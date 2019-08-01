@@ -1,0 +1,42 @@
+{
+  "mainDeck": [
+    {
+      "name": "Merfolk Trickster",
+      "count": 4,
+      "set": "(DAR)",
+      "collectorNumber": 56
+    },
+    {
+      "name": "Siren Stormtamer",
+      "count": 4,
+      "set": "(XLN)",
+      "collectorNumber": 79
+    },
+    {
+      "name": "Mist-Cloaked Herald",
+      "count": 2,
+      "set": "(RIX)",
+      "collectorNumber": 43
+    },
+    {
+      "name": "Island",
+      "count": 20,
+      "set": "(BFZ)",
+      "collectorNumber": 255
+    }
+  ],
+  "sideBoard": [
+    {
+      "name": "Disdainful Stroke",
+      "count": 4,
+      "set": "(GRN)",
+      "collectorNumber": 37
+    },
+    {
+      "name": "Sleep",
+      "count": 2,
+      "set": "(M19)",
+      "collectorNumber": 74
+    }
+  ]
+}

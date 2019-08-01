@@ -1,0 +1,306 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - TCGUABot</title>
+
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute"
+              crossorigin="anonymous"
+              integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"/>
+    </environment>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-page="/Index">TCGUABot</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <partial name="_LoginPartial" />
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <partial name="_CookieConsentPartial" />
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2019 - TCGUABot - <a asp-area="" asp-page="/Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <environment include="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=">
+        </script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o">
+        </script>
+    </environment>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <style>
+        .deck-visual-playmat {
+            min-height: 1032px;
+            padding: 10px;
+            position: relative;
+            background-size: cover;
+            color: #fff;
+            padding-bottom: 75px;
+            margin-top: 10px
+        }
+
+            .deck-visual-playmat:before,
+            .deck-visual-playmat:after {
+                display: table;
+                content: " "
+            }
+
+            .deck-visual-playmat:after {
+                clear: both
+            }
+
+        .deck-visual-playmat-maindeck {
+            float: left;
+            width: 1200px;
+            overflow: hidden;
+            margin-top: 20px;
+            margin-left: 65px
+        }
+
+            .deck-visual-playmat-maindeck:before,
+            .deck-visual-playmat-maindeck:after {
+                display: table;
+                content: " "
+            }
+
+            .deck-visual-playmat-maindeck:after {
+                clear: both
+            }
+
+        .deck-visual-pile {
+            position: relative;
+            width: 223px;
+            min-height: 420px;
+            height: auto;
+            display: inline-block
+        }
+
+        .deck-visual-pile-card {
+            position: absolute;
+            border-radius: 15px;
+            width: 223px;
+            height: 311px;
+            min-height: 311px;
+        }
+
+        .deck-visual-pile-card-0 {
+            z-index: 1;
+            top: 0
+        }
+
+        .deck-visual-pile-card-1 {
+            z-index: 2;
+            top: 35px
+        }
+
+        .deck-visual-pile-card-2 {
+            z-index: 3;
+            top: 70px
+        }
+
+        .deck-visual-pile-card-3 {
+            z-index: 4;
+            top: 105px
+        }
+
+        .deck-visual-pile-card-4 {
+            z-index: 5;
+            top: 140px
+        }
+
+        .deck-visual-pile-card-5 {
+            z-index: 6;
+            top: 175px
+        }
+
+        .deck-visual-pile-card-6 {
+            z-index: 7;
+            top: 210px
+        }
+
+        .deck-visual-pile-card-7 {
+            z-index: 8;
+            top: 245px
+        }
+
+        .deck-visual-pile-card-8 {
+            z-index: 9;
+            top: 240px
+        }
+
+        .deck-visual-pile-card-9 {
+            z-index: 10;
+            top: 270px
+        }
+
+        .deck-visual-pile-card-10 {
+            z-index: 11;
+            top: 300px
+        }
+
+        .deck-visual-pile-card-11 {
+            z-index: 12;
+            top: 330px
+        }
+
+        .deck-visual-pile-card-12 {
+            z-index: 13;
+            top: 360px
+        }
+
+        .deck-visual-pile-card-13 {
+            z-index: 14;
+            top: 390px
+        }
+
+        .deck-visual-pile-card-14 {
+            z-index: 15;
+            top: 420px
+        }
+
+        .deck-visual-pile-card-ru-0 {
+            z-index: 1;
+            top: 0;
+            display: none;
+        }
+
+        .deck-visual-pile-card-ru-1 {
+            z-index: 2;
+            top: 35px;
+            display: none;
+        }
+
+        .deck-visual-pile-card-ru-2 {
+            z-index: 3;
+            top: 70px;
+            display: none;
+        }
+
+        .deck-visual-pile-card-ru-3 {
+            z-index: 4;
+            top: 105px;
+            display: none;
+        }
+
+        .deck-visual-pile-card-ru-0:hover {
+            z-index: 16;
+            top: 0;
+            display: block;
+        }
+
+        .deck-visual-pile-card-ru-1:hover {
+            z-index: 17;
+            top: 35px;
+            display: block;
+        }
+
+        .deck-visual-pile-card-ru-2:hover {
+            z-index: 18;
+            top: 70px;
+            display: block;
+        }
+
+        .deck-visual-pile-card-ru-3:hover {
+            z-index: 19;
+            top: 105px;
+            display: block;
+        }
+
+        .cardname {
+            position: absolute;
+            width: 223px;
+            text-align: center;
+            vertical-align: middle;
+            top: 100px;
+            padding: 20px;
+            color: white;
+            font-size: large;
+            font-weight: 700;
+            z-index: 20;
+            text-shadow: 0px 0px 5px black, 0 0 20px gray, 0 0 20px dimgray;
+        }
+
+        div.oracle span.en {
+            display: inline;
+        }
+
+        div.oracle:hover span.en {
+            display: none;
+        }
+
+        div.oracle span.ru {
+            display: none;
+        }
+
+        div.oracle:hover span.ru {
+            display: inline;
+        }
+
+
+        .cardcount {
+            position: absolute;
+            width: 223px;
+            text-align: center;
+            vertical-align: middle;
+            color: white;
+            font-size: 50px;
+            z-index: 21;
+            top: 175px;
+            font-weight: 900;
+            text-shadow: 0px 0px 5px black, 0 0 20px gray, 0 0 20px dimgray;
+        }
+
+        .oracle {
+            width: 223px;
+            height: 223px;
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,46 @@
+﻿@page
+@{
+    //ViewData["Title"] = "RandomDeck";
+    //Layout = "_Layout.cshtml";
+}
+
+<h1>RandomDeck</h1>
+<div>
+    <div>
+        <div class="deck-visual-playmat">
+            <div class="deck-visual-playmat-maindeck">
+                @foreach (var card in ViewBag.SortedDecklist)
+                {
+                    @:<div class="deck-visual-pile" data-name-en="@card.Card.name" data-name-ru="@card.Card.ruName">
+
+
+                        var count = card.Count;
+                        var zzz = card.Card;
+                        for (int k = 0; k < count; k++)
+                        {
+                            <div class="deck-visual-pile-card deck-visual-pile-card-@k" style="
+                 width: 223px;
+                 height: 311px;
+                 background-image: url('https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.multiverseId&type=card');
+            background-size: cover;"
+                                 onmouseover="this.style.backgroundImage = 'url(https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.ruMultiverseId&type=card)'"
+                                 onmouseout="this.style.backgroundImage = 'url(https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.multiverseId&type=card)'">
+                                <img style="display:none;" src="https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.ruMultiverseId&type=card" />
+                                @if (k == count - 1)
+                                {
+                                    <div class="oracle">
+                                        <div class="cardname"><span class="en">@card.Card.name</span><span class="ru">@card.Card.ruName</span></div>
+                                        <div class="cardcount">@count</div>
+                                    </div>
+                                }
+                            </div>
+                            <!--cardcontainer-->
+                        }
+                    @:</div>
+
+
+                }
+            </div>
+        </div><!--deckcontainer-->
+    </div>
+</div>
