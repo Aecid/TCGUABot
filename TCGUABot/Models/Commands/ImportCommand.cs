@@ -46,7 +46,7 @@ namespace TCGUABot.Models.Commands
             }
 
             var controller = new TCGUABot.Controllers.DecklistController();
-            var id = controller.Post(deck);
+            var id = controller.Import(deck);
 
             var chatId = message.Chat.Id;
             await client.SendTextMessageAsync(chatId, "...here goes nothing: https://ace.od.ua:8443/decks/"+id);

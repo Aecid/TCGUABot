@@ -79,12 +79,60 @@ namespace TCGUABot.Controllers
 
         // POST: api/Decklist
         [HttpPost]
-        public string Post([FromBody] DeckArenaImport deck)
+        public string Import([FromBody] DeckArenaImport deck)
         {
+            var z = deck.MainDeck.GroupBy(x => x.name);
+
+
+            var sortedDeck = new DeckArenaImport();
+            sortedDeck.MainDeck = new List<ArenaCard>();
+            sortedDeck.SideBoard = new List<ArenaCard>();
+
+            foreach (var card in deck.MainDeck)
+            {
+                foreach (var compareCard in deck.MainDeck)
+                {
+                    if (card != compareCard)
+                    {
+                        if (card.name.Equals(compareCard.name) && !card.set.Equals(compareCard.set))
+                        {
+                            card.count += compareCard.count;
+                        }
+                    }
+                }
+
+                if (!sortedDeck.MainDeck.Any(c => c.name.Equals(card.name)))
+                {
+                    sortedDeck.MainDeck.Add(card);
+                }
+            }
+
+            foreach (var card in deck.SideBoard)
+            {
+                foreach (var compareCard in deck.SideBoard)
+                {
+                    if (card != compareCard)
+                    {
+                        if (card.name.Equals(compareCard.name) && !card.set.Equals(compareCard.set))
+                        {
+                            card.count += compareCard.count;
+                        }
+                    }
+                }
+
+                if (!sortedDeck.SideBoard.Any(c => c.name.Equals(card.name)))
+                {
+                    sortedDeck.SideBoard.Add(card);
+                }
+            }
+
+
+
+
             dynamic deckList = new ExpandoObject();
             deckList.MainDeck = new List<ExpandoObject>();
             deckList.SideBoard = new List<ExpandoObject>();
-            foreach (var importCard in deck.MainDeck)
+            foreach (var importCard in sortedDeck.MainDeck)
             {
                 var set = importCard.set.Replace("(", "").Replace(")", "").Replace("DAR", "DOM");
                 var card = CardData.Instance.Sets[set].cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
