@@ -155,6 +155,37 @@ namespace TCGUABot.Controllers
             return id;
         }
 
+        [HttpGet("/card", Name="TestCard")]
+        public string GetCard(string query)
+        {
+            var text = query;
+            var msg = string.Empty;
+            Card card = new Card();
+            //var chatId = message.Chat.Id;
+            var set = CardData.Instance.Sets.FirstOrDefault(s => s.Value.cards.Any(c => c.name.ToLowerInvariant().Contains(text.ToLowerInvariant()))).Value;
+            if (set == null)
+            {
+                set = CardData.Instance.Sets.FirstOrDefault(s => s.Value.cards.Any(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(text.ToLowerInvariant())))).Value;
+            }
+            if (set != null)
+            {
+                card = set.cards.FirstOrDefault(c => c.name.ToLowerInvariant().Contains(text.ToLowerInvariant()));
+                if (card == null)
+                {
+                    card = set.cards.FirstOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(text.ToLowerInvariant())));
+                    msg += card.ruName + "\r\n";
+                }
+                msg += card.name + "\r\n";
+                msg += "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card";
+            }
+            else
+            {
+                msg = "Карта не найдена.";
+            }
+
+            return msg;
+        }
+
         // POST: api/Decklist
         [HttpPost]
         public string Import([FromBody] DeckArenaImport deck)

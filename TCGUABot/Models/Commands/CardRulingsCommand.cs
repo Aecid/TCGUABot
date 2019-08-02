@@ -7,13 +7,13 @@ using Telegram.Bot.Types;
 
 namespace TCGUABot.Models.Commands
 {
-    public class CardCommand : Command
+    public class CardRulingsCommand : Command
     {
-        public override string Name => "/c";
+        public override string Name => "/cr";
 
         public override async void Execute(Message message, TelegramBotClient client)
         {
-            var text = message.Text.Replace("/c ", "");
+            var text = message.Text.Replace("/cr ", "");
             var msg = string.Empty;
             var chatId = message.Chat.Id;
             var card = Helpers.CardSearch.GetCardByName(text);
@@ -23,6 +23,19 @@ namespace TCGUABot.Models.Commands
                 msg += card.name + "\r\n";
                 if (card.foreignData.Any(c=>c.language.Equals("Russian"))) msg += card.ruName + "\r\n";
                 msg += "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card";
+
+                if (card.rulings.Count>0)
+                {
+                    msg += "\r\nРулинги: ";
+                    foreach (var ruling in card.rulings)
+                    {
+                        msg += "\r\n"+ruling.date + ": " + ruling.text;
+                    }
+                }
+                else
+                {
+                    msg += "Рулинги не найдены";
+                }
             }
             else
             {
