@@ -49,7 +49,7 @@ namespace TCGUABot.Models.Commands
             var id = controller.Import(deck);
 
             var chatId = message.Chat.Id;
-            await client.SendTextMessageAsync(chatId, "...here goes nothing: https://ace.od.ua:8443/decks/"+id);
+            await client.SendTextMessageAsync(chatId, "Ссылка на деку: https://ace.od.ua:8443/decks/"+id);
         }
     }
 }
