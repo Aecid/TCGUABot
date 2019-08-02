@@ -20,7 +20,7 @@
 
                             for (int k = 0; k < count; k++)
                             {
-                                <div class="deck-visual-pile-card deck-visual-pile-card-@k" style="width: 223px; height: 311px; background-image: url('https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.multiverseId&type=card'); background-size: cover;"
+                                <div class="deck-visual-pile-card deck-visual-pile-card-@k" style="width: 148px; height: 207px; background-image: url('https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.multiverseId&type=card'); background-size: contain;"
                                      onmouseover="this.style.backgroundImage = 'url(https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.ruMultiverseId&type=card)'"
                                      onmouseout="this.style.backgroundImage = 'url(https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.multiverseId&type=card)'">
                                     <img style="display:none;" src="https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.ruMultiverseId&type=card" />
@@ -47,7 +47,7 @@
                             }
                                 if (z<4)
                             {
-                                <div class="deck-visual-pile-card deck-visual-pile-card-@z" style="width: 223px; height: 311px; background-image: url('https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.multiverseId&type=card'); background-size: cover;"
+                                <div class="deck-visual-pile-card deck-visual-pile-card-@z" style="width: 148px; height: 207px; background-image: url('https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.multiverseId&type=card'); background-size: contain;"
                                      onmouseover="this.style.backgroundImage = 'url(https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.ruMultiverseId&type=card)'"
                                      onmouseout="this.style.backgroundImage = 'url(https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.multiverseId&type=card)'">
                                     <img style="display:none;" src="https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.ruMultiverseId&type=card" />
@@ -77,11 +77,19 @@
                     @{ int kk = 0; }
                     @foreach (var card in ViewBag.Deck.SideBoard)
                     {
-
-                        <div class="deck-visual-side-pile-card deck-visual-pile-side-card-@kk" style="width:223px; height:311px; background-image: url('https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.multiverseId&type=card'); background-size: cover;">
-
-                        </div>
-                        kk++;
+                        var ccount = card.Count;
+                        @for (var k = 0; k < ccount; k++)
+                        {
+                            <div class="deck-visual-side-pile-card deck-visual-pile-side-card-@kk" style="width:148px; height:207px; background-image: url('https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.multiverseId&type=card'); background-size: contain;"
+                                 onmouseover="document.getElementById('side-ru-@kk').style.display = 'block'"
+                                 >
+                            </div>
+                            <div class="deck-visual-side-pile-card deck-visual-pile-side-ru-card-@kk" id="side-ru-@kk" style="display: none; width:148px; height:207px; background-image: url('https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.ruMultiverseId&type=card'); background-size: contain;"
+                                 onmouseout="this.style.display='none'">
+                            </div>
+                            kk++;
+                        }
+                        //    kk++;
                     }
                 </div>
             </div>

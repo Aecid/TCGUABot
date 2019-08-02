@@ -74,7 +74,6 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <style>
         .deck-visual-playmat {
-            min-height: 1032px;
             padding: 10px;
             position: relative;
             background-size: cover;
@@ -95,7 +94,7 @@
 
         .deck-visual-playmat-maindeck {
             float: left;
-            width: 1200px;
+            width: 800px;
             overflow: hidden;
             margin-top: 20px;
             margin-left: 65px
@@ -113,18 +112,17 @@
 
         .deck-visual-pile {
             position: relative;
-            width: 223px;
-            min-height: 420px;
+            width: 148px;
+            min-height: 275px;
             height: auto;
             display: inline-block
         }
 
         .deck-visual-pile-card {
             position: absolute;
-            border-radius: 15px;
-            width: 223px;
-            height: 311px;
-            min-height: 311px;
+            border-radius: 10px;
+            width: 148px;
+            height: 207px;
         }
 
         .deck-visual-pile-card-0 {
@@ -134,22 +132,22 @@
 
         .deck-visual-pile-card-1 {
             z-index: 2;
-            top: 35px
+            top: 20px
         }
 
         .deck-visual-pile-card-2 {
             z-index: 3;
-            top: 70px
+            top: 40px
         }
 
         .deck-visual-pile-card-3 {
             z-index: 4;
-            top: 105px
+            top: 60px
         }
 
         .deck-visual-pile-card-4 {
             z-index: 5;
-            top: 140px
+            top: 60px
         }
 
         .deck-visual-pile-card-5 {
@@ -252,10 +250,10 @@
 
         .cardname {
             position: absolute;
-            width: 223px;
+            width: 148px;
             text-align: center;
             vertical-align: middle;
-            top: 100px;
+            top: 30px;
             padding: 20px;
             color: white;
             font-size: large;
@@ -283,20 +281,20 @@
 
         .cardcount {
             position: absolute;
-            width: 223px;
+            width: 148px;
             text-align: center;
             vertical-align: middle;
             color: white;
             font-size: 50px;
             z-index: 21;
-            top: 175px;
+            top: 100px;
             font-weight: 900;
             text-shadow: 0px 0px 5px black, 0 0 20px gray, 0 0 20px dimgray;
         }
 
         .oracle {
-            width: 223px;
-            height: 223px;
+            width: 148px;
+            height: 207px;
             text-align: center;
             vertical-align: middle;
         }
@@ -324,6 +322,22 @@
 .deck-visual-pile-side-card-12{top:600px}
 .deck-visual-pile-side-card-13{top:650px;margin-left:74.3333333333px}
 .deck-visual-pile-side-card-14{top:700px}
+
+.deck-visual-pile-side-ru-card-0{top:0; z-index: 100;}
+.deck-visual-pile-side-ru-card-1{top:50px;margin-left:74.3333333333px; z-index: 100;}
+.deck-visual-pile-side-ru-card-2{top:100px; z-index: 100;}
+.deck-visual-pile-side-ru-card-3{top:150px;margin-left:74.3333333333px; z-index: 100;}
+.deck-visual-pile-side-ru-card-4{top:200px; z-index: 100;}
+.deck-visual-pile-side-ru-card-5{top:250px;margin-left:74.3333333333px; z-index: 100;}
+.deck-visual-pile-side-ru-card-6{top:300px; z-index: 100;}
+.deck-visual-pile-side-ru-card-7{top:350px;margin-left:74.3333333333px; z-index: 100;}
+.deck-visual-pile-side-ru-card-8{top:400px; z-index: 100;}
+.deck-visual-pile-side-ru-card-9{top:450px;margin-left:74.3333333333px; z-index: 100;}
+.deck-visual-pile-side-ru-card-10{top:500px; z-index: 100;}
+.deck-visual-pile-side-ru-card-11{top:550px;margin-left:74.3333333333px; z-index: 100;}
+.deck-visual-pile-side-ru-card-12{top:600px; z-index: 100;}
+.deck-visual-pile-side-ru-card-13{top:650px;margin-left:74.3333333333px; z-index: 100;}
+.deck-visual-pile-side-ru-card-14{top:700px; z-index: 100;}
     </style>
     @RenderSection("Scripts", required: false)
 </body>

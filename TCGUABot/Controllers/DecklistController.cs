@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -75,6 +76,83 @@ namespace TCGUABot.Controllers
             var deck = JsonConvert.DeserializeObject<ExpandoObject>(System.IO.File.ReadAllText(deckId + ".json"));
             ViewBag.Deck = deck;
             return View();
+        }
+
+        [HttpGet("/test", Name = "Test")]
+        public string Test()
+        {
+            string zz = @"/import 4 Arboreal Grazer (WAR) 149
+4 Elvish Rejuvenator (M19) 180
+4 Hydroid Krasis (RNA) 183
+4 Teferi, Time Raveler (WAR) 221
+2 Forest (XLN) 277
+2 Island (XLN) 265
+1 Plains (XLN) 261
+1 Azorius Guildgate (RNA) 243
+1 Blast Zone (WAR) 244
+1 Blossoming Sands (M20) 243
+2 Breeding Pool (RNA) 246
+1 Field of Ruin (XLN) 254
+4 Field of the Dead (M20) 247
+2 Hallowed Fountain (RNA) 251
+1 Hinterland Harbor (DAR) 240
+1 Selesnya Guildgate (GRN) 256
+1 Simic Guildgate (RNA) 257
+1 Sunpetal Grove (XLN) 257
+2 Temple Garden (GRN) 258
+1 Temple of Malady (M20) 254
+2 Temple of Mystery (M20) 255
+1 Thornwood Falls (M20) 258
+1 Tranquil Cove (M20) 259
+4 Growth Spiral (RNA) 178
+4 Circuitous Route (GRN) 125
+2 Grow from the Ashes (DAR) 164
+4 Scapeshift (M19) 201
+2 Time Wipe (WAR) 223
+
+2 Deputy of Detention (RNA) 165
+2 Baffling End (RIX) 1
+2 Ixalan's Binding (XLN) 17
+2 Dovin's Veto (WAR) 193
+3 Root Snare (M19) 199
+3 Veil of Summer (M20) 198
+1 Ashiok, Dream Render (WAR) 228";
+
+
+            var text = zz.Replace("/import ", "");
+            var deck = new DeckArenaImport();
+            deck.MainDeck = new List<ArenaCard>();
+            deck.SideBoard = new List<ArenaCard>();
+            bool side = false;
+            foreach (var myString in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
+            {
+                ArenaCard card = new ArenaCard();
+
+                if (myString.Trim().Length > 1)
+                {
+                    var cardData = myString.Split(" ");
+                    Regex exp = new Regex(@"(\d+)\s+(.*)\s+(\(.+\))\s+(\d+)");
+                    var matches = exp.Matches(myString);
+
+                    int.TryParse(matches[0].Groups[1].Value, out card.count);
+                    card.name = matches[0].Groups[2].Value;
+                    card.set = matches[0].Groups[3].Value;
+                    int.TryParse(matches[0].Groups[4].Value, out card.collectorNumber);
+
+                    if (side) deck.SideBoard.Add(card);
+                    else deck.MainDeck.Add(card);
+                }
+
+                else
+                {
+                    side = true;
+                }
+            }
+
+            var controller = new TCGUABot.Controllers.DecklistController();
+            var id = controller.Import(deck);
+
+            return id;
         }
 
         // POST: api/Decklist
