@@ -34,7 +34,7 @@ namespace TCGUABot.Models.Commands
                 }
                 else
                 {
-                    msg += "\r\n<b>❌Рулинги не найдены<b>";
+                    msg += "\r\n<b>❌Рулинги не найдены</b>";
                 }
             }
             else

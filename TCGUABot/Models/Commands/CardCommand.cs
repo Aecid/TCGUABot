@@ -29,7 +29,7 @@ namespace TCGUABot.Models.Commands
                 msg = "<b>❌Карта не найдена.</b>";
             }
 
-            await client.SendTextMessageAsync(chatId, msg);
+            await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
         }
     }
 }
