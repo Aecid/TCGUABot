@@ -160,23 +160,26 @@ namespace TCGUABot.Controllers
         {
             var text = query;
             var msg = string.Empty;
-            Card card = new Card();
-            //var chatId = message.Chat.Id;
-            var set = CardData.Instance.Sets.FirstOrDefault(s => s.Value.cards.Any(c => c.name.ToLowerInvariant().Contains(text.ToLowerInvariant()))).Value;
-            if (set == null)
+            var card = Helpers.CardSearch.GetCardByName(text);
+
+            if (card != null)
             {
-                set = CardData.Instance.Sets.FirstOrDefault(s => s.Value.cards.Any(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(text.ToLowerInvariant())))).Value;
-            }
-            if (set != null)
-            {
-                card = set.cards.FirstOrDefault(c => c.name.ToLowerInvariant().Contains(text.ToLowerInvariant()));
-                if (card == null)
-                {
-                    card = set.cards.FirstOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(text.ToLowerInvariant())));
-                    msg += card.ruName + "\r\n";
-                }
                 msg += card.name + "\r\n";
+                if (card.foreignData.Any(c => c.language.Equals("Russian"))) msg += card.ruName + "\r\n";
                 msg += "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card";
+
+                if (card.rulings.Count > 0)
+                {
+                    msg += "\r\nРулинги: ";
+                    foreach (var ruling in card.rulings)
+                    {
+                        msg += "\r\n" + ruling.date + ": " + ruling.text;
+                    }
+                }
+                else
+                {
+                    msg += "Рулинги не найдены";
+                }
             }
             else
             {

@@ -9,11 +9,11 @@ namespace TCGUABot.Models.Commands
 {
     public class CardRulingsCommand : Command
     {
-        public override string Name => "/cr";
+        public override string Name => "/rs";
 
         public override async void Execute(Message message, TelegramBotClient client)
         {
-            var text = message.Text.Replace("/cr ", "");
+            var text = message.Text.Replace("/rs ", "");
             var msg = string.Empty;
             var chatId = message.Chat.Id;
             var card = Helpers.CardSearch.GetCardByName(text);
@@ -34,7 +34,7 @@ namespace TCGUABot.Models.Commands
                 }
                 else
                 {
-                    msg += "Рулинги не найдены";
+                    msg += "\r\nРулинги не найдены";
                 }
             }
             else
