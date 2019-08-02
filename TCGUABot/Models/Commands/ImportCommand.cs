@@ -20,7 +20,7 @@ namespace TCGUABot.Models.Commands
             deck.MainDeck = new List<ArenaCard>();
             deck.SideBoard = new List<ArenaCard>();
             bool side = false;
-            foreach (var myString in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var myString in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
             {
                 ArenaCard card = new ArenaCard();
 
