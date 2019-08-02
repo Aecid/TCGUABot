@@ -20,8 +20,8 @@ namespace TCGUABot.Models.Commands
 
             if ( card != null)
             {
-                msg += card.name + "\r\n";
-                if (card.foreignData.Any(c=>c.language.Equals("Russian"))) msg += card.ruName + "\r\n";
+                msg += "<b>🇺🇸" + card.name + "</b>\r\n";
+                if (card.foreignData.Any(c=>c.language.Equals("Russian"))) msg += "<b>🇷🇺" + card.ruName + "</b>\r\n";
                 msg += "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card";
 
                 if (card.rulings.Count>0)
@@ -29,20 +29,20 @@ namespace TCGUABot.Models.Commands
                     msg += "\r\nРулинги: ";
                     foreach (var ruling in card.rulings)
                     {
-                        msg += "\r\n"+ruling.date + ": " + ruling.text;
+                        msg += "\r\n📝<b>" + ruling.date + ":<b> <i>" + ruling.text + "</i>\r\n";
                     }
                 }
                 else
                 {
-                    msg += "\r\nРулинги не найдены";
+                    msg += "\r\n<b>❌Рулинги не найдены<b>";
                 }
             }
             else
             {
-                msg = "Карта не найдена.";
+                msg = "<b>❌Карта не найдена.</b>";
             }
 
-            await client.SendTextMessageAsync(chatId, msg);
+            await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
         }
     }
 }

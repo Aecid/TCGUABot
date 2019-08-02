@@ -20,13 +20,13 @@ namespace TCGUABot.Models.Commands
 
             if ( card != null)
             {
-                msg += card.name + "\r\n";
-                if (card.foreignData.Any(c=>c.language.Equals("Russian"))) msg += card.ruName + "\r\n";
+                msg += "<b>🇺🇸" + card.name + "</b>\r\n";
+                if (card.foreignData.Any(c => c.language.Equals("Russian"))) msg += "<b>🇷🇺" + card.ruName + "</b>\r\n";
                 msg += "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card";
             }
             else
             {
-                msg = "Карта не найдена.";
+                msg = "<b>❌Карта не найдена.</b>";
             }
 
             await client.SendTextMessageAsync(chatId, msg);
