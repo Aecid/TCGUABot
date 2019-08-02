@@ -24,7 +24,7 @@ namespace TCGUABot.Models.Commands
             {
                 ArenaCard card = new ArenaCard();
 
-                if (myString.Length > 0)
+                if (myString.Trim().Length > 1)
                 {
                     var cardData = myString.Split(" ");
                     Regex exp = new Regex(@"(\d+)\s+(.*)\s+(\(.+\))\s+(\d+)");
