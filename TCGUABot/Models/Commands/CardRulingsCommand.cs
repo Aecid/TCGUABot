@@ -29,7 +29,7 @@ namespace TCGUABot.Models.Commands
                     msg += "\r\nРулинги: ";
                     foreach (var ruling in card.rulings)
                     {
-                        msg += "\r\n📝<b>" + ruling.date + ":<b> <i>" + ruling.text + "</i>\r\n";
+                        msg += "\r\n📝<b>" + ruling.date + ":</b> <i>" + ruling.text + "</i>\r\n";
                     }
                 }
                 else
