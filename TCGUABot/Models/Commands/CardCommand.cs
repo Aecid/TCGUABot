@@ -27,7 +27,7 @@ namespace TCGUABot.Models.Commands
                 try
                 {
                     var price = GetCardPriceFromScryfallByMultiverseId(card.multiverseId);
-                    msg += "Цена: <b>" + price.ToString() + "</b>\r\n";
+                    msg += "Цена: <b>$" + price.ToString() + "</b>\r\n";
                 }
                 catch
                 { 

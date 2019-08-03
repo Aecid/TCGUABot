@@ -14,7 +14,7 @@ namespace TCGUABot.Models.Commands
 {
     public class CatCommand : Command
     {
-        public override string Name => "/cat";
+        public override string Name => "/randomCat";
 
         public override async void Execute(Message message, TelegramBotClient client)
         {
