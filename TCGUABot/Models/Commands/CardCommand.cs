@@ -25,7 +25,7 @@ namespace TCGUABot.Models.Commands
                 if (card.prices.paper.Count > 0)
                 {
                     var price = card.prices.paper.TakeLast(1).ToList()[0];
-                    msg += "Цена на " + price.Key + ": $" + price.Value.ToString();
+                    msg += "Цена на <b>" + price.Key + "</b>: <b>$" + price.Value.ToString() + "</b>\r\n";
                 }
                 msg += "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card";
             }
