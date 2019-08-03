@@ -52,7 +52,7 @@ namespace TCGUABot.Models.Commands
         public float GetCardPriceFromScryfallByMultiverseId(int multiverseId)
         {
             //https://api.scryfall.com/cards/multiverse/464166
-            dynamic card = JsonConvert.DeserializeObject<dynamic>(CardData.ApiCall("https://api.scryfall.com/cards/multiverse/" + 464166));
+            dynamic card = JsonConvert.DeserializeObject<dynamic>(CardData.ApiCall("https://api.scryfall.com/cards/multiverse/" + multiverseId));
             return card.prices.usd;
         }
     }
