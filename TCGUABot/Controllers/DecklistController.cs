@@ -158,35 +158,10 @@ namespace TCGUABot.Controllers
         [HttpGet("/card", Name="TestCard")]
         public string GetCard(string query)
         {
-            var text = query;
-            var msg = string.Empty;
-            var card = Helpers.CardSearch.GetCardByName(text);
-
-            if (card != null)
-            {
-                msg += card.name + "\r\n";
-                if (card.foreignData.Any(c => c.language.Equals("Russian"))) msg += card.ruName + "\r\n";
-                msg += "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card";
-
-                if (card.rulings.Count > 0)
-                {
-                    msg += "\r\nРулинги: ";
-                    foreach (var ruling in card.rulings)
-                    {
-                        msg += "\r\n" + ruling.date + ": " + ruling.text;
-                    }
-                }
-                else
-                {
-                    msg += "Рулинги не найдены";
-                }
-            }
-            else
-            {
-                msg = "Карта не найдена.";
-            }
-
-            return msg;
+            //https://api.scryfall.com/cards/multiverse/464166
+            dynamic card = JsonConvert.DeserializeObject<dynamic>(CardData.ApiCall("https://api.scryfall.com/cards/multiverse/" + 464166));
+            var prices = card.prices;
+            return card.prices.usd;
         }
 
         // POST: api/Decklist

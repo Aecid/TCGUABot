@@ -26,7 +26,7 @@ namespace TCGUABot.Models.Commands
                 try
                 {
                     var price = GetCardPriceFromScryfallByMultiverseId(card.multiverseId);
-                    msg += "Цена: <b>" + price.ToString() + "</b>";
+                    msg += "Цена: <b>" + price.ToString() + "</b>\r\n";
                 }
                 catch
                 { 
@@ -50,7 +50,8 @@ namespace TCGUABot.Models.Commands
 
         public float GetCardPriceFromScryfallByMultiverseId(int multiverseId)
         {
-            dynamic card = CardData.ApiCall("https://api.scryfall.com/cards/multiverse/" + multiverseId);
+            //https://api.scryfall.com/cards/multiverse/464166
+            dynamic card = JsonConvert.DeserializeObject<dynamic>(CardData.ApiCall("https://api.scryfall.com/cards/multiverse/" + 464166));
             return card.prices.usd;
         }
     }
