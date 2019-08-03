@@ -32,7 +32,7 @@ namespace TCGUABot.Models
         public string number;
         public string originalText;
         public string originalType;
-        public dynamic prices;
+        public Prices prices;
         public string rarity;
         public List<string> printings;
         public Dictionary<string, string> purchaseUrls;
@@ -103,5 +103,11 @@ namespace TCGUABot.Models
     {
         public string date;
         public string text;
+    }
+
+    public class Prices
+    {
+        public Dictionary<string, float> paper;
+        public Dictionary<string, float> paperFoil;
     }
 }
