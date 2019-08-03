@@ -47,7 +47,7 @@ namespace TCGUABot
             return CardData.Instance;
         }
 
-        public string ApiCall(string url)
+        public static string ApiCall(string url)
         {
             var request = (HttpWebRequest)WebRequest.Create(url);
 

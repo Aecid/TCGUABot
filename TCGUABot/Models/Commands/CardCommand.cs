@@ -22,19 +22,36 @@ namespace TCGUABot.Models.Commands
             {
                 msg += "<b>🇺🇸" + card.name + "</b>\r\n";
                 if (card.foreignData.Any(c => c.language.Equals("Russian"))) msg += "<b>🇷🇺" + card.ruName + "</b>\r\n";
-                if (card.prices.paper.Count > 0)
+
+                try
                 {
-                    var price = card.prices.paper.TakeLast(1).ToList()[0];
-                    msg += "Цена на <b>" + price.Key + "</b>: <b>$" + price.Value.ToString() + "</b>\r\n";
+                    var price = GetCardPriceFromScryfallByMultiverseId(card.multiverseId);
+                    msg += "Цена: <b>" + price.ToString() + "</b>";
                 }
+                catch
+                { 
+                    if (card.prices.paper.Count > 0)
+                    {
+                        var price = card.prices.paper.TakeLast(1).ToList()[0];
+                        msg += "Цена на <b>" + price.Key + "</b>: <b>$" + price.Value.ToString() + "</b>\r\n";
+                    }
+
+                }
+
                 msg += "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card";
             }
             else
             {
-                msg = "<b>❌Карта не найдена.</b>";
+                msg = "<b>❌Карта не найдена по запросу \""+text+"\".</b>";
             }
 
             await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+        }
+
+        public float GetCardPriceFromScryfallByMultiverseId(int multiverseId)
+        {
+            dynamic card = CardData.ApiCall("https://api.scryfall.com/cards/multiverse/" + multiverseId);
+            return card.prices.usd;
         }
     }
 }
