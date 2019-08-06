@@ -7,7 +7,7 @@ namespace TCGUABot
 {
     public static class Settings
     {
-        public static string Url { get; set; } = "https://ace.od.ua:8443/{0}";
+        public static string Url { get; set; } = "https://ace.od.ua/{0}";
         public static string Name { get; set; } = "starflame_bot";
         public static string ApiKey { get; set; } = "967739397:AAHkqRMad1ktMF6kWLBabznYLPxhu0SM-PI";
     }
