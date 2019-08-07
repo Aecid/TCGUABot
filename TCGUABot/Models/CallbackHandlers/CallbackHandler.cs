@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace TCGUABot.Models.Handlers
+namespace TCGUABot.Models.CallbackHandlers
 {
-    public abstract class Handler
+    public abstract class CallbackHandler
     {
         public abstract string Name { get; }
         public abstract void Execute(CallbackQuery query, TelegramBotClient client);

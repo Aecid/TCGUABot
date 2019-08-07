@@ -23,7 +23,7 @@ namespace TCGUABot
         {
             Configuration = configuration;
             Bot.Get();
-            //CardData.Initalize();
+            CardData.Initalize();
         }
 
         public IConfiguration Configuration { get; }

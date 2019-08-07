@@ -1,10 +1,27 @@
 ﻿@page
 @model IndexModel
+@inject UserManager<IdentityUser> UserManager
+
 @{
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+    <div class="text-center">
+        <h1 class="display-4">Welcome</h1>
+        @if (!User.Identity.IsAuthenticated)
+        {
+            <p>You are not logged in. No cookies for you.</p>
+        }
+        else
+        {
+            <p>Email: @User.Identity.Name</p>
+
+            var user = await UserManager.GetUserAsync(User);
+            var logins = await UserManager.GetLoginsAsync(user);
+            var telegramId = logins.Any(l => l.LoginProvider.Equals("Telegram")) ? logins.FirstOrDefault(l => l.LoginProvider.Equals("Telegram")).ProviderKey : null;
+            if (telegramId != null)
+            {
+                <p>Telegram Id: @telegramId</p>
+            }
+        }
+    </div>
