@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -16,6 +17,8 @@ namespace TCGUABot
         private static List<Handler> callbackHandlers;
         public static IReadOnlyList<Command> Commands { get => commandsList.AsReadOnly(); }
         public static IReadOnlyList<Handler> Handlers { get => callbackHandlers.AsReadOnly(); }
+        public static IConfiguration Configuration { get; }
+
 
         public static async Task<TelegramBotClient> Get()
         {
@@ -57,8 +60,8 @@ namespace TCGUABot
                 callbackHandlers.Add((Handler)handler);
             }
 
-            client = new TelegramBotClient(Settings.ApiKey);
-            var hook = string.Format(Settings.Url, "Update/Webhook");
+            client = new TelegramBotClient(Configuration.GetSection("TelegramSettings").GetSection("TelegramBotToken").Value);
+            var hook = string.Format(Configuration.GetSection("TelegramSettings").GetSection("TelegramWebHookHostBase").Value, "Update /Webhook");
             Console.WriteLine(hook);
             await client.SetWebhookAsync(hook);
 

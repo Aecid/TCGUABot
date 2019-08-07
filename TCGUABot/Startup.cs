@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using TCGUABot.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TCGUABot.Helpers.TelegramOAuth.Middleware;
 
 namespace TCGUABot
 {
@@ -22,7 +23,7 @@ namespace TCGUABot
         {
             Configuration = configuration;
             Bot.Get();
-            CardData.Initalize();
+            //CardData.Initalize();
         }
 
         public IConfiguration Configuration { get; }
@@ -45,6 +46,15 @@ namespace TCGUABot
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            services.AddAuthentication()
+                .AddTelegram(options =>
+                {
+                    options.BotUsername = Configuration.GetSection("TelegramSettings").GetSection("TelegramBotName").Value;
+                    options.ClientId = Configuration.GetSection("TelegramSettings").GetSection("TelegramClientId").Value;
+                    options.ClientSecret = Configuration.GetSection("TelegramSettings").GetSection("TelegramBotToken").Value;
+                }
+                );
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -66,7 +76,6 @@ namespace TCGUABot
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-
             app.UseAuthentication();
 
             app.UseMvc(routes =>
