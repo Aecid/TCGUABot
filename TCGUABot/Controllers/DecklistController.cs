@@ -23,11 +23,11 @@ namespace TCGUABot.Controllers
             Dictionary<string, string> urls = new Dictionary<string, string>();
             List<Card> decklist = new List<Card>();
 
-            var NonNullSets = cards.Sets.Where(s => s.Value.cards.Any(c => c.multiverseId != 0)).ToList();
+            var NonNullSets = cards.Sets.Where(s => s.cards.Any(c => c.multiverseId != 0)).ToList();
 
             for (int i = 0; i < 60; i++)
             {
-                Set set = NonNullSets.ElementAt(random.Next(NonNullSets.Count())).Value;
+                Set set = NonNullSets.ElementAt(random.Next(NonNullSets.Count()));
                 Card obj = set.cards.Where(c => c.multiverseId != 0).ElementAt(random.Next(set.cards.Where(c => c.multiverseId != 0).Count()));
                 //urls.Add(obj.name, "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + obj.multiverseId + "&type=card");
                 decklist.Add(obj);
@@ -78,7 +78,7 @@ namespace TCGUABot.Controllers
             return View();
         }
 
-        [HttpGet("/test", Name = "Test")]
+        [HttpGet("/test2", Name = "Test2")]
         public string Test()
         {
             string zz = @"/import 4 Arboreal Grazer (WAR) 149
@@ -222,7 +222,7 @@ namespace TCGUABot.Controllers
             foreach (var importCard in sortedDeck.MainDeck)
             {
                 var set = importCard.set.Replace("(", "").Replace(")", "").Replace("DAR", "DOM");
-                var card = CardData.Instance.Sets[set].cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
+                var card = CardData.Instance.Sets.FirstOrDefault(s => s.name.Equals(set)).cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
                 if (card.name.Equals(importCard.name))
                 {
                     dynamic obj = new ExpandoObject();
@@ -234,7 +234,7 @@ namespace TCGUABot.Controllers
             foreach (var importCard in deck.SideBoard)
             {
                 var set = importCard.set.Replace("(", "").Replace(")", "");
-                var card = CardData.Instance.Sets[set].cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
+                var card = CardData.Instance.Sets.FirstOrDefault(s => s.name.Equals(set)).cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
                 if (card.name.Equals(importCard.name))
                 {
                     dynamic obj = new ExpandoObject();

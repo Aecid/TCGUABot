@@ -16,7 +16,7 @@ namespace TCGUABot
         private static List<Command> commandsList;
         private static List<CallbackHandler> callbackHandlers;
         public static IReadOnlyList<Command> Commands { get => commandsList.AsReadOnly(); }
-        public static IReadOnlyList<CallbackHandler> Handlers { get => callbackHandlers.AsReadOnly(); }
+        public static IReadOnlyList<CallbackHandler> CallbackHandlers { get => callbackHandlers.AsReadOnly(); }
 
         public static async Task<TelegramBotClient> Get()
         {
@@ -43,23 +43,22 @@ namespace TCGUABot
                 commandsList.Add((Command)command);
             }
 
-            //types = Assembly
-            //    .GetExecutingAssembly()
-            //    .GetTypes()
-            //    .Where(t => t.Namespace != null && t.Namespace.StartsWith("TCGUABot.Models.CallbackHandlers"));
+            types = Assembly
+                .GetExecutingAssembly()
+                .GetTypes()
+                .Where(t => t.Namespace != null && t.Namespace.StartsWith("TCGUABot.Models.CallbackHandlers"));
 
-            //Console.WriteLine("Initializing handlers:");
+            Console.WriteLine("Initializing handlers:");
 
-            //foreach (var t in types)
-            //{
-            //    if (t.Name.Equals("CallbackHandler") || !t.Name.EndsWith("CallbackHandler")) continue;
-            //    Console.WriteLine(t.Name);
-            //    var handler = Activator.CreateInstance(t);
-            //    callbackHandlers.Add((CallbackHandler)handler);
-            //}
-            try
+            foreach (var t in types)
             {
-                IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+                if (t.Name.Equals("CallbackHandler") || !t.Name.EndsWith("CallbackHandler")) continue;
+                Console.WriteLine(t.Name);
+                var handler = Activator.CreateInstance(t);
+                callbackHandlers.Add((CallbackHandler)handler);
+            }
+
+            IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddJsonFile("appsettings.json");
             IConfiguration configuration = configurationBuilder.Build();
 
@@ -69,11 +68,6 @@ namespace TCGUABot
             var hook = string.Format(configuration.GetSection("TelegramSettings").GetSection("TelegramWebHookHostBase").Value, "Update/Webhook");
             Console.WriteLine(hook);
             await client.SetWebhookAsync(hook);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message + " \r\n " + e.InnerException.Message);
-            }
 
             return client;
         }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TCGUABot.Models.InlineQueryHandler;
 using Telegram.Bot.Types;
 
 namespace TCGUABot.Controllers
@@ -21,14 +22,14 @@ namespace TCGUABot.Controllers
         {
             Console.WriteLine("UPDATE CAME!");
             var commands = Bot.Commands;
-            var handlers = Bot.Handlers;
+            var callbackHandlers = Bot.CallbackHandlers;
             var client = await Bot.Get();
-
+            var inlineQueryHandler = new InlineQueryHandler();
             if (update.CallbackQuery != null)
             {
                 if (update.CallbackQuery.Data != null)
                 {
-                    foreach (var handler in handlers)
+                    foreach (var handler in callbackHandlers)
                     {
                         if (handler.Is(update.CallbackQuery.Data))
                         {
@@ -37,6 +38,11 @@ namespace TCGUABot.Controllers
                         }
                     }
                 }
+            }
+
+            if (update.InlineQuery != null)
+            {
+                inlineQueryHandler.Execute(update.InlineQuery);
             }
 
             if (update != null)

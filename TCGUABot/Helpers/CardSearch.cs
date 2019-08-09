@@ -12,10 +12,10 @@ namespace TCGUABot.Helpers
         {
             Card card = new Card();
 
-            var set = CardData.Instance.Sets.FirstOrDefault(s => s.Value.cards.Any(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant()))).Value;
+            var set = CardData.Instance.Sets.FirstOrDefault(s => s.cards.Any(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant())));
             if (set == null)
             {
-                set = CardData.Instance.Sets.FirstOrDefault(s => s.Value.cards.Any(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant())))).Value;
+                set = CardData.Instance.Sets.FirstOrDefault(s => s.cards.Any(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant()))));
             }
             if (set != null)
             {
@@ -23,6 +23,31 @@ namespace TCGUABot.Helpers
                 if (card == null)
                 {
                     card = set.cards.FirstOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant())));
+                }
+
+                return card;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static Card GetCardByName(string name, string set)
+        {
+            Card card = new Card();
+
+            var setToSearch = CardData.Instance.Sets.FirstOrDefault(s => s.code.ToLower().Equals(set.ToLower()));
+            if (setToSearch == null)
+            {
+                return null;
+            }
+            if (setToSearch != null)
+            {
+                card = setToSearch.cards.FirstOrDefault(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant()));
+                if (card == null)
+                {
+                    card = setToSearch.cards.FirstOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant())));
                 }
 
                 return card;
