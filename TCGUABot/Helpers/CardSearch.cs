@@ -57,5 +57,15 @@ namespace TCGUABot.Helpers
                 return null;
             }
         }
+
+        public static Card GetCardByMultiverseId(int id)
+        {
+            foreach (var set in CardData.Instance.Sets)
+            {
+                if (set.cards.Any(c => c.multiverseId == id)) return set.cards.FirstOrDefault(c => c.multiverseId == id);
+                if (set.cards.Any(c => c.foreignData.Any(f => f.multiverseId == id))) return set.cards.FirstOrDefault(c => c.foreignData.Any(f => f.multiverseId == id));
+            }
+            return null;
+        }
     }
 }

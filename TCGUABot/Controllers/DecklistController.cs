@@ -222,7 +222,7 @@ namespace TCGUABot.Controllers
             foreach (var importCard in sortedDeck.MainDeck)
             {
                 var set = importCard.set.Replace("(", "").Replace(")", "").Replace("DAR", "DOM");
-                var card = CardData.Instance.Sets.FirstOrDefault(s => s.name.Equals(set)).cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
+                var card = CardData.Instance.Sets.FirstOrDefault(s => s.code.Equals(set)).cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
                 if (card.name.Equals(importCard.name))
                 {
                     dynamic obj = new ExpandoObject();
@@ -234,7 +234,7 @@ namespace TCGUABot.Controllers
             foreach (var importCard in deck.SideBoard)
             {
                 var set = importCard.set.Replace("(", "").Replace(")", "");
-                var card = CardData.Instance.Sets.FirstOrDefault(s => s.name.Equals(set)).cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
+                var card = CardData.Instance.Sets.FirstOrDefault(s => s.code.Equals(set)).cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
                 if (card.name.Equals(importCard.name))
                 {
                     dynamic obj = new ExpandoObject();

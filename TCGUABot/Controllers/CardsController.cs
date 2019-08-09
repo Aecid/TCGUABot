@@ -61,6 +61,13 @@ namespace TCGUABot.Controllers
             return resultCards;
         }
 
+        [HttpGet("/Cards/id/{id}", Name = "SearchForCardByMuID")]
+        public Card Get(int id)
+        {
+            return Helpers.CardSearch.GetCardByMultiverseId(id);
+        }
+
+
         // POST: api/Cards
         [HttpPost]
         public void Post([FromBody] string value)
