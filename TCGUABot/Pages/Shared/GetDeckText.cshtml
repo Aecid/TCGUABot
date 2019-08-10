@@ -1,0 +1,34 @@
+﻿@page
+@{
+    //ViewData["Title"] = "GetDeck";
+    //Layout = "_Layout.cshtml";
+}
+
+<h1>RandomDeck</h1>
+<div>
+    <div>
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-9" style="column-count: auto">
+                <div class="deck-text-maindeck">
+                    <ul class="accordion">
+                        @foreach (var card in ViewBag.Deck.MainDeck)
+                        {
+
+                            <li>@card.Count<span>x</span> @card.Card.name</li>
+
+                        }
+                    </ul>
+                </div>
+                <div class="deck-text-sideboard">
+                    <ul class="accordion">
+                        @foreach (var card in ViewBag.Deck.SideBoard)
+                        {
+                            <li>@card.Count<span>x</span> @card.Card.name</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div><!--deckcontainer-->
+    </div>
+</div>

@@ -78,6 +78,22 @@ namespace TCGUABot.Controllers
             return View();
         }
 
+        [HttpGet("/deckt2/{deckId}", Name = "Get_Deck_t2")]
+        public ActionResult GetDeckType2(string deckId)
+        {
+            var deck = JsonConvert.DeserializeObject<ExpandoObject>(System.IO.File.ReadAllText(deckId + ".json"));
+            ViewBag.Deck = deck;
+            return View();
+        }
+
+        [HttpGet("/deck/{deckId}", Name = "Get_Deck_Text")]
+        public ActionResult GetDeckText(string deckId)
+        {
+            var deck = JsonConvert.DeserializeObject<ExpandoObject>(System.IO.File.ReadAllText(deckId + ".json"));
+            ViewBag.Deck = deck;
+            return View();
+        }
+
         [HttpGet("/test2", Name = "Test2")]
         public string Test()
         {
