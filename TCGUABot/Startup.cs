@@ -14,6 +14,7 @@ using TCGUABot.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TCGUABot.Helpers.TelegramOAuth.Middleware;
+using TCGUABot.Data.Models;
 
 namespace TCGUABot
 {
@@ -42,7 +43,7 @@ namespace TCGUABot
                 options.UseNpgsql(
                     Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDefaultIdentity<IdentityUser>()
+            services.AddDefaultIdentity<ApplicationUser>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
