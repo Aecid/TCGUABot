@@ -8,7 +8,7 @@ namespace TCGUABot.Helpers
 {
     public static class CardSearch
     {
-        public static Card GetCardByName(string name)
+        public static Card GetCardByName(string name, bool includePromos = true)
         {
             Card card = new Card();
 
@@ -33,10 +33,10 @@ namespace TCGUABot.Helpers
             }
         }
 
-        public static Card GetCardByName(string name, string set)
+        public static Card GetCardByName(string name, string set, bool includePromos = true)
         {
             Card card = new Card();
-
+            
             var setToSearch = CardData.Instance.Sets.FirstOrDefault(s => s.code.ToLower().Equals(set.ToLower()));
             if (setToSearch == null)
             {
@@ -44,10 +44,21 @@ namespace TCGUABot.Helpers
             }
             if (setToSearch != null)
             {
-                card = setToSearch.cards.FirstOrDefault(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant()));
-                if (card == null)
+                if (includePromos)
                 {
-                    card = setToSearch.cards.FirstOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant())));
+                    card = setToSearch.cards.FirstOrDefault(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant()));
+                    if (card == null)
+                    {
+                        card = setToSearch.cards.FirstOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant())));
+                    }
+                }
+                else
+                {
+                    card = setToSearch.cards.FirstOrDefault(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant()) && c.multiverseId > 0);
+                    if (card == null)
+                    {
+                        card = setToSearch.cards.FirstOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant()) && f.multiverseId > 0));
+                    }
                 }
 
                 return card;

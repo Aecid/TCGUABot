@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using TCGUABot.Models.Commands;
 using TCGUABot.Models.CallbackHandlers;
 using Telegram.Bot;
+using TCGUABot.Data;
 
 namespace TCGUABot
 {

@@ -5,14 +5,24 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using TCGUABot.Data;
+using TCGUABot.Data.Models;
 using TCGUABot.Models;
 
 namespace TCGUABot.Controllers
 {
     public class DecklistController : Controller
     {
+        ApplicationDbContext context { get; set; }
+        public DecklistController(ApplicationDbContext context)
+        {
+            this.context = context;
+        }
+
         // GET: api/Decklist
         [HttpGet]
         public ActionResult RandomDeck()//IEnumerable<string> Get()
@@ -73,24 +83,30 @@ namespace TCGUABot.Controllers
         [HttpGet("/decks/{deckId}", Name = "Get_Deck")]
         public ActionResult GetDeck(string deckId)
         {
-            var deck = JsonConvert.DeserializeObject<ExpandoObject>(System.IO.File.ReadAllText(deckId + ".json"));
-            ViewBag.Deck = deck;
+            var deck = context.Decks.FirstOrDefault(d => d.Id == deckId);
+            ViewBag.Title = deck.Name;
+            //var deck = JsonConvert.DeserializeObject<ExpandoObject>(System.IO.File.ReadAllText(deckId + ".json"));
+            ViewBag.Deck = JsonConvert.DeserializeObject<ExpandoObject>(deck.Cards);
             return View();
         }
 
         [HttpGet("/deckt2/{deckId}", Name = "Get_Deck_t2")]
         public ActionResult GetDeckType2(string deckId)
         {
-            var deck = JsonConvert.DeserializeObject<ExpandoObject>(System.IO.File.ReadAllText(deckId + ".json"));
-            ViewBag.Deck = deck;
+            var deck = context.Decks.FirstOrDefault(d => d.Id == deckId);
+            ViewBag.Title = deck.Name;
+            //var deck = JsonConvert.DeserializeObject<ExpandoObject>(System.IO.File.ReadAllText(deckId + ".json"));
+            ViewBag.Deck = JsonConvert.DeserializeObject<ExpandoObject>(deck.Cards);
             return View();
         }
 
         [HttpGet("/deck/{deckId}", Name = "Get_Deck_Text")]
         public ActionResult GetDeckText(string deckId)
         {
-            var deck = JsonConvert.DeserializeObject<ExpandoObject>(System.IO.File.ReadAllText(deckId + ".json"));
-            ViewBag.Deck = deck;
+            var deck = context.Decks.FirstOrDefault(d => d.Id == deckId);
+            ViewBag.Title = deck.Name;
+            //var deck = JsonConvert.DeserializeObject<ExpandoObject>(System.IO.File.ReadAllText(deckId + ".json"));
+            ViewBag.Deck = JsonConvert.DeserializeObject<ExpandoObject>(deck.Cards);
             return View();
         }
 
@@ -165,8 +181,7 @@ namespace TCGUABot.Controllers
                 }
             }
 
-            var controller = new TCGUABot.Controllers.DecklistController();
-            var id = controller.Import(deck);
+            var id = Import(deck);
 
             return id;
         }
@@ -180,7 +195,7 @@ namespace TCGUABot.Controllers
             return card.prices.usd;
         }
 
-        // POST: api/Decklist
+        // POST: /Decklist
         [HttpPost]
         public string Import([FromBody] DeckArenaImport deck)
         {
@@ -242,7 +257,7 @@ namespace TCGUABot.Controllers
                 if (card.name.Equals(importCard.name))
                 {
                     dynamic obj = new ExpandoObject();
-                    obj.Card = card;
+                    obj.Card = card.multiverseId;
                     obj.Count = importCard.count;
                     deckList.MainDeck.Add(obj);
                 }
@@ -254,22 +269,35 @@ namespace TCGUABot.Controllers
                 if (card.name.Equals(importCard.name))
                 {
                     dynamic obj = new ExpandoObject();
-                    obj.Card = card;
+                    obj.Card = card.multiverseId;
                     obj.Count = importCard.count;
                     deckList.SideBoard.Add(obj);
                 }
             }
 
             var deckId = Guid.NewGuid().ToString();
-            try
-            {
-                System.IO.File.WriteAllText(deckId + ".json", JsonConvert.SerializeObject(deckList));
-            }
-            catch
-            {
-                return "NULL";
-            }
 
+            var dbdeck = new Deck();
+               
+            dbdeck.ApplicationUser = context.Users.FirstOrDefault(u => u.Id == "f1227c8d-1cfa-411e-b3d0-9154fd42df6b");
+            dbdeck.Name = "TestDeck";
+            dbdeck.Id = deckId;
+            dbdeck.Cards = JsonConvert.SerializeObject(deckList);
+            context.Decks.Add(dbdeck);
+            context.SaveChanges();
+            
+
+            //try
+            //{
+            //    System.IO.File.WriteAllText(deckId + ".json", JsonConvert.SerializeObject(deckList));
+            //}
+            //catch
+            //{
+            //    return "NULL";
+            //}
+
+            //Console.WriteLine(Convert.ToString(deckList));
+            //return JsonConvert.SerializeObject(deckList);
             return deckId;
         }
     }

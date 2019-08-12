@@ -1,11 +1,15 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using TCGUABot.Data;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.InputFiles;
 
 namespace TCGUABot.Models.Commands
 {
@@ -13,7 +17,7 @@ namespace TCGUABot.Models.Commands
     {
         public override string Name => "/c";
 
-        public override async void Execute(Message message, TelegramBotClient client)
+        public override async void Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
         {
             string text = string.Empty;
             string setName = string.Empty;
@@ -65,14 +69,26 @@ namespace TCGUABot.Models.Commands
 
                 }
 
-                msg += "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card";
+                //msg += "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card";
             }
             else
             {
                 msg = "<b>❌Карта не найдена по запросу \""+text+"\".</b>";
             }
 
-            await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+            if (card != null)
+            {
+                var req = WebRequest.Create("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card");
+
+                using (Stream fileStream = req.GetResponse().GetResponseStream())
+                {
+                    await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream), msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                }
+            }
+            else
+            {
+                await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyToMessageId:message.MessageId);
+            }
         }
 
         public dynamic GetCardPriceFromScryfallByMultiverseId(int multiverseId)

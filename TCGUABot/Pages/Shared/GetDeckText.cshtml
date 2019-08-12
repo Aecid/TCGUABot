@@ -4,7 +4,7 @@
     //Layout = "_Layout.cshtml";
 }
 
-<h1>RandomDeck</h1>
+<h1>@ViewBag.Title</h1>
 <div>
     <div>
         <div class="row">
@@ -12,19 +12,22 @@
             <div class="col-md-9" style="column-count: auto">
                 <div class="deck-text-maindeck">
                     <ul class="accordion">
-                        @foreach (var card in ViewBag.Deck.MainDeck)
+                        @foreach (var cardId in ViewBag.Deck.MainDeck)
                         {
+                            var card = Helpers.CardSearch.GetCardByMultiverseId(int.Parse(cardId.Card.ToString()));
 
-                            <li>@card.Count<span>x</span> @card.Card.name</li>
+                            <li>@cardId.Count<span>x</span> @card.name</li>
 
                         }
                     </ul>
                 </div>
                 <div class="deck-text-sideboard">
                     <ul class="accordion">
-                        @foreach (var card in ViewBag.Deck.SideBoard)
+                        @foreach (var cardId in ViewBag.Deck.SideBoard)
                         {
-                            <li>@card.Count<span>x</span> @card.Card.name</li>
+                            var card = Helpers.CardSearch.GetCardByMultiverseId(int.Parse(cardId.Card.ToString()));
+
+                            <li>@cardId.Count<span>x</span> @card.name</li>
                         }
                     </ul>
                 </div>

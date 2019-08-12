@@ -4,30 +4,32 @@
     //Layout = "_Layout.cshtml";
 }
 
-<h1>RandomDeck</h1>
+<h1>@ViewBag.Title</h1>
 <div>
     <div>
         <div class="deck-visual-playmat">
             <div class="deck-visual-playmat-maindeck">
-                @foreach (var card in ViewBag.Deck.MainDeck)
+                @foreach (var cardId in ViewBag.Deck.MainDeck)
                 {
-                    var count = card.Count;
+                    var card = Helpers.CardSearch.GetCardByMultiverseId(int.Parse(cardId.Card.ToString()));
+                    cardId.Card = card;
+                    var count = cardId.Count;
 
                     if (count <= 4)
                     {
-                        @:<div class="deck-visual-pile" data-name-en="@card.Card.name" data-name-ru="@card.Card.ruName">
+                        @:<div class="deck-visual-pile" data-name-en="@cardId.Card.name" data-name-ru="@cardId.Card.ruName">
 
 
                             for (int k = 0; k < count; k++)
                             {
-                                <div class="deck-visual-pile-card deck-visual-pile-card-@k" style="width: 148px; height: 207px; background-image: url('https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.multiverseId&type=card'); background-size: contain;"
-                                     onmouseover="this.style.backgroundImage = 'url(https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.ruMultiverseId&type=card)'"
-                                     onmouseout="this.style.backgroundImage = 'url(https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.multiverseId&type=card)'">
-                                    <img style="display:none;" src="https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.ruMultiverseId&type=card" />
+                                <div class="deck-visual-pile-card deck-visual-pile-card-@k" style="width: 148px; height: 207px; background-image: url('https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@cardId.Card.multiverseId&type=card'); background-size: contain;"
+                                     onmouseover="this.style.backgroundImage = 'url(https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@cardId.Card.ruMultiverseId&type=card)'"
+                                     onmouseout="this.style.backgroundImage = 'url(https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@cardId.Card.multiverseId&type=card)'">
+                                    <img style="display:none;" src="https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@cardId.Card.ruMultiverseId&type=card" />
                                     @if (k == count - 1)
                                     {
                                         <div class="oracle">
-                                            <div class="cardname"><span class="en">@card.Card.name</span><span class="ru">@card.Card.ruName</span></div>
+                                            <div class="cardname"><span class="en">@cardId.Card.name</span><span class="ru">@cardId.Card.ruName</span></div>
                                             <div class="cardcount">@count</div>
                                         </div>
                                     }
@@ -43,18 +45,18 @@
                         {
                             if (z == 0)
                             {
-                            @:<div class="deck-visual-pile" data-name-en="@card.Card.name" data-name-ru="@card.Card.ruName">
+                            @:<div class="deck-visual-pile" data-name-en="@cardId.Card.name" data-name-ru="@cardId.Card.ruName">
                             }
                                 if (z<4)
                             {
-                                <div class="deck-visual-pile-card deck-visual-pile-card-@z" style="width: 148px; height: 207px; background-image: url('https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.multiverseId&type=card'); background-size: contain;"
-                                     onmouseover="this.style.backgroundImage = 'url(https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.ruMultiverseId&type=card)'"
-                                     onmouseout="this.style.backgroundImage = 'url(https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.multiverseId&type=card)'">
-                                    <img style="display:none;" src="https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.ruMultiverseId&type=card" />
+                                <div class="deck-visual-pile-card deck-visual-pile-card-@z" style="width: 148px; height: 207px; background-image: url('https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@cardId.Card.multiverseId&type=card'); background-size: contain;"
+                                     onmouseover="this.style.backgroundImage = 'url(https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@cardId.Card.ruMultiverseId&type=card)'"
+                                     onmouseout="this.style.backgroundImage = 'url(https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@cardId.Card.multiverseId&type=card)'">
+                                    <img style="display:none;" src="https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@cardId.Card.ruMultiverseId&type=card" />
                                     @if (k == z)
                                     {
                                         <div class="oracle">
-                                            <div class="cardname"><span class="en">@card.Card.name</span><span class="ru">@card.Card.ruName</span></div>
+                                            <div class="cardname"><span class="en">@cardId.Card.name</span><span class="ru">@cardId.Card.ruName</span></div>
                                             <div class="cardcount">@count</div>
                                         </div>
                                     }
@@ -75,16 +77,19 @@
             <div class="deck-visual-playmat-sideboard">
                 <div class="deck-visual-side-pile">
                     @{ int kk = 0; }
-                    @foreach (var card in ViewBag.Deck.SideBoard)
+                    @foreach (var cardId in ViewBag.Deck.SideBoard)
                     {
-                        var ccount = card.Count;
+                    var card = Helpers.CardSearch.GetCardByMultiverseId(int.Parse(cardId.Card.ToString()));
+                       cardId.Card = card;
+
+                        var ccount = cardId.Count;
                         @for (var k = 0; k < ccount; k++)
                         {
-                            <div class="deck-visual-side-pile-card deck-visual-pile-side-card-@kk" style="width:148px; height:207px; background-image: url('https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.multiverseId&type=card'); background-size: contain;"
+                            <div class="deck-visual-side-pile-card deck-visual-pile-side-card-@kk" style="width:148px; height:207px; background-image: url('https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@cardId.Card.multiverseId&type=card'); background-size: contain;"
                                  onmouseover="document.getElementById('side-ru-@kk').style.display = 'block'"
                                  >
                             </div>
-                            <div class="deck-visual-side-pile-card deck-visual-pile-side-ru-card-@kk" id="side-ru-@kk" style="display: none; width:148px; height:207px; background-image: url('https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@card.Card.ruMultiverseId&type=card'); background-size: contain;"
+                            <div class="deck-visual-side-pile-card deck-visual-pile-side-ru-card-@kk" id="side-ru-@kk" style="display: none; width:148px; height:207px; background-image: url('https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=@cardId.Card.ruMultiverseId&type=card'); background-size: contain;"
                                  onmouseout="this.style.display='none'">
                             </div>
                             kk++;

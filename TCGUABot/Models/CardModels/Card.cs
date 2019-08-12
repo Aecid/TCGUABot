@@ -17,6 +17,7 @@ namespace TCGUABot.Models
         //public bool hasFoil;
         //public bool hasNoFoil;
         //public bool isMtgo;
+        public bool isPromo;
         //public bool isPaper;
         //public bool isReprint;
         //public string layout;
@@ -36,13 +37,13 @@ namespace TCGUABot.Models
         //public string rarity;
         //public List<string> printings;
         //public Dictionary<string, string> purchaseUrls;
-        //public List<Ruling> rulings;
+        public List<Ruling> rulings;
         public string scryfallId;
         public string scryfallIllustrationId;
         public string scryfallOrcaleId;
         public List<string> subtypes;
         public List<string> supertypes;
-        //public int tcgplayerProductId;
+        public int tcgplayerProductId;
         //public string tcgplayerPurchaseUrl;
         public string text;
         public string type;

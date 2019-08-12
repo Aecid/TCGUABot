@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TCGUABot.Data;
 using TCGUABot.Models.InlineQueryHandler;
 using Telegram.Bot.Types;
 
@@ -13,6 +14,12 @@ namespace TCGUABot.Controllers
     //[ApiController]
     public class UpdateController : ControllerBase
     {
+        public ApplicationDbContext context { get; set; }
+        public UpdateController(ApplicationDbContext context)
+        {
+            this.context = context;
+        }
+
         public string HealthCheck()
         {
             return "ALIVE!";
@@ -20,7 +27,6 @@ namespace TCGUABot.Controllers
 
         public async Task<OkResult> Webhook([FromBody]Update update)
         {
-            Console.WriteLine("UPDATE CAME!");
             var commands = Bot.Commands;
             var callbackHandlers = Bot.CallbackHandlers;
             var client = await Bot.Get();
@@ -56,7 +62,7 @@ namespace TCGUABot.Controllers
                             if (command.Contains(update.Message.Text))
                             {
                                 Console.WriteLine(update.Message.From.FirstName + " " + update.Message.From.LastName + " @" + update.Message.From.Username + ": " + update.Message.Text);
-                                command.Execute(update.Message, client);
+                                command.Execute(update.Message, client, context);
                                 break;
                             }
                         }

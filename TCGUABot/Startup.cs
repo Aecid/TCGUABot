@@ -20,6 +20,7 @@ namespace TCGUABot
 {
     public class Startup
     {
+        public static IServiceCollection StaticServices {get; private set;}
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -56,7 +57,11 @@ namespace TCGUABot
                 }
                 );
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .AddControllersAsServices();
+
+            Startup.StaticServices = services;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
