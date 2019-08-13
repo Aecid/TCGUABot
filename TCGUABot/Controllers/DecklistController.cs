@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using TCGUABot.Data;
 using TCGUABot.Data.Models;
 using TCGUABot.Models;
+using Z.EntityFramework.Plus;
 
 namespace TCGUABot.Controllers
 {
@@ -21,6 +22,17 @@ namespace TCGUABot.Controllers
         public DecklistController(ApplicationDbContext context)
         {
             this.context = context;
+        }
+
+        [HttpGet]
+        public string Clear()
+        {
+            var userId = "548ba8ce-d90a-4f33-834a-bc2a78372df6";
+            var user = context.Users.FirstOrDefault(u => u.Id == userId);
+
+            context.Decks.Where(x => x.ApplicationUser.Id == userId).Delete();
+
+            return "Should be done";
         }
 
         // GET: api/Decklist
@@ -278,8 +290,8 @@ namespace TCGUABot.Controllers
             var deckId = Guid.NewGuid().ToString();
 
             var dbdeck = new Deck();
-               
-            dbdeck.ApplicationUser = context.Users.FirstOrDefault(u => u.Id == "f1227c8d-1cfa-411e-b3d0-9154fd42df6b");
+
+            dbdeck.ApplicationUser = deck.Owner;
             dbdeck.Name = "TestDeck";
             dbdeck.Id = deckId;
             dbdeck.Cards = JsonConvert.SerializeObject(deckList);

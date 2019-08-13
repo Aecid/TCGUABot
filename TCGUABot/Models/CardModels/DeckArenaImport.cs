@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
+using TCGUABot.Data.Models;
 
 namespace TCGUABot.Models
 {
     public class DeckArenaImport
     {
+        public ApplicationUser Owner;
         public List<ArenaCard> MainDeck;
         public List<ArenaCard> SideBoard;
     }

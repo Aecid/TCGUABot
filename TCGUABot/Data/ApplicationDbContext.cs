@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using TCGUABot.Controllers;
 using TCGUABot.Data.Models;
 
 namespace TCGUABot.Data
@@ -12,6 +13,8 @@ namespace TCGUABot.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+            var deckListController = new DecklistController(this);
+            deckListController.Clear();
         }
 
         public DbSet<Deck> Decks { get; set; }

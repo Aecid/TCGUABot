@@ -8,21 +8,21 @@ namespace TCGUABot.Helpers
 {
     public static class CardSearch
     {
-        public static Card GetCardByName(string name, bool includePromos = true)
+        public static Card GetCardByName(string name, bool includePromos = false)
         {
             Card card = new Card();
 
-            var set = CardData.Instance.Sets.FirstOrDefault(s => s.cards.Any(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant())));
+            var set = CardData.Instance.Sets.FirstOrDefault(s => s.cards.Any(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant()) && c.multiverseId>0));
             if (set == null)
             {
-                set = CardData.Instance.Sets.FirstOrDefault(s => s.cards.Any(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant()))));
+                set = CardData.Instance.Sets.FirstOrDefault(s => s.cards.Any(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant()) && f.multiverseId>0)));
             }
             if (set != null)
             {
-                card = set.cards.FirstOrDefault(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant()));
+                card = set.cards.FirstOrDefault(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant()) && c.multiverseId>0);
                 if (card == null)
                 {
-                    card = set.cards.FirstOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant())));
+                    card = set.cards.FirstOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant()) && f.multiverseId>0));
                 }
 
                 return card;
@@ -33,7 +33,7 @@ namespace TCGUABot.Helpers
             }
         }
 
-        public static Card GetCardByName(string name, string set, bool includePromos = true)
+        public static Card GetCardByName(string name, string set, bool includePromos = false)
         {
             Card card = new Card();
             

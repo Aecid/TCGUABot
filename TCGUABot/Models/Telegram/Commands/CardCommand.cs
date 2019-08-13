@@ -15,7 +15,7 @@ namespace TCGUABot.Models.Commands
 {
     public class CardCommand : Command
     {
-        public override string Name => "/c";
+        public override string Name => "/c ";
 
         public override async void Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
         {

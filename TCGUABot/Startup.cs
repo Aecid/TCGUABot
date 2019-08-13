@@ -56,6 +56,10 @@ namespace TCGUABot
                     options.ClientSecret = Configuration.GetSection("TelegramSettings").GetSection("TelegramBotToken").Value;
                 }
                 );
+           // services.Configure<CookiePolicyOptions>(options =>
+           //{
+           //    options.
+           //});
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)

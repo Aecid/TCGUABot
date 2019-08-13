@@ -54,20 +54,37 @@ namespace TCGUABot.Models.Commands
             configurationBuilder.AddJsonFile("appsettings.json");
             IConfiguration configuration = configurationBuilder.Build();
             var baseAddress = configuration.GetSection("TelegramSettings").GetSection("TelegramWebHookHostBase").Value;
-            HttpClient httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri(baseAddress);
-            HttpResponseMessage response = await httpClient.PostAsJsonAsync("/Decklist/Import", deck);
-            response.EnsureSuccessStatusCode();
+            //HttpClient httpClient = new HttpClient();
+            //httpClient.BaseAddress = new Uri(baseAddress);
+            //HttpResponseMessage response = await httpClient.PostAsJsonAsync("/Decklist/Import", deck);
+            var msg = string.Empty;
+            var telegramUser = context.UserLogins.FirstOrDefault(l => l.LoginProvider == "Telegram" && l.ProviderKey == message.From.Id.ToString());
+            if (telegramUser == null)
+            {
+                msg += "Вы не зарегистрированы на сайте. Деклист будет импортирован временно и может быть удалён в любое время\r\n";
+                deck.Owner = context.Users.FirstOrDefault(u => u.Id == "548ba8ce-d90a-4f33-834a-bc2a78372df6");
+            }
+            else
+            {
+                deck.Owner = context.Users.FirstOrDefault(u => u.Id == telegramUser.UserId);
+            }
 
-            var id = await response.Content.ReadAsStringAsync();
+            var deckListController = new DecklistController(context);
+            var id = deckListController.Import(deck);
+
+
+            var link = string.Format(baseAddress, "decks/" + id);
+            msg += "Ссылка на деку: " + link;
+            //response.EnsureSuccessStatusCode();
+
+            //var id = await response.Content.ReadAsStringAsync();
 
             //var controller = new TCGUABot.Controllers.DecklistController();
             //var id = controller.Import(deck);
             var chatId = message.Chat.Id;
 
-            var link = string.Format(baseAddress, "decks/"+id);
             //https://ace.od.ua:8443/decks/"+id
-            await client.SendTextMessageAsync(chatId, "Ссылка на деку: "+link, Telegram.Bot.Types.Enums.ParseMode.Html, replyToMessageId:message.MessageId);
+            await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyToMessageId:message.MessageId);
         }
     }
 }

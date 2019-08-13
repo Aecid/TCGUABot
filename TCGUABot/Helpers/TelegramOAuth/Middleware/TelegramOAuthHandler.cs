@@ -29,7 +29,7 @@ namespace TCGUABot.Helpers.TelegramOAuth.Middleware
         protected override string BuildChallengeUrl(AuthenticationProperties properties, string redirectUri)
         {
 
-            Response.Cookies.Append("__Telegram", Options.StateDataFormat.Protect(properties));
+            Response.Cookies.Append("__Telegram", Options.StateDataFormat.Protect(properties), new CookieOptions() { IsEssential = true });
             return Options.AuthorizationEndpoint;
         }
 
