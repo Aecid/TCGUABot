@@ -92,7 +92,7 @@ namespace TCGUABot.Controllers
         }
 
         // GET: api/Decklist/5
-        [HttpGet("/decks/{deckId}", Name = "Get_Deck")]
+        [HttpGet("/deckz/{deckId}", Name = "Get_Deck")]
         public ActionResult GetDeck(string deckId)
         {
             var deck = context.Decks.FirstOrDefault(d => d.Id == deckId);

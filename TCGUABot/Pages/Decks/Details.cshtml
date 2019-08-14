@@ -1,0 +1,48 @@
+﻿@page
+@model TCGUABot.Pages.Decks.DetailsModel
+@inject UserManager<Data.Models.ApplicationUser> UserManager
+@inject ApplicationDbContext Context
+
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+    <div iv-id="content">
+        <h1>
+            @Html.DisplayFor(model => model.Deck.Name)
+        </h1>
+
+        <div iv-id="body">
+            <h4>
+                Decklist
+            </h4>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-2">
+                    
+                </dt>
+                <dd class="col-sm-10">
+                </dd>
+                <dt class="col-sm-2">
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.Raw(DetailsModel.HtmlizeWithDividers(DetailsModel.ToDeck(Model.Deck.Cards)))
+                </dd>
+            </dl>
+        </div>
+        <div>
+            @{var user = await UserManager.GetUserAsync(User);}
+            @{ var deckUserId = Context.Decks.FirstOrDefault(d => d.Id == Model.Deck.Id).UserId;}
+            @if (User.Identity.IsAuthenticated && deckUserId == user.Id)
+     {
+            <a asp-page="./Edit" asp-route-id="@Model.Deck.Id">Change name</a>  <text>|</text>
+    }
+    else
+    {
+        var z = 0;
+    }
+        </div>
+
+        <a asp-page="./Index">Back to List</a>
+    </div>

@@ -1,0 +1,53 @@
+﻿@page
+@model TCGUABot.Pages.Decks.IndexModel
+@inject UserManager<Data.Models.ApplicationUser> UserManager
+
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Decks</h1>
+@if (!User.Identity.IsAuthenticated)
+{
+    <p>You are not logged in. No cookies for you.</p>
+}
+else
+{
+    <p>
+        <a asp-page="Create">Create New</a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Deck[0].Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Deck[0].Cards)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Deck)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.Raw(IndexModel.ToShortDeck(item.Cards?.ToString()))
+                    </td>
+                    <td>
+                        @{var user = await UserManager.GetUserAsync(User);}
+                        @if (item.UserId == user.Id)
+                        {
+                            <a asp-page="./Edit" asp-route-id="@item.Id">Change&nbsp;name</a> <text>|</text> <a asp-page="./Details" asp-route-id="@item.Id">Details</a> <text>|</text> <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

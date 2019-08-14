@@ -24,7 +24,7 @@ namespace TCGUABot.Models.Commands
             }
             else
             {
-                await client.SendTextMessageAsync(chatId, "Залогиньтесь на https://ace.od.ua через Телеграм");
+                await client.SendTextMessageAsync(chatId, "Если хотите пользоваться функцией импорта деклистов, залогиньтесь на https://ace.od.ua через Телеграм.\r\nЕсли не хотите - не регистрируйтесь :)");
             }
         }
     }

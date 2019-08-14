@@ -21,7 +21,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">TCGUABot</a>
+                <a class="navbar-brand" asp-area="" asp-page="/Index">TCGUA Bot</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -29,16 +29,16 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <partial name="_LoginPartial" />
                     <script type="text/javascript">
-  function onTelegramAuth(user) {
-    alert('Logged in as ' + user.first_name + ' ' + user.last_name + ' (' + user.id + (user.username ? ', @@' + user.username : '') + ')');
-  }
+                        function onTelegramAuth(user) {
+                            alert('Logged in as ' + user.first_name + ' ' + user.last_name + ' (' + user.id + (user.username ? ', @@' + user.username : '') + ')');
+                        }
                     </script>
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Decks/Index">Decks</a>
                         </li>
                     </ul>
                 </div>
@@ -77,7 +77,18 @@
         </script>
     </environment>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/tooltip.js" asp-append-version="true"></script>
+
     <style>
+
+        .deck-short {
+  -webkit-columns: 4 150px;
+  -moz-columns: 4 150px;
+  columns: 4 150px;
+  -webkit-column-gap: 2em;
+  -moz-column-gap: 2em;
+  column-gap: 2em;
+}
         .deck-visual-playmat {
             padding: 10px;
             position: relative;
@@ -305,44 +316,185 @@
         }
 
 
-        .deck-visual-playmat-sideboard{margin-top:20px;margin-left:25px;margin-right:84.3333333333px;float:left}
-        .deck-visual-playmat-sideboard:before,
-        .deck-visual-playmat-sideboard:after{display:table;content:" "}
-        .deck-visual-playmat-sideboard:after{clear:both}
-        .deck-visual-side-pile{position:relative;width:148.6666666667px;height:297.3333333333px;display:inline-block}
-        .deck-visual-side-pile-card{position:absolute;border-radius:10px;width:148.6666666667px;height:207.3333333333px}
+        .deck-visual-playmat-sideboard {
+            margin-top: 20px;
+            margin-left: 25px;
+            margin-right: 84.3333333333px;
+            float: left
+        }
 
-.deck-visual-pile-side-card-0{top:0}
-.deck-visual-pile-side-card-1{top:50px;margin-left:74.3333333333px}
-.deck-visual-pile-side-card-2{top:100px}
-.deck-visual-pile-side-card-3{top:150px;margin-left:74.3333333333px}
-.deck-visual-pile-side-card-4{top:200px}
-.deck-visual-pile-side-card-5{top:250px;margin-left:74.3333333333px}
-.deck-visual-pile-side-card-6{top:300px}
-.deck-visual-pile-side-card-7{top:350px;margin-left:74.3333333333px}
-.deck-visual-pile-side-card-8{top:400px}
-.deck-visual-pile-side-card-9{top:450px;margin-left:74.3333333333px}
-.deck-visual-pile-side-card-10{top:500px}
-.deck-visual-pile-side-card-11{top:550px;margin-left:74.3333333333px}
-.deck-visual-pile-side-card-12{top:600px}
-.deck-visual-pile-side-card-13{top:650px;margin-left:74.3333333333px}
-.deck-visual-pile-side-card-14{top:700px}
+            .deck-visual-playmat-sideboard:before,
+            .deck-visual-playmat-sideboard:after {
+                display: table;
+                content: " "
+            }
 
-.deck-visual-pile-side-ru-card-0{top:0; z-index: 100;}
-.deck-visual-pile-side-ru-card-1{top:50px;margin-left:74.3333333333px; z-index: 100;}
-.deck-visual-pile-side-ru-card-2{top:100px; z-index: 100;}
-.deck-visual-pile-side-ru-card-3{top:150px;margin-left:74.3333333333px; z-index: 100;}
-.deck-visual-pile-side-ru-card-4{top:200px; z-index: 100;}
-.deck-visual-pile-side-ru-card-5{top:250px;margin-left:74.3333333333px; z-index: 100;}
-.deck-visual-pile-side-ru-card-6{top:300px; z-index: 100;}
-.deck-visual-pile-side-ru-card-7{top:350px;margin-left:74.3333333333px; z-index: 100;}
-.deck-visual-pile-side-ru-card-8{top:400px; z-index: 100;}
-.deck-visual-pile-side-ru-card-9{top:450px;margin-left:74.3333333333px; z-index: 100;}
-.deck-visual-pile-side-ru-card-10{top:500px; z-index: 100;}
-.deck-visual-pile-side-ru-card-11{top:550px;margin-left:74.3333333333px; z-index: 100;}
-.deck-visual-pile-side-ru-card-12{top:600px; z-index: 100;}
-.deck-visual-pile-side-ru-card-13{top:650px;margin-left:74.3333333333px; z-index: 100;}
-.deck-visual-pile-side-ru-card-14{top:700px; z-index: 100;}
+            .deck-visual-playmat-sideboard:after {
+                clear: both
+            }
+
+        .deck-visual-side-pile {
+            position: relative;
+            width: 148.6666666667px;
+            height: 297.3333333333px;
+            display: inline-block
+        }
+
+        .deck-visual-side-pile-card {
+            position: absolute;
+            border-radius: 10px;
+            width: 148.6666666667px;
+            height: 207.3333333333px
+        }
+
+        .deck-visual-pile-side-card-0 {
+            top: 0
+        }
+
+        .deck-visual-pile-side-card-1 {
+            top: 50px;
+            margin-left: 74.3333333333px
+        }
+
+        .deck-visual-pile-side-card-2 {
+            top: 100px
+        }
+
+        .deck-visual-pile-side-card-3 {
+            top: 150px;
+            margin-left: 74.3333333333px
+        }
+
+        .deck-visual-pile-side-card-4 {
+            top: 200px
+        }
+
+        .deck-visual-pile-side-card-5 {
+            top: 250px;
+            margin-left: 74.3333333333px
+        }
+
+        .deck-visual-pile-side-card-6 {
+            top: 300px
+        }
+
+        .deck-visual-pile-side-card-7 {
+            top: 350px;
+            margin-left: 74.3333333333px
+        }
+
+        .deck-visual-pile-side-card-8 {
+            top: 400px
+        }
+
+        .deck-visual-pile-side-card-9 {
+            top: 450px;
+            margin-left: 74.3333333333px
+        }
+
+        .deck-visual-pile-side-card-10 {
+            top: 500px
+        }
+
+        .deck-visual-pile-side-card-11 {
+            top: 550px;
+            margin-left: 74.3333333333px
+        }
+
+        .deck-visual-pile-side-card-12 {
+            top: 600px
+        }
+
+        .deck-visual-pile-side-card-13 {
+            top: 650px;
+            margin-left: 74.3333333333px
+        }
+
+        .deck-visual-pile-side-card-14 {
+            top: 700px
+        }
+
+        .deck-visual-pile-side-ru-card-0 {
+            top: 0;
+            z-index: 100;
+        }
+
+        .deck-visual-pile-side-ru-card-1 {
+            top: 50px;
+            margin-left: 74.3333333333px;
+            z-index: 100;
+        }
+
+        .deck-visual-pile-side-ru-card-2 {
+            top: 100px;
+            z-index: 100;
+        }
+
+        .deck-visual-pile-side-ru-card-3 {
+            top: 150px;
+            margin-left: 74.3333333333px;
+            z-index: 100;
+        }
+
+        .deck-visual-pile-side-ru-card-4 {
+            top: 200px;
+            z-index: 100;
+        }
+
+        .deck-visual-pile-side-ru-card-5 {
+            top: 250px;
+            margin-left: 74.3333333333px;
+            z-index: 100;
+        }
+
+        .deck-visual-pile-side-ru-card-6 {
+            top: 300px;
+            z-index: 100;
+        }
+
+        .deck-visual-pile-side-ru-card-7 {
+            top: 350px;
+            margin-left: 74.3333333333px;
+            z-index: 100;
+        }
+
+        .deck-visual-pile-side-ru-card-8 {
+            top: 400px;
+            z-index: 100;
+        }
+
+        .deck-visual-pile-side-ru-card-9 {
+            top: 450px;
+            margin-left: 74.3333333333px;
+            z-index: 100;
+        }
+
+        .deck-visual-pile-side-ru-card-10 {
+            top: 500px;
+            z-index: 100;
+        }
+
+        .deck-visual-pile-side-ru-card-11 {
+            top: 550px;
+            margin-left: 74.3333333333px;
+            z-index: 100;
+        }
+
+        .deck-visual-pile-side-ru-card-12 {
+            top: 600px;
+            z-index: 100;
+        }
+
+        .deck-visual-pile-side-ru-card-13 {
+            top: 650px;
+            margin-left: 74.3333333333px;
+            z-index: 100;
+        }
+
+        .deck-visual-pile-side-ru-card-14 {
+            top: 700px;
+            z-index: 100;
+        }
     </style>
     @RenderSection("Scripts", required: false)
 </body>
