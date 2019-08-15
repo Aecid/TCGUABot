@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.InlineQueryResults;
 
@@ -10,7 +11,7 @@ namespace TCGUABot.Models.InlineQueryHandler
 {
     public class InlineQueryHandler
     {
-        public async void Execute(InlineQuery query)
+        public async void Execute(InlineQuery query, TelegramBotClient client)
         {
             bool ruLang = false;
             if (query.Query.Length > 2)
@@ -53,8 +54,6 @@ namespace TCGUABot.Models.InlineQueryHandler
                     }
                     if (results.Count > 49) break;
                 }
-
-                var client = await Bot.Get();
 
                 await client.AnswerInlineQueryAsync(query.Id, results);
             }

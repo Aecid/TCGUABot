@@ -12,10 +12,10 @@ namespace TCGUABot.Controllers
 {
     //[Route("api/[controller]")]
     //[ApiController]
-    public class UpdateController : ControllerBase
+    public class SecondaryUpdateController : ControllerBase
     {
         public ApplicationDbContext context { get; set; }
-        public UpdateController(ApplicationDbContext context)
+        public SecondaryUpdateController(ApplicationDbContext context)
         {
             this.context = context;
         }
@@ -29,7 +29,7 @@ namespace TCGUABot.Controllers
         {
             var commands = Bot.Commands;
             var callbackHandlers = Bot.CallbackHandlers;
-            var client = await Bot.Get();
+            var client = await SecondaryBot.Get();
             var inlineQueryHandler = new InlineQueryHandler();
             if (update.CallbackQuery != null)
             {
