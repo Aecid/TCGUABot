@@ -42,31 +42,22 @@ namespace TCGUABot.Pages.Decks
 
         public static dynamic ToDeck(string cards)
         {
+            var deck = ImportDeck.StringToDeck(cards, null);
             dynamic Deck = new ExpandoObject();
             Deck.MainDeck = new Dictionary<Card, int>();
             Deck.SideBoard = new Dictionary<Card, int>();
-
-            if (cards != null)
+            
+            foreach (var card in deck.MainDeck)
             {
-                var decklist = JsonConvert.DeserializeObject<dynamic>(cards);
-                var Maindeck = new Dictionary<Card, int>();
-                var Sideboard = new Dictionary<Card, int>();
-                
+                Deck.MainDeck.Add(Helpers.CardSearch.GetCardByMultiverseId(card.multiverseId.GetValueOrDefault()), card.count);
+            }
 
-                foreach (var card in decklist.MainDeck)
+            if (deck.SideBoard.Count > 0)
+            {
+                foreach (var card in deck.SideBoard)
                 {
-                    Card foundCard = Helpers.CardSearch.GetCardByMultiverseId(int.Parse(card.Card.ToString()));
-                    Maindeck.Add(foundCard, int.Parse(card.Count.ToString()));
+                    Deck.SideBoard.Add(Helpers.CardSearch.GetCardByMultiverseId(card.multiverseId.GetValueOrDefault()), card.count);
                 }
-
-                foreach (var card in decklist.SideBoard)
-                {
-                    Card foundCard = Helpers.CardSearch.GetCardByMultiverseId(int.Parse(card.Card.ToString()));
-                    Sideboard.Add(foundCard, int.Parse(card.Count.ToString()));
-                }
-
-                Deck.MainDeck = Maindeck;
-                Deck.SideBoard = Sideboard;
             }
 
             return Deck;
@@ -125,21 +116,24 @@ namespace TCGUABot.Pages.Decks
                     }
                 }
 
-
-                result += "</p><p><b>Sideboard:</b><br/>";
-                foreach (var card in deck.SideBoard)
-                {
-                    Card foundCard = Helpers.CardSearch.GetCardByMultiverseId(int.Parse(card.Key.multiverseId.ToString()));
-                    result += card.Value + " " +
-                        "<a target =\"_blank\"" +
-                        "class=\"gathererTooltip\" " +
-                        "data-image=\"https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + foundCard.multiverseId + "&type=card\" " +
-                        "data-width=\"223px\"" +
-                        "data-height=\"311px\"" +
-                        "href=\"https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=" + foundCard.multiverseId + "\"" +
-                        ">" + foundCard.name + "</a><br/>";
-                }
-                result += "</p></div>";
+                if (deck.SideBoard.Count > 0)
+                    {
+                    result += "</p><p><b>Sideboard:</b><br/>";
+                    foreach (var card in deck.SideBoard)
+                    {
+                        Card foundCard = Helpers.CardSearch.GetCardByMultiverseId(int.Parse(card.Key.multiverseId.ToString()));
+                        result += card.Value + " " +
+                            "<a target =\"_blank\"" +
+                            "class=\"gathererTooltip\" " +
+                            "data-image=\"https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + foundCard.multiverseId + "&type=card\" " +
+                            "data-width=\"223px\"" +
+                            "data-height=\"311px\"" +
+                            "href=\"https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=" + foundCard.multiverseId + "\"" +
+                            ">" + foundCard.name + "</a><br/>";
+                    }
+                    result += "</p>";
+                        }
+                        result += "</div>";
                 return result;
             }
             else

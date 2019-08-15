@@ -39,34 +39,32 @@ namespace TCGUABot.Pages.Decks
         {
             if (cards != null)
             {
-                var decklist = JsonConvert.DeserializeObject<dynamic>(cards);
+                var decklist = ImportDeck.StringToDeck(cards, null);
                 var result = string.Empty;
                 result += "<div class=\"deck-short\"";
                 result += "<p><b>Maindeck:</b><br/>";
                 foreach (var card in decklist.MainDeck)
                 {
-                    Card foundCard = Helpers.CardSearch.GetCardByMultiverseId(int.Parse(card.Card.ToString()));
-                    result += card.Count + "x " +
+                    result += card.count + "x " +
                         "<a " +
                         "class=\"gathererTooltip\" " +
-                        "data-image=\"https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + foundCard.multiverseId + "&type=card\" " +
+                        "data-image=\"https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card\" " +
                         "data-width=\"223px\"" +
                         "data-height=\"311px\"" +
-                        "href=\"https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=" + foundCard.multiverseId + "\"" +
-                        ">" + foundCard.name + "</a><br/>";
+                        "href=\"https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=" + card.multiverseId + "\"" +
+                        ">" + card.name + "</a><br/>";
                 }
                 result += "</p><p><b>Sideboard:</b><br/>";
                 foreach (var card in decklist.SideBoard)
                 {
-                    Card foundCard = Helpers.CardSearch.GetCardByMultiverseId(int.Parse(card.Card.ToString()));
-                    result += card.Count + "x " +
+                    result += card.count + "x " +
                         "<a " +
                         "class=\"gathererTooltip\" " +
-                        "data-image=\"https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + foundCard.multiverseId + "&type=card\" " +
+                        "data-image=\"https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card\" " +
                         "data-width=\"223px\"" +
                         "data-height=\"311px\"" +
-                        "href=\"https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=" + foundCard.multiverseId + "\"" +
-                        ">" + foundCard.name + "</a><br/>";
+                        "href=\"https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=" + card.multiverseId + "\"" +
+                        ">" + card.name + "</a><br/>";
                 }
                 result += "</p></div>";
                 return result;

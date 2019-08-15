@@ -20,6 +20,6 @@ namespace TCGUABot.Models
         public string name;
         //public string parentCode;
         //public string releaseDate;
-        //public string type;
+        public string type;
     }
 }

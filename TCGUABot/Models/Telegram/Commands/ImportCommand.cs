@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using TCGUABot.Controllers;
 using TCGUABot.Data;
 using Telegram.Bot;
@@ -20,34 +21,7 @@ namespace TCGUABot.Models.Commands
         public override async void Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
         {
             var text = message.Text.Replace("/import ", "");
-            var deck = new DeckArenaImport();
-            deck.MainDeck = new List<ArenaCard>();
-            deck.SideBoard = new List<ArenaCard>();
-            bool side = false;
-            foreach (var myString in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
-            {
-                ArenaCard card = new ArenaCard();
-
-                if (myString.Trim().Length > 1)
-                {
-                    var cardData = myString.Split(" ");
-                    Regex exp = new Regex(@"(\d+)\s+(.*)\s+(\(.+\))\s+(\d+)");
-                    var matches = exp.Matches(myString);
-                
-                    int.TryParse(matches[0].Groups[1].Value, out card.count);
-                    card.name = matches[0].Groups[2].Value;
-                    card.set = matches[0].Groups[3].Value.Replace("DAR", "DOM");
-                    int.TryParse(matches[0].Groups[4].Value, out card.collectorNumber);
-
-                    if (side) deck.SideBoard.Add(card);
-                    else deck.MainDeck.Add(card);
-                }
-
-                else
-                {
-                    side = true;
-                }
-            }
+            var deck = ImportDeck.StringToDeck(text, null);
 
 
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
@@ -72,9 +46,8 @@ namespace TCGUABot.Models.Commands
             var deckListController = new DecklistController(context);
             var id = deckListController.Import(deck);
 
-
-            var link = string.Format(baseAddress, "decks/" + id);
-            msg += "Ссылка на деку: " + link;
+            var link = string.Format(baseAddress, "Decks/Details?id=" + id);
+            msg += "Ссылка на деку: https://t.me/iv?url=" + HttpUtility.UrlEncode(link) + "&rhash=32913b8ff178b0";
             //response.EnsureSuccessStatusCode();
 
             //var id = await response.Content.ReadAsStringAsync();

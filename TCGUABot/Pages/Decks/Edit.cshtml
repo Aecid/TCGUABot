@@ -19,11 +19,11 @@
                 <input asp-for="Deck.Name" class="form-control" />
                 <span asp-validation-for="Deck.Name" class="text-danger"></span>
             </div>
-            @*<div class="form-group">
-            <label asp-for="Deck.Cards" class="control-label"></label>
-            <span asp-validation-for="Deck.Cards" class="text-danger"></span>
-        </div>*@
-            <input type="hidden" asp-for="Deck.Cards" class="form-control" />
+            <div class="form-group">
+                <label asp-for="Deck.Cards" class="control-label"></label>
+                <span asp-validation-for="Deck.Cards" class="text-danger"></span>
+                <textarea rows="25" asp-for="Deck.Cards" class="form-control"></textarea>
+            </div>
             <input type="hidden" asp-for="Deck.UserId" class="form-control" />
 
             <div class="form-group">

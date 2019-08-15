@@ -63,8 +63,8 @@ namespace TCGUABot
             configurationBuilder.AddJsonFile("appsettings.json");
             IConfiguration configuration = configurationBuilder.Build();
 
-           
             client = new TelegramBotClient(configuration.GetSection("TelegramSettings").GetSection("TelegramBotToken").Value);
+
             Console.WriteLine(configuration.GetSection("TelegramSettings").GetSection("TelegramBotToken").Value);
             var hook = string.Format(configuration.GetSection("TelegramSettings").GetSection("TelegramWebHookHostBase").Value, "Update/Webhook");
             Console.WriteLine(hook);

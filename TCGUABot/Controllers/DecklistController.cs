@@ -122,83 +122,23 @@ namespace TCGUABot.Controllers
             return View();
         }
 
-        [HttpGet("/test2", Name = "Test2")]
+        [HttpGet("/test", Name = "Test2")]
         public string Test()
         {
-            string zz = @"/import 4 Arboreal Grazer (WAR) 149
-4 Elvish Rejuvenator (M19) 180
-4 Hydroid Krasis (RNA) 183
-4 Teferi, Time Raveler (WAR) 221
-2 Forest (XLN) 277
-2 Island (XLN) 265
-1 Plains (XLN) 261
-1 Azorius Guildgate (RNA) 243
-1 Blast Zone (WAR) 244
-1 Blossoming Sands (M20) 243
-2 Breeding Pool (RNA) 246
-1 Field of Ruin (XLN) 254
-4 Field of the Dead (M20) 247
-2 Hallowed Fountain (RNA) 251
-1 Hinterland Harbor (DAR) 240
-1 Selesnya Guildgate (GRN) 256
-1 Simic Guildgate (RNA) 257
-1 Sunpetal Grove (XLN) 257
-2 Temple Garden (GRN) 258
-1 Temple of Malady (M20) 254
-2 Temple of Mystery (M20) 255
-1 Thornwood Falls (M20) 258
-1 Tranquil Cove (M20) 259
-4 Growth Spiral (RNA) 178
-4 Circuitous Route (GRN) 125
-2 Grow from the Ashes (DAR) 164
-4 Scapeshift (M19) 201
-2 Time Wipe (WAR) 223
+            string zz = @"4 Fiery Islet 4 Light Up the Stage 4 Crash Through 4 Soul-Scar Mage 4 Bedlam Reveler 4 Monastery Swiftspear 2 Blistercoil Weird 4 Faithless Looting 4 Manamorphose 4 Lava Spike 4 Lava Dart 14 Mountain 4 Lightning Bolt  Sideboard 1 Shenanigans 3 Abrade 1 Dismember 4 Surgical Extraction 2 Flame Slash 3 Dragon's Claw 1 Tormod's Crypt";
 
-2 Deputy of Detention (RNA) 165
-2 Baffling End (RIX) 1
-2 Ixalan's Binding (XLN) 17
-2 Dovin's Veto (WAR) 193
-3 Root Snare (M19) 199
-3 Veil of Summer (M20) 198
-1 Ashiok, Dream Render (WAR) 228";
-
+            
 
             var text = zz.Replace("/import ", "");
-            var deck = new DeckArenaImport();
-            deck.MainDeck = new List<ArenaCard>();
-            deck.SideBoard = new List<ArenaCard>();
-            bool side = false;
-            foreach (var myString in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
-            {
-                ArenaCard card = new ArenaCard();
 
-                if (myString.Trim().Length > 1)
-                {
-                    var cardData = myString.Split(" ");
-                    Regex exp = new Regex(@"(\d+)\s+(.*)\s+(\(.+\))\s+(\d+)");
-                    var matches = exp.Matches(myString);
-
-                    int.TryParse(matches[0].Groups[1].Value, out card.count);
-                    card.name = matches[0].Groups[2].Value;
-                    card.set = matches[0].Groups[3].Value;
-                    int.TryParse(matches[0].Groups[4].Value, out card.collectorNumber);
-
-                    if (side) deck.SideBoard.Add(card);
-                    else deck.MainDeck.Add(card);
-                }
-
-                else
-                {
-                    side = true;
-                }
-            }
+            var deck = ImportDeck.StringToDeck(text, context.Users.FirstOrDefault(u => u.Id == "4d72cde2-2f9d-4463-b0db-fac43c552544"));
 
             var id = Import(deck);
 
             return id;
         }
 
-        [HttpGet("/card", Name="TestCard")]
+        [HttpGet("/card", Name = "TestCard")]
         public string GetCard(string query)
         {
             //https://api.scryfall.com/cards/multiverse/464166
@@ -207,109 +147,42 @@ namespace TCGUABot.Controllers
             return card.prices.usd;
         }
 
+        [HttpGet("/weirdCards", Name = "weirdCards")]
+        public string GetCard()
+        {
+            string z = string.Empty;
+            foreach (var set in CardData.Instance.Sets)
+            {
+                foreach (var card in set.cards)
+                {
+                    var regexItem = new Regex(@"[0-9\(\)]");
+
+                    if (regexItem.IsMatch(card.name))
+                        z += card.name+" "+ set.name +"\r\n";
+                }
+            }
+
+            return z;
+        }
+
         // POST: /Decklist
         [HttpPost]
-        public string Import([FromBody] DeckArenaImport deck)
+        public string Import([FromBody] ImportDeck deck)
         {
-            var z = deck.MainDeck.GroupBy(x => x.name);
 
-
-            var sortedDeck = new DeckArenaImport();
-            sortedDeck.MainDeck = new List<ArenaCard>();
-            sortedDeck.SideBoard = new List<ArenaCard>();
-
-            foreach (var card in deck.MainDeck)
-            {
-                foreach (var compareCard in deck.MainDeck)
-                {
-                    if (card != compareCard)
-                    {
-                        if (card.name.Equals(compareCard.name) && !card.set.Equals(compareCard.set))
-                        {
-                            card.count += compareCard.count;
-                        }
-                    }
-                }
-
-                if (!sortedDeck.MainDeck.Any(c => c.name.Equals(card.name)))
-                {
-                    sortedDeck.MainDeck.Add(card);
-                }
-            }
-
-            foreach (var card in deck.SideBoard)
-            {
-                foreach (var compareCard in deck.SideBoard)
-                {
-                    if (card != compareCard)
-                    {
-                        if (card.name.Equals(compareCard.name) && !card.set.Equals(compareCard.set))
-                        {
-                            card.count += compareCard.count;
-                        }
-                    }
-                }
-
-                if (!sortedDeck.SideBoard.Any(c => c.name.Equals(card.name)))
-                {
-                    sortedDeck.SideBoard.Add(card);
-                }
-            }
-
-
-
-
-            dynamic deckList = new ExpandoObject();
-            deckList.MainDeck = new List<ExpandoObject>();
-            deckList.SideBoard = new List<ExpandoObject>();
-            foreach (var importCard in sortedDeck.MainDeck)
-            {
-                var set = importCard.set.Replace("(", "").Replace(")", "").Replace("DAR", "DOM");
-                var card = CardData.Instance.Sets.FirstOrDefault(s => s.code.Equals(set)).cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
-                if (card.name.Equals(importCard.name))
-                {
-                    dynamic obj = new ExpandoObject();
-                    obj.Card = card.multiverseId;
-                    obj.Count = importCard.count;
-                    deckList.MainDeck.Add(obj);
-                }
-            }
-            foreach (var importCard in deck.SideBoard)
-            {
-                var set = importCard.set.Replace("(", "").Replace(")", "");
-                var card = CardData.Instance.Sets.FirstOrDefault(s => s.code.Equals(set)).cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
-                if (card.name.Equals(importCard.name))
-                {
-                    dynamic obj = new ExpandoObject();
-                    obj.Card = card.multiverseId;
-                    obj.Count = importCard.count;
-                    deckList.SideBoard.Add(obj);
-                }
-            }
 
             var deckId = Guid.NewGuid().ToString();
 
             var dbdeck = new Deck();
 
             dbdeck.ApplicationUser = deck.Owner;
+            dbdeck.UserId = deck.Owner.Id;
             dbdeck.Name = "TestDeck";
             dbdeck.Id = deckId;
-            dbdeck.Cards = JsonConvert.SerializeObject(deckList);
+            dbdeck.Cards = deck.ToString();
             context.Decks.Add(dbdeck);
             context.SaveChanges();
             
-
-            //try
-            //{
-            //    System.IO.File.WriteAllText(deckId + ".json", JsonConvert.SerializeObject(deckList));
-            //}
-            //catch
-            //{
-            //    return "NULL";
-            //}
-
-            //Console.WriteLine(Convert.ToString(deckList));
-            //return JsonConvert.SerializeObject(deckList);
             return deckId;
         }
     }

@@ -35,7 +35,7 @@ namespace TCGUABot.Models
         //public string originalType;
         //public Prices prices;
         //public string rarity;
-        //public List<string> printings;
+        public List<string> printings;
         //public Dictionary<string, string> purchaseUrls;
         public List<Ruling> rulings;
         public string scryfallId;
