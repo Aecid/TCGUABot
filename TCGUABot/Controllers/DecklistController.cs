@@ -27,7 +27,7 @@ namespace TCGUABot.Controllers
         [HttpGet]
         public string Clear()
         {
-            var userId = "548ba8ce-d90a-4f33-834a-bc2a78372df6";
+            var userId = "d34f08f5-9daa-46d6-a87c-cc3a6fda538a";
             var user = context.Users.FirstOrDefault(u => u.Id == userId);
 
             context.Decks.Where(x => x.ApplicationUser.Id == userId).Delete();
@@ -125,7 +125,41 @@ namespace TCGUABot.Controllers
         [HttpGet("/test", Name = "Test2")]
         public string Test()
         {
-            string zz = @"4 Fiery Islet 4 Light Up the Stage 4 Crash Through 4 Soul-Scar Mage 4 Bedlam Reveler 4 Monastery Swiftspear 2 Blistercoil Weird 4 Faithless Looting 4 Manamorphose 4 Lava Spike 4 Lava Dart 14 Mountain 4 Lightning Bolt  Sideboard 1 Shenanigans 3 Abrade 1 Dismember 4 Surgical Extraction 2 Flame Slash 3 Dragon's Claw 1 Tormod's Crypt";
+            string zz = @"3 Arboreal Grazer (WAR) 149
+4 Growth Spiral (RNA) 178
+4 Hydroid Krasis (RNA) 183
+4 Elvish Rejuvenator (M19) 180
+2 Prison Realm (WAR) 26
+2 Grow from the Ashes (DAR) 164
+4 Teferi, Time Raveler (WAR) 221
+4 Circuitous Route (GRN) 125
+4 Scapeshift (M19) 201
+1 Plains (XLN) 261
+2 Island (XLN) 265
+2 Forest (XLN) 277
+1 Azorius Guildgate (RNA) 243
+2 Hallowed Fountain (RNA) 251
+1 Tranquil Cove (M20) 259
+1 Temple of Malady (M20) 254
+1 Blossoming Sands (M20) 243
+1 Selesnya Guildgate (GRN) 256
+1 Sunpetal Grove (XLN) 257
+2 Temple Garden (GRN) 258
+3 Breeding Pool (RNA) 246
+1 Hinterland Harbor (DAR) 240
+1 Simic Guildgate (RNA) 257
+2 Temple of Mystery (M20) 255
+1 Thornwood Falls (M20) 258
+1 Blast Zone (WAR) 244
+1 Field of Ruin (XLN) 254
+4 Field of the Dead (M20) 247
+
+3 Veil of Summer (M20) 198
+3 Aether Gust (M20) 42
+3 Dovin's Veto (WAR) 193
+3 Deputy of Detention (RNA) 165
+2 Knight of Autumn (GRN) 183
+1 Ixalan's Binding (XLN) 17";
 
             
 
@@ -165,6 +199,13 @@ namespace TCGUABot.Controllers
             return z;
         }
 
+        [HttpPost]
+        public string HtmlizeStringDeck([FromBody] string deck)
+        {
+            var result = ImportDeck.HtmlizeString(deck);
+            return result;
+        }
+
         // POST: /Decklist
         [HttpPost]
         public string Import([FromBody] ImportDeck deck)
@@ -180,6 +221,7 @@ namespace TCGUABot.Controllers
             dbdeck.Name = "TestDeck";
             dbdeck.Id = deckId;
             dbdeck.Cards = deck.ToString();
+            dbdeck.CreationDate = DateTime.UtcNow;
             context.Decks.Add(dbdeck);
             context.SaveChanges();
             

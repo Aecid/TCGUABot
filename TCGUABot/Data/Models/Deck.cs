@@ -13,6 +13,7 @@ namespace TCGUABot.Data.Models
         public string Id { get; set; }
         public string Name { get; set; }
         public string Cards { get; set; }
+        public DateTime CreationDate { get; set; }
 
         [ForeignKey("UserId")]
         public ApplicationUser ApplicationUser { get; set; }

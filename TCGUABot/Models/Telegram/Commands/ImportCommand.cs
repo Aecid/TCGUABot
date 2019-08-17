@@ -23,7 +23,6 @@ namespace TCGUABot.Models.Commands
             var text = message.Text.Replace("/import ", "");
             var deck = ImportDeck.StringToDeck(text, null);
 
-
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddJsonFile("appsettings.json");
             IConfiguration configuration = configurationBuilder.Build();
@@ -36,7 +35,7 @@ namespace TCGUABot.Models.Commands
             if (telegramUser == null)
             {
                 msg += "Вы не зарегистрированы на сайте. Деклист будет импортирован временно и может быть удалён в любое время\r\n";
-                deck.Owner = context.Users.FirstOrDefault(u => u.Id == "548ba8ce-d90a-4f33-834a-bc2a78372df6");
+                deck.Owner = context.Users.FirstOrDefault(u => u.Id == "d34f08f5-9daa-46d6-a87c-cc3a6fda538a");
             }
             else
             {

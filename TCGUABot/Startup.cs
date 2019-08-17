@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TCGUABot.Helpers.TelegramOAuth.Middleware;
 using TCGUABot.Data.Models;
+using TCGUABot.Helpers;
 
 namespace TCGUABot
 {
@@ -56,12 +57,12 @@ namespace TCGUABot
                     options.ClientSecret = Configuration.GetSection("TelegramSettings").GetSection("TelegramBotToken").Value;
                 }
                 );
-           // services.Configure<CookiePolicyOptions>(options =>
-           //{
-           //    options.
-           //});
-
-            services.AddMvc()
+            
+            services.AddMvc( options =>
+              {
+                  options.InputFormatters.Insert(0, new TextPlainInputFormatter());
+              }
+            )
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddControllersAsServices();
 
@@ -90,6 +91,9 @@ namespace TCGUABot
 
             app.UseMvc(routes =>
             {
+                routes.MapRoute(
+                    name: "simple",
+                    template: "{controller=Home}/{action=Index}");
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");

@@ -5,15 +5,17 @@
 
 @{
     ViewData["Title"] = "Index";
+    var isAuth = false;
 }
 
 <h1>Decks</h1>
 @if (!User.Identity.IsAuthenticated)
 {
-    <p>You are not logged in. No cookies for you.</p>
 }
 else
 {
+    isAuth = true;
+}
     <p>
         <a asp-page="Create">Create New</a>
     </p>
@@ -45,9 +47,12 @@ else
                         {
                             <a asp-page="./Edit" asp-route-id="@item.Id">Change&nbsp;name</a> <text>|</text> <a asp-page="./Details" asp-route-id="@item.Id">Details</a> <text>|</text> <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
                         }
+                        else
+                        {
+                            <a asp-page="./Details" asp-route-id="@item.Id">Details</a>
+                        }
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-}

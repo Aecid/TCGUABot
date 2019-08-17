@@ -27,7 +27,7 @@
                 <dt class="col-sm-2">
                 </dt>
                 <dd class="col-sm-10">
-                    @Html.Raw(DetailsModel.HtmlizeWithDividers(DetailsModel.ToDeck(Model.Deck.Cards)))
+                    @Html.Raw(DetailsModel.Htmlize(Model.Deck.Cards))
                 </dd>
             </dl>
         </div>

@@ -33,6 +33,12 @@ namespace TCGUABot.Pages.Decks
                 var user = await _userManager.GetUserAsync(User);
                 Deck = await _context.Decks.Where(d => d.ApplicationUser == user).ToListAsync();
             }
+            else
+            {
+                var user = _context.Users.FirstOrDefault(u => u.Id == "d34f08f5-9daa-46d6-a87c-cc3a6fda538a");
+
+                Deck = await _context.Decks.Where(d => d.ApplicationUser == user).ToListAsync();
+            }
         }
 
         public static string ToShortDeck(string cards)

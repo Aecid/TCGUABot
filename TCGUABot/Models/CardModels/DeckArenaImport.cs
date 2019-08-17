@@ -69,7 +69,11 @@ namespace TCGUABot.Models
             foreach (var importCard in sortedDeck.MainDeck)
             {
                 var set = importCard.set?.Replace("(", "").Replace(")", "").Replace("DAR", "DOM");
-                if (!string.IsNullOrEmpty(set))
+                if (set == "NONE")
+                {
+                    deckList.Add(importCard.count + " " + importCard.name);
+                }
+                else if (!string.IsNullOrEmpty(set))
                 {
                     var card = CardData.Instance.Sets.FirstOrDefault(s => s.code.Equals(set)).cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
                     if (card.name.Equals(importCard.name))
@@ -117,26 +121,34 @@ namespace TCGUABot.Models
 
             if (text.Contains("(") && text.Contains(")")) //treat as magic arena import
             {
+                text=text.Replace("\n", "\r\n");
                 foreach (var myString in text.Split(new string[] { "\r\n" }, StringSplitOptions.None))
                 {
                     ImportCard card = new ImportCard();
 
                     if (myString.Trim().Length > 1)
                     {
-                        var cardData = myString.Split(" ");
-                        Regex exp = new Regex(@"(\d+)x?\s+?(.*\s?)\s+(\(.+\))?\s+(\d+)?");
-                        var matches = exp.Matches(myString);
+                        try
+                        {
+                            var cardData = myString.Split(" ");
+                            Regex exp = new Regex(@"(\d+)x?\s+?(.*\s?)\s+(\(.+\))?\s+(\d+)?");
+                            var matches = exp.Matches(myString);
 
-                        int.TryParse(matches[0].Groups[1].Value, out card.count);
-                        card.name = matches[0].Groups[2].Value;
-                        card.set = matches[0].Groups[3].Value;
-                        int.TryParse(matches[0].Groups[4].Value, out card.collectorNumber);
+                            int.TryParse(matches[0].Groups[1].Value, out card.count);
+                            card.name = matches[0].Groups[2].Value;
+                            card.set = matches[0].Groups[3].Value;
+                            int.TryParse(matches[0].Groups[4].Value, out card.collectorNumber);
 
-                        var tempCard = Helpers.CardSearch.GetCardByName(card.name, card.set);
-                        if (tempCard != null) card.multiverseId = tempCard.multiverseId;
+                            var tempCard = Helpers.CardSearch.GetCardByName(card.name, card.set);
+                            if (tempCard != null) card.multiverseId = tempCard.multiverseId;
 
-                        if (side) deck.SideBoard.Add(card);
-                        else deck.MainDeck.Add(card);
+                            if (side) deck.SideBoard.Add(card);
+                            else deck.MainDeck.Add(card);
+                        }
+                        catch
+                        {
+                            Console.WriteLine("|||||||||||||||Yep, error is somewhere here");
+                        }
                     }
 
                     else
@@ -159,13 +171,22 @@ namespace TCGUABot.Models
                 {
                     ImportCard importCard = new ImportCard();
                     importCard.name = match.Groups[2].Value.Trim();
+                    importCard.count = int.Parse(match.Groups[1].Value.Trim());
 
                     var tempCard = Helpers.CardSearch.GetCardByName(importCard.name);
-                    var set = CardData.Instance.Sets.FirstOrDefault(s => tempCard.printings.Contains(s.code) && s.type != "promo" && s.type != "funny");
-                    importCard.set = set.code;
-                    importCard.collectorNumber = int.Parse(tempCard.number);
-                    importCard.count = int.Parse(match.Groups[1].Value.Trim());
-                    importCard.multiverseId = tempCard.multiverseId;
+                    if (tempCard==null)
+                    {
+                        importCard.multiverseId = 0;
+                        importCard.collectorNumber = 0;
+                        importCard.set = "NONE";
+                    }
+                    else
+                    {
+                        var set = CardData.Instance.Sets.FirstOrDefault(s => tempCard.printings.Contains(s.code) && s.type != "promo" && s.type != "funny");
+                        importCard.set = set.code;
+                        importCard.collectorNumber = int.Parse(tempCard.number);
+                        importCard.multiverseId = tempCard.multiverseId;
+                    }
 
                     deck.MainDeck.Add(importCard);
                 }
@@ -177,14 +198,22 @@ namespace TCGUABot.Models
                     {
                         ImportCard importCard = new ImportCard();
                         importCard.name = match.Groups[2].Value.Trim();
+                        importCard.count = int.Parse(match.Groups[1].Value.Trim());
 
                         var tempCard = Helpers.CardSearch.GetCardByName(importCard.name);
-                        var set = CardData.Instance.Sets.FirstOrDefault(s => tempCard.printings.Contains(s.code) && s.type != "promo" && s.type != "funny");
-                        importCard.set = set.code;
-                        importCard.collectorNumber = int.Parse(tempCard.number);
-                        importCard.count = int.Parse(match.Groups[1].Value.Trim());
-                        importCard.multiverseId = tempCard.multiverseId;
-
+                        if (tempCard == null)
+                        {
+                            importCard.multiverseId = 0;
+                            importCard.collectorNumber = 0;
+                            importCard.set = "NONE";
+                        }
+                        else
+                        {
+                            var set = CardData.Instance.Sets.FirstOrDefault(s => tempCard.printings.Contains(s.code) && s.type != "promo" && s.type != "funny");
+                            importCard.set = set.code;
+                            importCard.collectorNumber = int.Parse(tempCard.number);
+                            importCard.multiverseId = tempCard.multiverseId;
+                        }
 
                         deck.SideBoard.Add(importCard);
                     }
@@ -192,6 +221,149 @@ namespace TCGUABot.Models
             }
 
             return deck;
+        }
+
+        public static string HtmlizeDeck(ImportDeck deck)
+        {
+            dynamic Deck = new ExpandoObject();
+            Deck.MainDeck = new Dictionary<Card, int>();
+            Deck.SideBoard = new Dictionary<Card, int>();
+
+            foreach (var card in deck.MainDeck)
+            {
+                Deck.MainDeck.Add(Helpers.CardSearch.GetCardByMultiverseId(card.multiverseId.GetValueOrDefault()), card.count);
+            }
+
+            if (deck.SideBoard.Count > 0)
+            {
+                foreach (var card in deck.SideBoard)
+                {
+                    Deck.SideBoard.Add(Helpers.CardSearch.GetCardByMultiverseId(card.multiverseId.GetValueOrDefault()), card.count);
+                }
+            }
+
+            return HtmlizeWithDividers(Deck);
+        }
+
+        public static string HtmlizeString(string cards)
+        {
+            var deck = StringToDeck(cards, null);
+            dynamic Deck = new ExpandoObject();
+            Deck.MainDeck = new Dictionary<Card, int>();
+            Deck.SideBoard = new Dictionary<Card, int>();
+
+            foreach (var card in deck.MainDeck)
+            {
+                if (card.multiverseId > 0)
+                    Deck.MainDeck.Add(Helpers.CardSearch.GetCardByMultiverseId(card.multiverseId.GetValueOrDefault()), card.count);
+                else
+                    Deck.MainDeck.Add(new Card() { name = card.name, multiverseId = 0, type = "Other" }, card.count);
+            }
+
+            if (deck.SideBoard.Count > 0)
+            {
+                foreach (var card in deck.SideBoard)
+                {
+                    if (card.multiverseId > 0)
+                        Deck.SideBoard.Add(Helpers.CardSearch.GetCardByMultiverseId(card.multiverseId.GetValueOrDefault()), card.count);
+                    else
+                        Deck.SideBoard.Add(new Card() { name = card.name, multiverseId = 0, type = "Other" }, card.count);
+                }
+            }
+
+            return HtmlizeWithDividers(Deck);
+        }
+
+        public static string HtmlizeWithDividers(dynamic deck)
+        {
+            if (deck != null)
+            {
+                Dictionary<Card, int> MainDeck = deck.MainDeck;
+                Dictionary<Card, int> Creatures = MainDeck.Where(c => c.Key.type.Contains("Creature", StringComparison.InvariantCultureIgnoreCase)).ToDictionary(c => c.Key, c => c.Value);
+                MainDeck = MainDeck.Except(Creatures).ToDictionary(x => x.Key, x => x.Value);
+                Dictionary<Card, int> Planeswalkers = MainDeck.Where(c => c.Key.type.Contains("Planeswalker", StringComparison.InvariantCultureIgnoreCase)).ToDictionary(c => c.Key, c => c.Value);
+                MainDeck = MainDeck.Except(Planeswalkers).ToDictionary(x => x.Key, x => x.Value);
+                Dictionary<Card, int> Spells = MainDeck.Where(c => c.Key.type.Contains("Instant", StringComparison.InvariantCultureIgnoreCase) || c.Key.type.Contains("Sorcery", StringComparison.InvariantCultureIgnoreCase)).ToDictionary(c => c.Key, c => c.Value);
+                MainDeck = MainDeck.Except(Spells).ToDictionary(x => x.Key, x => x.Value);
+                Dictionary<Card, int> Artifacts = MainDeck.Where(c => c.Key.type.Contains("Artifact", StringComparison.InvariantCultureIgnoreCase)).ToDictionary(c => c.Key, c => c.Value);
+                MainDeck = MainDeck.Except(Artifacts).ToDictionary(x => x.Key, x => x.Value);
+                Dictionary<Card, int> Enchantments = MainDeck.Where(c => c.Key.type.Contains("Enchantment", StringComparison.InvariantCultureIgnoreCase)).ToDictionary(c => c.Key, c => c.Value);
+                MainDeck = MainDeck.Except(Enchantments).ToDictionary(x => x.Key, x => x.Value);
+                Dictionary<Card, int> Lands = MainDeck.Where(c => c.Key.type.Contains("Land", StringComparison.InvariantCultureIgnoreCase)).ToDictionary(c => c.Key, c => c.Value);
+                MainDeck = MainDeck.Except(Lands).ToDictionary(x => x.Key, x => x.Value);
+
+                var all = new Dictionary<string, Dictionary<Card, int>>();
+                all.Add("Creatures", Creatures);
+                all.Add("Planeswalkers", Planeswalkers);
+                all.Add("Spells", Spells);
+                all.Add("Artifacts", Artifacts);
+                all.Add("Enchantments", Enchantments);
+                all.Add("Lands", Lands);
+                all.Add("Other", MainDeck);
+
+
+                var result = string.Empty;
+                result += "<div class=\"deck-short\">";
+
+                foreach (var item in all)
+                {
+                    if (item.Value.Count > 0)
+                    {
+                        result += "<p><b>" + item.Key + "</b><br/>";
+
+                        foreach (var card in item.Value)
+                        {
+                            if (card.Key.multiverseId > 0)
+                            {
+                                Card foundCard = Helpers.CardSearch.GetCardByMultiverseId(int.Parse(card.Key.multiverseId.ToString()));
+                                result += card.Value + " " +
+                                    "<a target =\"_blank\"" +
+                                    "class=\"gathererTooltip\" " +
+                                    "data-image=\"https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + foundCard.multiverseId + "&type=card\" " +
+                                    "data-width=\"223px\"" +
+                                    "data-height=\"311px\"" +
+                                    "href=\"https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=" + foundCard.multiverseId + "\"" +
+                                    ">" + foundCard.name + "</a><br/>";
+                            }
+                            else
+                            {
+                                result += card.Value + " " + card.Key.name + "<br/>";
+                            }
+                        }
+                    }
+                }
+
+                if (deck.SideBoard.Count > 0)
+                {
+                    result += "</p><p><b>Sideboard:</b><br/>";
+                    foreach (var card in deck.SideBoard)
+                    {
+                        if (card.Key.multiverseId > 0)
+                        {
+                            Card foundCard = Helpers.CardSearch.GetCardByMultiverseId(int.Parse(card.Key.multiverseId.ToString()));
+                            result += card.Value + " " +
+                                "<a target =\"_blank\"" +
+                                "class=\"gathererTooltip\" " +
+                                "data-image=\"https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + foundCard.multiverseId + "&type=card\" " +
+                                "data-width=\"223px\"" +
+                                "data-height=\"311px\"" +
+                                "href=\"https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=" + foundCard.multiverseId + "\"" +
+                                ">" + foundCard.name + "</a><br/>";
+                        }
+                        else
+                        {
+                            result += card.Value + " " + card.Key.name + "<br/>";
+                        }
+                    }
+                    result += "</p>";
+                }
+                result += "</div>";
+                return result;
+            }
+            else
+            {
+                return "No cards";
+            }
         }
     }
 
