@@ -75,7 +75,7 @@ namespace TCGUABot.Models
                 }
                 else if (!string.IsNullOrEmpty(set))
                 {
-                    var card = CardData.Instance.Sets.FirstOrDefault(s => s.code.Equals(set)).cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
+                    var card = CardData.Instance.Sets.FirstOrDefault(s => s.code.Equals(set) && s.type != "promo" && s.type != "funny" && s.type != "box").cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
                     if (card.name.Equals(importCard.name))
                     {
                         deckList.Add(importCard.count + " " + card.name);
@@ -121,7 +121,7 @@ namespace TCGUABot.Models
 
             if (text.Contains("(") && text.Contains(")")) //treat as magic arena import
             {
-                text=text.Replace("\n", "\r\n");
+                text = text.Replace("\n", "\r\n");
                 foreach (var myString in text.Split(new string[] { "\r\n" }, StringSplitOptions.None))
                 {
                     ImportCard card = new ImportCard();
@@ -136,11 +136,15 @@ namespace TCGUABot.Models
 
                             int.TryParse(matches[0].Groups[1].Value, out card.count);
                             card.name = matches[0].Groups[2].Value;
-                            card.set = matches[0].Groups[3].Value;
+                            card.set = matches[0].Groups[3].Value.Replace("(DAR)", "(DOM)");
                             int.TryParse(matches[0].Groups[4].Value, out card.collectorNumber);
 
                             var tempCard = Helpers.CardSearch.GetCardByName(card.name, card.set);
-                            if (tempCard != null) card.multiverseId = tempCard.multiverseId;
+                            if (tempCard != null)
+                            {
+                                card.multiverseId = tempCard.multiverseId;
+                                card.scryfallId = tempCard.scryfallId;
+                            }
 
                             if (side) deck.SideBoard.Add(card);
                             else deck.MainDeck.Add(card);
@@ -182,7 +186,7 @@ namespace TCGUABot.Models
                     }
                     else
                     {
-                        var set = CardData.Instance.Sets.FirstOrDefault(s => tempCard.printings.Contains(s.code) && s.type != "promo" && s.type != "funny");
+                        var set = CardData.Instance.Sets.FirstOrDefault(s => tempCard.printings.Contains(s.code) && s.type != "promo" && s.type != "funny" && s.type != "box");
                         importCard.set = set.code;
                         importCard.collectorNumber = int.Parse(tempCard.number);
                         importCard.multiverseId = tempCard.multiverseId;
@@ -209,7 +213,7 @@ namespace TCGUABot.Models
                         }
                         else
                         {
-                            var set = CardData.Instance.Sets.FirstOrDefault(s => tempCard.printings.Contains(s.code) && s.type != "promo" && s.type != "funny");
+                            var set = CardData.Instance.Sets.FirstOrDefault(s => tempCard.printings.Contains(s.code) && s.type != "promo" && s.type != "funny" && s.type != "box");
                             importCard.set = set.code;
                             importCard.collectorNumber = int.Parse(tempCard.number);
                             importCard.multiverseId = tempCard.multiverseId;
@@ -374,6 +378,7 @@ namespace TCGUABot.Models
         public string set;
         public int collectorNumber;
         public int? multiverseId;
+        public string scryfallId;
 
         public override bool Equals(object obj)
         {

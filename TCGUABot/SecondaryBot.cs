@@ -30,7 +30,7 @@ namespace TCGUABot
             callbackHandlers = new List<CallbackHandler>();
 
             commandsList.Add(new CardCommand());
-            commandsList.Add(new CatCommand());
+            commandsList.Add(new CatCommandStub());
             commandsList.Add(new CardRulingsCommand());
             commandsList.Add(new ComboCommand());
             commandsList.Add(new AdStartCommand());

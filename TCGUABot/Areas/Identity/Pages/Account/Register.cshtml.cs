@@ -60,6 +60,11 @@ namespace TCGUABot.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [DataType(DataType.Text)]
+            [StringLength(10, ErrorMessage ="The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 4)]
+            [Display(Name = "DCI number")]
+            public string DCI { get; set; }
         }
 
         public async Task OnGet(string returnUrl = null)
@@ -73,7 +78,7 @@ namespace TCGUABot.Areas.Identity.Pages.Account
             returnUrl = returnUrl ?? Url.Content("~/");
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email};
+                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, DCI = Input.DCI};
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

@@ -13,8 +13,8 @@
             }
         };
         $(this).hover(
-            function () { $(image).fadeIn(); },
-            function () { $(image).fadeOut(); }
+            function () { $(image).fadeIn(100); },
+            function () { $(image).fadeOut(100); }
         );
     });
 });

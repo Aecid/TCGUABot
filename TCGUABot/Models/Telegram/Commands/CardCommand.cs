@@ -21,15 +21,16 @@ namespace TCGUABot.Models.Commands
         {
             string text = string.Empty;
             string setName = string.Empty;
-            if (message.Text.Contains("(") && message.Text.Contains(")"))
+            var originalMessage = message.Text.Substring(message.Text.IndexOf("/c "));
+            if (originalMessage.Contains("(") && originalMessage.Contains(")"))
             {
-                var match = Regex.Match(message.Text, @"/c (.*)\((.*)\)");
+                var match = Regex.Match(originalMessage, @"/c (.*)\((.*)\)");
                 text = match.Groups[1].Value;
                 setName = match.Groups[2].Value;
             }
             else
             { 
-                text = message.Text.Replace("/c ", "");
+                text = originalMessage.Replace("/c ", "");
             }
             var msg = string.Empty;
             var chatId = message.Chat.Id;
@@ -40,7 +41,7 @@ namespace TCGUABot.Models.Commands
             }
             else
             {
-                card = Helpers.CardSearch.GetCardByName(text);
+                card = Helpers.CardSearch.GetCardByName(text.Trim());
             }
 
             if ( card != null)

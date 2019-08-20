@@ -14,7 +14,6 @@ namespace TCGUABot.Data
             : base(options)
         {
             var deckListController = new DecklistController(this);
-            deckListController.Clear();
         }
 
         public DbSet<Deck> Decks { get; set; }

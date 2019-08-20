@@ -51,13 +51,13 @@
                 <tr>
                     <td>
                         <h4>@Html.DisplayFor(modelItem => item.Name)</h4>
-                        <h5>@Html.DisplayFor(modelItem => item.CreationDate)</h5>
+                        <h7>@Html.DisplayFor(modelItem => item.CreationDate)</h7>
                     </td>
                     <td>
                         @Html.Raw(IndexModel.ToShortDeck(item.Cards?.ToString()))
                     </td>
                     <td>
-                        <a asp-page="./Details" asp-route-id="@item.Id">Details</a>
+                        <a asp-page="./Decks/Details" asp-route-id="@item.Id">Details</a>
                     </td>
                 </tr>
             }

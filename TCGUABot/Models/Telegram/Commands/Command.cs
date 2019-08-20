@@ -14,7 +14,7 @@ namespace TCGUABot.Models.Commands
         public abstract void Execute(Message message, TelegramBotClient client, ApplicationDbContext context);
         public bool Contains(string command)
         {
-            return command.StartsWith(this.Name, StringComparison.InvariantCultureIgnoreCase);
+            return command.Contains(this.Name, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

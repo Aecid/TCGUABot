@@ -36,7 +36,8 @@ namespace TCGUABot.Helpers
         public static Card GetCardByName(string name, string set, bool includePromos = false)
         {
             Card card = new Card();
-            
+            set = set.Replace("(", "").Replace(")", "").Replace("DAR", "DOM");
+
             var setToSearch = CardData.Instance.Sets.FirstOrDefault(s => s.code.ToLower().Equals(set.ToLower()));
             if (setToSearch == null)
             {

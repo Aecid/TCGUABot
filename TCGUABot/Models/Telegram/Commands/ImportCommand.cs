@@ -43,10 +43,24 @@ namespace TCGUABot.Models.Commands
             }
 
             var deckListController = new DecklistController(context);
-            var id = deckListController.Import(deck);
+            if (deck.MainDeck.Count > 0)
+            {
+                try
+                {
+                    var id = deckListController.Import(deck);
+                    var link = string.Format(baseAddress, "Decks/Details?id=" + id);
+                    msg += "Ссылка на деку: https://t.me/iv?url=" + HttpUtility.UrlEncode(link) + "&rhash=32913b8ff178b0";
+                }
+                catch
+                {
+                    msg = "❌Ошибка импорта деки.";
+                }
 
-            var link = string.Format(baseAddress, "Decks/Details?id=" + id);
-            msg += "Ссылка на деку: https://t.me/iv?url=" + HttpUtility.UrlEncode(link) + "&rhash=32913b8ff178b0";
+            }
+            else
+            {
+                msg = "❌Ошибка импорта деки.";
+            }
             //response.EnsureSuccessStatusCode();
 
             //var id = await response.Content.ReadAsStringAsync();

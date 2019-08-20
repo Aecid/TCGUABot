@@ -1,6 +1,7 @@
 ﻿@page
 @model TCGUABot.Pages.Decks.IndexModel
 @inject UserManager<Data.Models.ApplicationUser> UserManager
+@inject ApplicationDbContext Context
 
 
 @{
@@ -36,13 +37,15 @@ else
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Name)
+                        <h4>@Html.DisplayFor(modelItem => item.Name)</h4>
+                        <h7>@Html.DisplayFor(modelItem => item.CreationDate)</h7>
                     </td>
                     <td>
                         @Html.Raw(IndexModel.ToShortDeck(item.Cards?.ToString()))
                     </td>
                     <td>
                         @{var user = await UserManager.GetUserAsync(User);}
+                        @if (user == null) { user = Context.Users.FirstOrDefault(u => u.Id == "d34f08f5-9daa-46d6-a87c-cc3a6fda538a"); }
                         @if (item.UserId == user.Id)
                         {
                             <a asp-page="./Edit" asp-route-id="@item.Id">Change&nbsp;name</a> <text>|</text> <a asp-page="./Details" asp-route-id="@item.Id">Details</a> <text>|</text> <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>

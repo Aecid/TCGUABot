@@ -51,7 +51,6 @@ namespace TCGUABot.Controllers
             {
                 Set set = NonNullSets.ElementAt(random.Next(NonNullSets.Count()));
                 Card obj = set.cards.Where(c => c.multiverseId != 0).ElementAt(random.Next(set.cards.Where(c => c.multiverseId != 0).Count()));
-                //urls.Add(obj.name, "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + obj.multiverseId + "&type=card");
                 decklist.Add(obj);
                 if (decklist.Count == 60) break;
                 if (random.Next(0, 2) == 1) decklist.Add(obj);
@@ -125,41 +124,41 @@ namespace TCGUABot.Controllers
         [HttpGet("/test", Name = "Test2")]
         public string Test()
         {
-            string zz = @"3 Arboreal Grazer (WAR) 149
-4 Growth Spiral (RNA) 178
-4 Hydroid Krasis (RNA) 183
-4 Elvish Rejuvenator (M19) 180
-2 Prison Realm (WAR) 26
-2 Grow from the Ashes (DAR) 164
-4 Teferi, Time Raveler (WAR) 221
-4 Circuitous Route (GRN) 125
-4 Scapeshift (M19) 201
-1 Plains (XLN) 261
-2 Island (XLN) 265
-2 Forest (XLN) 277
-1 Azorius Guildgate (RNA) 243
-2 Hallowed Fountain (RNA) 251
-1 Tranquil Cove (M20) 259
-1 Temple of Malady (M20) 254
-1 Blossoming Sands (M20) 243
-1 Selesnya Guildgate (GRN) 256
-1 Sunpetal Grove (XLN) 257
-2 Temple Garden (GRN) 258
-3 Breeding Pool (RNA) 246
-1 Hinterland Harbor (DAR) 240
-1 Simic Guildgate (RNA) 257
-2 Temple of Mystery (M20) 255
-1 Thornwood Falls (M20) 258
-1 Blast Zone (WAR) 244
-1 Field of Ruin (XLN) 254
-4 Field of the Dead (M20) 247
-
-3 Veil of Summer (M20) 198
-3 Aether Gust (M20) 42
-3 Dovin's Veto (WAR) 193
-3 Deputy of Detention (RNA) 165
-2 Knight of Autumn (GRN) 183
-1 Ixalan's Binding (XLN) 17";
+            string zz = @"/import 1 Ancient Den
+1 Birthing Pod
+1 Blazing Shoal
+1 Bridge From Below
+1 Chrome Mox
+1 Cloudpost
+1 Dark Depths
+1 Deathrite Shaman
+1 Dig Through Time
+1 Dread Return
+1 Eye of Ugin
+1 Gitaxian Probe
+1 Glimpse of Nature
+1 Golgari Grave-Troll
+1 Great Furnace
+1 Green Sun's Zenith
+1 Hypergenesis
+1 Krark-Clan Ironworks
+1 Mental Misstep
+1 Ponder
+1 Preordain
+1 Punishing Fire
+1 Rite of Flame
+1 Seat of the Synod
+1 Second Sunrise
+1 Seething Song
+1 Sensei's Divining Top
+1 Skullclamp
+1 Splinter Twin
+1 Stoneforge Mystic
+1 Summer Bloom
+1 Treasure Cruise
+1 Tree of Tales
+1 Umezawa's Jitte
+1 Vault of Whispers";
 
             
 
@@ -211,6 +210,10 @@ namespace TCGUABot.Controllers
         public string Import([FromBody] ImportDeck deck)
         {
 
+            if (deck.MainDeck.Count == 0)
+            {
+                throw new InvalidOperationException("Deck is empty or in wrong format.");
+            }
 
             var deckId = Guid.NewGuid().ToString();
 
@@ -218,7 +221,7 @@ namespace TCGUABot.Controllers
 
             dbdeck.ApplicationUser = deck.Owner;
             dbdeck.UserId = deck.Owner.Id;
-            dbdeck.Name = "TestDeck";
+            dbdeck.Name = deck.MainDeck[0].name;
             dbdeck.Id = deckId;
             dbdeck.Cards = deck.ToString();
             dbdeck.CreationDate = DateTime.UtcNow;

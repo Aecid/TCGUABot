@@ -64,7 +64,11 @@ namespace TCGUABot
               }
             )
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddControllersAsServices();
+                .AddControllersAsServices()
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.DateFormatString = "0:MM/dd/yy, H:mm";
+                });
 
             Startup.StaticServices = services;
         }

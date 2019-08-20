@@ -27,9 +27,10 @@ namespace TCGUABot.Controllers
 
         public async Task<OkResult> Webhook([FromBody]Update update)
         {
-            var commands = Bot.Commands;
-            var callbackHandlers = Bot.CallbackHandlers;
             var client = await SecondaryBot.Get();
+
+            var commands = SecondaryBot.Commands;
+            var callbackHandlers = SecondaryBot.CallbackHandlers;
             var inlineQueryHandler = new InlineQueryHandler();
             if (update.CallbackQuery != null)
             {

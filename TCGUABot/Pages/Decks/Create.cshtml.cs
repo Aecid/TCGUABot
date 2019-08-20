@@ -36,6 +36,11 @@ namespace TCGUABot.Pages.Decks
                 return Page();
             }
 
+            if (this.Deck.Cards == string.Empty)
+            {
+                return new UnprocessableEntityResult();
+            }
+
             //            < input type = "hidden" asp -for= "Deck.ApplicationUser" value = "@user" class="form-control" />
             //<input type = "hidden" asp-for="Deck.UserId" value="@user.Id" class="form-control" />
             ApplicationUser user;
