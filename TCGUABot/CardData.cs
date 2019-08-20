@@ -192,8 +192,13 @@ namespace TCGUABot
             var pfoil = results.FirstOrDefault(za => za.subTypeName == "Foil");
             var pnormal = results.FirstOrDefault(za => za.subTypeName == "Normal");
 
-            result.Add("normal", pnormal.midPrice ?? 0);
-            result.Add("foil", pfoil.midPrice ?? 0);
+            float priceNormal = 0;
+            float priceFoil = 0;
+            float.TryParse(pnormal.midPrice.ToString(), out priceNormal);
+            float.TryParse(pfoil.midPrice.ToString(), out priceFoil);
+
+            result.Add("normal", priceNormal);
+            result.Add("foil", priceFoil);
 
 
             return result;

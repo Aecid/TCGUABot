@@ -68,13 +68,21 @@ namespace TCGUABot.Controllers
         {
             return Helpers.CardSearch.GetCardByMultiverseId(id);
         }
-        
+
         [HttpGet("/testCard", Name = "TestCard")]
         public string GetCardPrice()
         {
+            var msg = string.Empty;
             var card = Helpers.CardSearch.GetCardByMultiverseId(430834);
+            var prices = CardData.GetTcgPlayerPrices(card.tcgplayerProductId);
+            if (prices["normal"] > 0)
+                msg += "Цена: <b>$" + prices["normal"].ToString() + "</b>\r\n";
+            if (prices["foil"] > 0)
+                msg += "Цена фойлы: <b>$" + prices["foil"].ToString() + "</b>\r\n";
+            if (prices["normal"] == 0 && prices["foil"] == 0)
+                msg += "Цена: <i>Нет данных о цене</i>\r\n";
 
-
+            return msg;
         }
 
 
