@@ -51,12 +51,12 @@ namespace TCGUABot.Models.Commands
 
                 try
                 {
-                    var prices = GetCardPriceFromScryfallByMultiverseId(card.multiverseId);
-                    if (prices.usd != null)
-                        msg += "Цена: <b>$" + prices.usd.ToString() + "</b>\r\n";
-                    if (prices.usd_foil != null)
-                        msg += "Цена фойлы: <b>$" + prices.usd_foil.ToString() + "</b>\r\n";
-                    if (prices.usd == null & prices.usd_foil == null)
+                    var prices = CardData.GetTcgPlayerPrices(card.tcgplayerProductId);
+                    if (prices["normal"] > 0)
+                        msg += "Цена: <b>$" + prices["normal"].ToString() + "</b>\r\n";
+                    if (prices["foil"] > 0)
+                        msg += "Цена фойлы: <b>$" + prices["foil"].ToString() + "</b>\r\n";
+                    if (prices["normal"] == 0 && prices["foil"] == 0)
                         msg += "Цена: <i>Нет данных о цене</i>\r\n";
 
                 }

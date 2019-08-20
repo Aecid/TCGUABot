@@ -1,10 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using TCGUABot.Models;
 
@@ -16,6 +18,7 @@ namespace TCGUABot
         private static readonly object padlock = new object();
         public List<Set> Sets = new List<Set>();
         public string Version = string.Empty;
+        public static string BearerToken { get; private set; }
         public static CardData Instance
         {
             get
@@ -34,6 +37,8 @@ namespace TCGUABot
 
         public CardData()
         {
+            BearerToken = GetTcgplayerAccessToken();
+
             var version = GetVersion();
             if (version != Version || Sets == null)
             {
@@ -86,6 +91,45 @@ namespace TCGUABot
             }
         }
 
+        public static string GetTcgplayerAccessToken()
+        {
+            IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddJsonFile("appsettings.json");
+            IConfiguration configuration = configurationBuilder.Build();
+
+            var clientId = configuration.GetSection("TCGPlayer").GetSection("ClientId").Value;
+            var clientSecret = configuration.GetSection("TCGPlayer").GetSection("ClientSecret").Value;
+
+            var request = (HttpWebRequest)WebRequest.Create("https://api.tcgplayer.com/token");
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            string postData = "grant_type=client_credentials&client_id=" + clientId + "&client_secret=" + clientSecret;
+
+            var encoding = new UTF8Encoding();
+            byte[] byte1 = encoding.GetBytes(postData);
+
+            // Set the content length of the string being posted.
+            request.ContentLength = byte1.Length;
+
+            Stream newStream = request.GetRequestStream();
+            newStream.Write(byte1, 0, byte1.Length);
+
+            var content = string.Empty;
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                using (var stream = response.GetResponseStream())
+                {
+                    using (var sr = new StreamReader(stream))
+                    {
+                        content = sr.ReadToEnd();
+                    }
+                }
+            }
+
+            var responseObj = JsonConvert.DeserializeObject<dynamic>(content);
+            return responseObj.access_token;
+        }
+
         public static CardData Initalize()
         {
             return CardData.Instance;
@@ -112,6 +156,47 @@ namespace TCGUABot
             }
 
             return content;
+        }
+
+        public static Dictionary<string, float> GetTcgPlayerPrices(int productKey)
+        {
+            IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddJsonFile("appsettings.json");
+            IConfiguration configuration = configurationBuilder.Build();
+
+            var result = new Dictionary<string, float>();
+            var version = configuration.GetSection("TCGPlayer").GetSection("Version").Value;
+
+            var url = "https://api.tcgplayer.com/" + version + "/pricing/product/" + productKey.ToString();
+            var request = (HttpWebRequest)WebRequest.Create(url);
+
+            request.Method = "GET";
+            request.ContentType = "application/json";
+            request.Headers.Add("Authorization", "Bearer " + BearerToken);
+
+            var content = string.Empty;
+
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                using (var stream = response.GetResponseStream())
+                {
+                    using (var sr = new StreamReader(stream))
+                    {
+                        content = sr.ReadToEnd();
+                    }
+                }
+            }
+
+            var res = JsonConvert.DeserializeObject<dynamic>(content);
+            IEnumerable<dynamic> results = res.results;
+            var pfoil = results.FirstOrDefault(za => za.subTypeName == "Foil");
+            var pnormal = results.FirstOrDefault(za => za.subTypeName == "Normal");
+
+            result.Add("normal", pnormal.midPrice ?? 0);
+            result.Add("foil", pfoil.midPrice ?? 0);
+
+
+            return result;
         }
 
         public static bool DownloadJson(string url, string filename)

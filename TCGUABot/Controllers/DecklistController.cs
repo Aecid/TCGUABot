@@ -171,15 +171,6 @@ namespace TCGUABot.Controllers
             return id;
         }
 
-        [HttpGet("/card", Name = "TestCard")]
-        public string GetCard(string query)
-        {
-            //https://api.scryfall.com/cards/multiverse/464166
-            dynamic card = JsonConvert.DeserializeObject<dynamic>(CardData.ApiCall("https://api.scryfall.com/cards/multiverse/" + 464166));
-            var prices = card.prices;
-            return card.prices.usd;
-        }
-
         [HttpGet("/weirdCards", Name = "weirdCards")]
         public string GetCard()
         {

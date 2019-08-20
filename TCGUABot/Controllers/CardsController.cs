@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -65,6 +67,14 @@ namespace TCGUABot.Controllers
         public Card Get(int id)
         {
             return Helpers.CardSearch.GetCardByMultiverseId(id);
+        }
+        
+        [HttpGet("/testCard", Name = "TestCard")]
+        public string GetCardPrice()
+        {
+            var card = Helpers.CardSearch.GetCardByMultiverseId(430834);
+
+
         }
 
 
