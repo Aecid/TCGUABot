@@ -285,6 +285,8 @@ namespace TCGUABot.Models
                 Dictionary<Card, int> MainDeck = deck.MainDeck;
                 Dictionary<Card, int> Creatures = MainDeck.Where(c => c.Key.type.Contains("Creature", StringComparison.InvariantCultureIgnoreCase)).ToDictionary(c => c.Key, c => c.Value);
                 MainDeck = MainDeck.Except(Creatures).ToDictionary(x => x.Key, x => x.Value);
+                Dictionary<Card, int> Lands = MainDeck.Where(c => c.Key.type.Contains("Land", StringComparison.InvariantCultureIgnoreCase)).ToDictionary(c => c.Key, c => c.Value);
+                MainDeck = MainDeck.Except(Lands).ToDictionary(x => x.Key, x => x.Value);
                 Dictionary<Card, int> Planeswalkers = MainDeck.Where(c => c.Key.type.Contains("Planeswalker", StringComparison.InvariantCultureIgnoreCase)).ToDictionary(c => c.Key, c => c.Value);
                 MainDeck = MainDeck.Except(Planeswalkers).ToDictionary(x => x.Key, x => x.Value);
                 Dictionary<Card, int> Spells = MainDeck.Where(c => c.Key.type.Contains("Instant", StringComparison.InvariantCultureIgnoreCase) || c.Key.type.Contains("Sorcery", StringComparison.InvariantCultureIgnoreCase)).ToDictionary(c => c.Key, c => c.Value);
@@ -293,8 +295,6 @@ namespace TCGUABot.Models
                 MainDeck = MainDeck.Except(Artifacts).ToDictionary(x => x.Key, x => x.Value);
                 Dictionary<Card, int> Enchantments = MainDeck.Where(c => c.Key.type.Contains("Enchantment", StringComparison.InvariantCultureIgnoreCase)).ToDictionary(c => c.Key, c => c.Value);
                 MainDeck = MainDeck.Except(Enchantments).ToDictionary(x => x.Key, x => x.Value);
-                Dictionary<Card, int> Lands = MainDeck.Where(c => c.Key.type.Contains("Land", StringComparison.InvariantCultureIgnoreCase)).ToDictionary(c => c.Key, c => c.Value);
-                MainDeck = MainDeck.Except(Lands).ToDictionary(x => x.Key, x => x.Value);
 
                 var all = new Dictionary<string, Dictionary<Card, int>>();
                 all.Add("Creatures", Creatures);

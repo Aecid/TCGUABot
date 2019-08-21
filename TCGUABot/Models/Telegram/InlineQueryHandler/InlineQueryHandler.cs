@@ -55,7 +55,14 @@ namespace TCGUABot.Models.InlineQueryHandler
                     if (results.Count > 49) break;
                 }
 
-                await client.AnswerInlineQueryAsync(query.Id, results);
+                try
+                {
+                    await client.AnswerInlineQueryAsync(query.Id, results);
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine(e.Message + "|" + e?.InnerException?.Message);
+                }
             }
         }
     }

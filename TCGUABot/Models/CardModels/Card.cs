@@ -30,6 +30,7 @@ namespace TCGUABot.Models
         //public int mtgstocksId;
         public int multiverseId;
         public string name;
+        public List<string> names;
         public string number;
         //public string originalText;
         //public string originalType;
