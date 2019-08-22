@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TCGUABot.Helpers.TelegramOAuth.Middleware;
 using TCGUABot.Data.Models;
 using TCGUABot.Helpers;
+using React.AspNet;
 
 namespace TCGUABot
 {
@@ -32,7 +33,7 @@ namespace TCGUABot
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -57,6 +58,8 @@ namespace TCGUABot
                     options.ClientSecret = Configuration.GetSection("TelegramSettings").GetSection("TelegramBotToken").Value;
                 }
                 );
+
+            services.AddReact();
             
             services.AddMvc( options =>
               {
@@ -71,6 +74,8 @@ namespace TCGUABot
                 });
 
             Startup.StaticServices = services;
+
+            return services.BuildServiceProvider();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -92,6 +97,11 @@ namespace TCGUABot
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();
+
+            app.UseReact(config =>
+            {
+
+            });
 
             app.UseMvc(routes =>
             {
