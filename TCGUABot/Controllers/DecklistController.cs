@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -124,51 +125,113 @@ namespace TCGUABot.Controllers
         [HttpGet("/test", Name = "Test2")]
         public string Test()
         {
-            string zz = @"/import 1 Ancient Den
-1 Birthing Pod
-1 Blazing Shoal
-1 Bridge From Below
-1 Chrome Mox
-1 Cloudpost
-1 Dark Depths
-1 Deathrite Shaman
-1 Dig Through Time
-1 Dread Return
-1 Eye of Ugin
-1 Gitaxian Probe
-1 Glimpse of Nature
-1 Golgari Grave-Troll
-1 Great Furnace
-1 Green Sun's Zenith
-1 Hypergenesis
-1 Krark-Clan Ironworks
-1 Mental Misstep
-1 Ponder
-1 Preordain
-1 Punishing Fire
-1 Rite of Flame
-1 Seat of the Synod
-1 Second Sunrise
-1 Seething Song
-1 Sensei's Divining Top
-1 Skullclamp
-1 Splinter Twin
-1 Stoneforge Mystic
-1 Summer Bloom
-1 Treasure Cruise
-1 Tree of Tales
-1 Umezawa's Jitte
-1 Vault of Whispers";
+            string text = string.Empty;
+            string setName = string.Empty;
+            var originalMessage = "/c karn";
+            if (originalMessage.Contains("(") && originalMessage.Contains(")"))
+            {
+                var match = Regex.Match(originalMessage, @"/c (.*)\((.*)\)");
+                text = match.Groups[1].Value;
+                setName = match.Groups[2].Value;
+            }
+            else
+            {
+                text = originalMessage.Replace("/c ", "");
+            }
+            var msg = string.Empty;
+            Card card;
+            if (setName != string.Empty)
+            {
+                card = Helpers.CardSearch.GetCardByName(text, setName);
+            }
+            else
+            {
+                card = Helpers.CardSearch.GetCardByName(text.Trim());
+            }
 
-            
+            string nameEn = string.Empty;
+            string nameRu = string.Empty;
 
-            var text = zz.Replace("/import ", "");
+            string price = string.Empty;
+            if (card != null)
+            {
+                nameEn += "<b>🇺🇸" + card.name + "</b>";
+                if (card.foreignData.Any(c => c.language.Equals("Russian"))) nameRu += "<b>🇷🇺" + card.ruName + "</b>";
 
-            var deck = ImportDeck.StringToDeck(text, context.Users.FirstOrDefault(u => u.Id == "4d72cde2-2f9d-4463-b0db-fac43c552544"));
+                try
+                {
+                    var prices = CardData.GetTcgPlayerPrices(card.tcgplayerProductId);
+                    if (prices["normal"] > 0)
+                        price += "Цена: <b>$" + prices["normal"].ToString() + "</b>\r\n";
+                    if (prices["foil"] > 0)
+                        price += "Цена фойлы: <b>$" + prices["foil"].ToString() + "</b>\r\n";
+                    if (prices["normal"] == 0 && prices["foil"] == 0)
+                        price += "Цена: <i>Нет данных о цене</i>\r\n";
 
-            var id = Import(deck);
+                }
+                catch
+                {
+                }
+            }
+            else
+            {
+                msg = "<b>❌Карта не найдена по запросу \"" + text + "\".</b>";
+            }
 
-            return id;
+            if (card != null)
+            {
+                if (card.names != null)
+                {
+                    if (card.names.Count > 0) //if transform?
+                    {
+                        nameEn = "<b>🇺🇸</b>";
+                        nameRu = "<b>🇷🇺</b>";
+                        var ComboList = new List<Card>();
+
+                        foreach (var comboPiece in card.names)
+                        {
+                            var cpName = comboPiece.Trim();
+                            Card secondCard;
+                            secondCard = Helpers.CardSearch.GetCardByName(cpName);
+
+                            nameEn += "|<b>" + comboPiece + "</b>";
+                            if (secondCard.foreignData.Any(c => c.language.Equals("Russian"))) nameRu += "|<b>" + card.ruName + "</b>";
+
+
+                            if (secondCard != null)
+                            {
+                                Console.WriteLine("Card found");
+                                ComboList.Add(secondCard);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Not found");
+                                msg += "❌Карта " + cpName + " была не найдена\r\n";
+                            }
+                        }
+
+                        msg = nameEn + "\r\n" + nameRu + "\r\n" + price;
+                    }
+                }
+                else
+                {
+                    msg += nameEn + "\r\n" + nameRu + "\r\n" + price;
+                    var req = WebRequest.Create("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card");
+
+                    using (Stream fileStream = req.GetResponse().GetResponseStream())
+                    {
+                        return msg;
+                    }
+                }
+            }
+            else
+            {
+                msg = nameEn + "\r\n" + nameRu + "\r\n" + price;
+                return msg;
+                //await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyToMessageId: message.MessageId);
+            }
+
+            return "DAFAQ";
         }
 
         [HttpGet("/weirdCards", Name = "weirdCards")]

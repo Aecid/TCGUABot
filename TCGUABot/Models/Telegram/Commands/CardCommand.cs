@@ -51,8 +51,8 @@ namespace TCGUABot.Models.Commands
             string price = string.Empty;
             if ( card != null)
             {
-                nameEn += "<b>🇺🇸" + card.name + "</b>";
-                if (card.foreignData.Any(c => c.language.Equals("Russian"))) nameRu += "<b>🇷🇺" + card.ruName + "</b>";
+                nameEn += "<b>🇺🇸 " + card.name + "</b>";
+                if (card.foreignData.Any(c => c.language.Equals("Russian"))) nameRu += "<b>🇷🇺 " + card.ruName + "</b>";
 
                 try
                 {
@@ -88,10 +88,10 @@ namespace TCGUABot.Models.Commands
                         {
                             var cpName = comboPiece.Trim();
                             Card secondCard;
-                            secondCard = Helpers.CardSearch.GetCardByName(cpName);
+                            secondCard = Helpers.CardSearch.GetCardByName(cpName, true);
 
                             nameEn += "|<b>" + comboPiece + "</b>";
-                            if (secondCard.foreignData.Any(c => c.language.Equals("Russian"))) nameRu += "|<b>" + card.ruName + "</b>";
+                            if (secondCard.foreignData.Any(c => c.language.Equals("Russian"))) nameRu += "|<b>" + secondCard.ruName + "</b>";
 
 
                             if (secondCard != null)
@@ -107,13 +107,19 @@ namespace TCGUABot.Models.Commands
                         }
 
                         List<IAlbumInputMedia> media = new List<IAlbumInputMedia>();
+
+                        var firstCardMuId = 0;
                         foreach (var foundCard in ComboList)
                         {
-                            var imp = new InputMediaPhoto(new InputMedia("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + foundCard.multiverseId + "&type=card"))
+                            if (firstCardMuId != foundCard.multiverseId)
                             {
-                                Caption = foundCard.name
-                            };
-                            media.Add(imp);
+                                firstCardMuId = foundCard.multiverseId;
+                                var imp = new InputMediaPhoto(new InputMedia("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + foundCard.multiverseId + "&type=card"))
+                                {
+                                    //Caption = foundCard.name
+                                };
+                                media.Add(imp);
+                            }
                         }
 
                         foreach (var z in media)
@@ -121,22 +127,34 @@ namespace TCGUABot.Models.Commands
                             Console.WriteLine(z.Caption);
                         }
 
-                        msg = nameEn + "\r\n" + nameRu + "\r\n" + price;
+                        int index = nameRu.IndexOf("|");
+                        nameRu = (index < 0)
+                            ? nameRu
+                            : nameRu.Remove(index, 1);
+
+                        index = nameEn.IndexOf("|");
+                        nameEn = (index < 0)
+                            ? nameEn
+                            : nameEn.Remove(index, 1);
+
+                        if (nameRu.Equals("<b>🇷🇺</b>")) msg = nameEn + "\r\n" + price;
+                        else msg = nameEn + "\r\n" + nameRu + "\r\n" + price;
+
                         if (media.Count > 0)
                         {
                             await client.SendMediaGroupAsync(media, chatId);
                             await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
                         }
                     }
-                    else
-                    {
-                        msg += nameEn + "\r\n" + nameRu + "\r\n" + price;
-                        var req = WebRequest.Create("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card");
+                }
+                else
+                {
+                    msg += nameEn + "\r\n" + nameRu + (nameRu.Length>0?"\r\n":"") + price;
+                    var req = WebRequest.Create("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card");
 
-                        using (Stream fileStream = req.GetResponse().GetResponseStream())
-                        {
-                            await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream), msg, Telegram.Bot.Types.Enums.ParseMode.Html);
-                        }
+                    using (Stream fileStream = req.GetResponse().GetResponseStream())
+                    {
+                        await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream), msg, Telegram.Bot.Types.Enums.ParseMode.Html);
                     }
                 }
             }
