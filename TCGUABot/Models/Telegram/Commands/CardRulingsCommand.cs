@@ -43,7 +43,22 @@ namespace TCGUABot.Models.Commands
                 msg = "<b>❌Карта не найдена.</b>";
             }
 
+            if (msg.Length <= 4095)
             await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+            else
+            {
+                var msgs = Split(msg, 4096);
+                foreach (var ms in msgs)
+                {
+                    await client.SendTextMessageAsync(chatId, ms, Telegram.Bot.Types.Enums.ParseMode.Html);
+                }
+            }
+        }
+
+        static IEnumerable<string> Split(string str, int chunkSize)
+        {
+            return Enumerable.Range(0, str.Length / chunkSize)
+                .Select(i => str.Substring(i * chunkSize, chunkSize));
         }
     }
 }
