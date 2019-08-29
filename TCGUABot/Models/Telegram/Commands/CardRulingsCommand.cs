@@ -57,6 +57,7 @@ namespace TCGUABot.Models.Commands
                     var msgs = Split(msg, 4096);
                     foreach (var ms in msgs)
                     {
+                        await Task.Delay(100);
                         await client.SendTextMessageAsync(chatId, ms);
                     }
                 }
