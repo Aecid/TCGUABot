@@ -13,6 +13,8 @@ using Newtonsoft.Json;
 using TCGUABot.Data;
 using TCGUABot.Data.Models;
 using TCGUABot.Models;
+using TCGUABot.Models.Commands;
+using Telegram.Bot.Types;
 using Z.EntityFramework.Plus;
 
 namespace TCGUABot.Controllers
@@ -122,116 +124,16 @@ namespace TCGUABot.Controllers
             return View();
         }
 
-        [HttpGet("/test", Name = "Test2")]
-        public string Test()
+        [HttpGet("/CardCommand/{cardName}", Name = "CardCommandCall")]
+        public async Task<string> CardCommand(string cardName)
         {
-            string text = string.Empty;
-            string setName = string.Empty;
-            var originalMessage = "/c karn";
-            if (originalMessage.Contains("(") && originalMessage.Contains(")"))
-            {
-                var match = Regex.Match(originalMessage, @"/c (.*)\((.*)\)");
-                text = match.Groups[1].Value;
-                setName = match.Groups[2].Value;
-            }
-            else
-            {
-                text = originalMessage.Replace("/c ", "");
-            }
+
             var msg = string.Empty;
-            Card card;
-            if (setName != string.Empty)
-            {
-                card = Helpers.CardSearch.GetCardByName(text, setName);
-            }
-            else
-            {
-                card = Helpers.CardSearch.GetCardByName(text.Trim());
-            }
 
-            string nameEn = string.Empty;
-            string nameRu = string.Empty;
+            var command = new CardCommand();
+            command.Execute(new Message() { Text = "/c "+cardName, Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
 
-            string price = string.Empty;
-            if (card != null)
-            {
-                nameEn += "<b>🇺🇸" + card.name + "</b>";
-                if (card.foreignData.Any(c => c.language.Equals("Russian"))) nameRu += "<b>🇷🇺" + card.ruName + "</b>";
-
-                try
-                {
-                    var prices = CardData.GetTcgPlayerPrices(card.tcgplayerProductId);
-                    if (prices["normal"] > 0)
-                        price += "Цена: <b>$" + prices["normal"].ToString() + "</b>\r\n";
-                    if (prices["foil"] > 0)
-                        price += "Цена фойлы: <b>$" + prices["foil"].ToString() + "</b>\r\n";
-                    if (prices["normal"] == 0 && prices["foil"] == 0)
-                        price += "Цена: <i>Нет данных о цене</i>\r\n";
-
-                }
-                catch
-                {
-                }
-            }
-            else
-            {
-                msg = "<b>❌Карта не найдена по запросу \"" + text + "\".</b>";
-            }
-
-            if (card != null)
-            {
-                if (card.names != null)
-                {
-                    if (card.names.Count > 0) //if transform?
-                    {
-                        nameEn = "<b>🇺🇸</b>";
-                        nameRu = "<b>🇷🇺</b>";
-                        var ComboList = new List<Card>();
-
-                        foreach (var comboPiece in card.names)
-                        {
-                            var cpName = comboPiece.Trim();
-                            Card secondCard;
-                            secondCard = Helpers.CardSearch.GetCardByName(cpName);
-
-                            nameEn += "|<b>" + comboPiece + "</b>";
-                            if (secondCard.foreignData.Any(c => c.language.Equals("Russian"))) nameRu += "|<b>" + card.ruName + "</b>";
-
-
-                            if (secondCard != null)
-                            {
-                                Console.WriteLine("Card found");
-                                ComboList.Add(secondCard);
-                            }
-                            else
-                            {
-                                Console.WriteLine("Not found");
-                                msg += "❌Карта " + cpName + " была не найдена\r\n";
-                            }
-                        }
-
-                        msg = nameEn + "\r\n" + nameRu + "\r\n" + price;
-                    }
-                }
-                else
-                {
-                    msg += nameEn + "\r\n" + nameRu + "\r\n" + price;
-                    var req = WebRequest.Create("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card");
-
-                    using (Stream fileStream = req.GetResponse().GetResponseStream())
-                    {
-                        return msg;
-                    }
-                }
-            }
-            else
-            {
-                msg = nameEn + "\r\n" + nameRu + "\r\n" + price;
-                return msg;
-                //await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyToMessageId: message.MessageId);
-            }
-
-            return "DAFAQ";
+            return msg;
         }
 
         [HttpGet("/weirdCards", Name = "weirdCards")]

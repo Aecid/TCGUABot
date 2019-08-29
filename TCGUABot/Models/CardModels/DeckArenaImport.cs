@@ -215,7 +215,14 @@ namespace TCGUABot.Models
                         {
                             var set = CardData.Instance.Sets.FirstOrDefault(s => tempCard.printings.Contains(s.code) && s.type != "promo" && s.type != "funny" && s.type != "box");
                             importCard.set = set.code;
-                            importCard.collectorNumber = int.Parse(tempCard.number);
+                            try
+                            {
+                                importCard.collectorNumber = int.Parse(tempCard.number);
+                            }
+                            catch
+                            {
+                                importCard.collectorNumber = 0;
+                            }
                             importCard.multiverseId = tempCard.multiverseId;
                         }
 

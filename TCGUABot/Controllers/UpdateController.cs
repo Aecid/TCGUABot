@@ -40,7 +40,7 @@ namespace TCGUABot.Controllers
                         if (handler.Is(update.CallbackQuery.Data))
                         {
                             Console.WriteLine("Result: {0}, {1}", update.CallbackQuery.Data, update.CallbackQuery.From.Id);
-                            handler.Execute(update.CallbackQuery, client);
+                            handler.Execute(update.CallbackQuery, client, context);
                         }
                     }
                 }

@@ -17,9 +17,22 @@ namespace TCGUABot.Data
         }
 
         public DbSet<Deck> Decks { get; set; }
+        public DbSet<Tournament> Tournaments { get; set; }
+        public DbSet<TournamentUserPair> TournamentUserPairs { get; set; }
+        public DbSet<TelegramUser> TelegramUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.ForNpgsqlUseIdentityColumns();
+            builder.Entity<TournamentUserPair>()
+                .Property(p => p.Id)
+                .ValueGeneratedOnAdd();
+
+            builder.HasPostgresExtension("uuid-ossp")
+                   .Entity<Tournament>()
+                   .Property(e => e.Id)
+                   .HasDefaultValueSql("uuid_generate_v4()");
+
             base.OnModelCreating(builder);
         }
     }

@@ -31,7 +31,7 @@ namespace TCGUABot.Controllers
 
             var commands = SecondaryBot.Commands;
             var callbackHandlers = SecondaryBot.CallbackHandlers;
-            var inlineQueryHandler = new InlineQueryHandler();
+            var inlineQueryHandler = new CutInlineQueryHandler();
             if (update.CallbackQuery != null)
             {
                 if (update.CallbackQuery.Data != null)
@@ -41,7 +41,7 @@ namespace TCGUABot.Controllers
                         if (handler.Is(update.CallbackQuery.Data))
                         {
                             Console.WriteLine("Result: {0}, {1}", update.CallbackQuery.Data, update.CallbackQuery.From.Id);
-                            handler.Execute(update.CallbackQuery, client);
+                            handler.Execute(update.CallbackQuery, client, context);
                         }
                     }
                 }

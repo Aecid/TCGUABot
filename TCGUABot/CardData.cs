@@ -204,6 +204,50 @@ namespace TCGUABot
             return result;
         }
 
+        public static string GetTcgPlayerImage(int productKey)
+        {
+            IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddJsonFile("appsettings.json");
+            IConfiguration configuration = configurationBuilder.Build();
+
+            var result = new Dictionary<string, float>();
+            var version = configuration.GetSection("TCGPlayer").GetSection("Version").Value;
+
+            var url = "https://api.tcgplayer.com/" + version + "/catalog/products/" + productKey.ToString() + "/media";
+            var request = (HttpWebRequest)WebRequest.Create(url);
+
+            request.Method = "GET";
+            request.ContentType = "application/json";
+            request.Headers.Add("Authorization", "Bearer " + BearerToken);
+
+            var content = string.Empty;
+            Console.WriteLine("Url TCGPlayer: " + url);
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                using (var stream = response.GetResponseStream())
+                {
+                    using (var sr = new StreamReader(stream))
+                    {
+                        content = sr.ReadToEnd();
+                    }
+                }
+            }
+
+            try
+            {
+                var res = JsonConvert.DeserializeObject<dynamic>(content);
+                IEnumerable<dynamic> results = res.results;
+                IEnumerable<dynamic> firstResultContentList = results.First().contentList;
+                var productUrl = firstResultContentList.First().url;
+
+                return productUrl;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Something went wrong with tcgplayer image" + "\r\n"+e.Message+"\r\n"+e.InnerException.Message);
+            }
+        }
+
         public static bool DownloadJson(string url, string filename)
         {
             if (!File.Exists(filename))

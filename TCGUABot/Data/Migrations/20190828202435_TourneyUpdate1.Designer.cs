@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TCGUABot.Data;
@@ -9,9 +10,10 @@ using TCGUABot.Data;
 namespace TCGUABot.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190828202435_TourneyUpdate1")]
+    partial class TourneyUpdate1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -203,22 +205,6 @@ namespace TCGUABot.Data.Migrations
                     b.ToTable("Decks");
                 });
 
-            modelBuilder.Entity("TCGUABot.Data.Models.TelegramUser", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("FirstName");
-
-                    b.Property<string>("LastName");
-
-                    b.Property<string>("Username");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TelegramUsers");
-                });
-
             modelBuilder.Entity("TCGUABot.Data.Models.Tournament", b =>
                 {
                     b.Property<string>("Id")
@@ -248,7 +234,7 @@ namespace TCGUABot.Data.Migrations
                     b.ToTable("Tournaments");
                 });
 
-            modelBuilder.Entity("TCGUABot.Data.TournamentUserPair", b =>
+            modelBuilder.Entity("TCGUABot.Data.PlayerDeckPair", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -265,7 +251,7 @@ namespace TCGUABot.Data.Migrations
 
                     b.HasIndex("TournamentId");
 
-                    b.ToTable("TournamentUserPairs");
+                    b.ToTable("PlayerDeckPairs");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -320,7 +306,7 @@ namespace TCGUABot.Data.Migrations
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("TCGUABot.Data.TournamentUserPair", b =>
+            modelBuilder.Entity("TCGUABot.Data.PlayerDeckPair", b =>
                 {
                     b.HasOne("TCGUABot.Data.Models.Tournament")
                         .WithMany("PlayerDeckPairs")

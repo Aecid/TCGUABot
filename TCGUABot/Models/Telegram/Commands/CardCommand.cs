@@ -31,14 +31,14 @@ namespace TCGUABot.Models.Commands
                 setName = match.Groups[2].Value;
             }
             else
-            { 
+            {
                 text = originalMessage.Replace("/c ", "");
             }
             var msg = string.Empty;
             Card card;
             if (setName != string.Empty)
             {
-                card = Helpers.CardSearch.GetCardByName(text, setName);
+                card = Helpers.CardSearch.GetCardByName(text.Trim(), setName);
             }
             else
             {
@@ -49,7 +49,7 @@ namespace TCGUABot.Models.Commands
             string nameRu = string.Empty;
 
             string price = string.Empty;
-            if ( card != null)
+            if (card != null)
             {
                 nameEn += "<b>🇺🇸 " + card.name + "</b>";
                 if (card.foreignData.Any(c => c.language.Equals("Russian"))) nameRu += "<b>🇷🇺 " + card.ruName + "</b>";
@@ -66,102 +66,118 @@ namespace TCGUABot.Models.Commands
 
                 }
                 catch
-                { 
+                {
                 }
             }
             else
             {
-                msg = "<b>❌Карта не найдена по запросу \""+text+"\".</b>";
+                msg = "<b>❌Карта не найдена по запросу \"" + text + "\".</b>";
             }
 
             if (card != null)
             {
-                if (card.names != null)
+                if (card.names != null && card.names.Count > 0)
                 {
-                    if (card.names.Count > 0) //if transform?
+                    nameEn = "<b>🇺🇸</b>";
+                    nameRu = "<b>🇷🇺</b>";
+                    var ComboList = new List<Card>();
+
+                    foreach (var comboPiece in card.names)
                     {
-                        nameEn = "<b>🇺🇸</b>";
-                        nameRu = "<b>🇷🇺</b>";
-                        var ComboList = new List<Card>();
+                        var cpName = comboPiece.Trim();
+                        Card secondCard;
+                        secondCard = Helpers.CardSearch.GetCardByName(cpName, true);
 
-                        foreach (var comboPiece in card.names)
+                        nameEn += "|<b>" + comboPiece + "</b>";
+                        if (secondCard.foreignData.Any(c => c.language.Equals("Russian"))) nameRu += "|<b>" + secondCard.ruName + "</b>";
+
+
+                        if (secondCard != null)
                         {
-                            var cpName = comboPiece.Trim();
-                            Card secondCard;
-                            secondCard = Helpers.CardSearch.GetCardByName(cpName, true);
-
-                            nameEn += "|<b>" + comboPiece + "</b>";
-                            if (secondCard.foreignData.Any(c => c.language.Equals("Russian"))) nameRu += "|<b>" + secondCard.ruName + "</b>";
-
-
-                            if (secondCard != null)
-                            {
-                                Console.WriteLine("Card found");
-                                ComboList.Add(secondCard);
-                            }
-                            else
-                            {
-                                Console.WriteLine("Not found");
-                                msg += "❌Карта " + cpName + " была не найдена\r\n";
-                            }
+                            Console.WriteLine("Card found");
+                            ComboList.Add(secondCard);
                         }
-
-                        List<IAlbumInputMedia> media = new List<IAlbumInputMedia>();
-
-                        var firstCardMuId = 0;
-                        foreach (var foundCard in ComboList)
+                        else
                         {
-                            if (firstCardMuId != foundCard.multiverseId)
-                            {
-                                firstCardMuId = foundCard.multiverseId;
-                                var imp = new InputMediaPhoto(new InputMedia("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + foundCard.multiverseId + "&type=card"))
-                                {
-                                    //Caption = foundCard.name
-                                };
-                                media.Add(imp);
-                            }
-                        }
-
-                        foreach (var z in media)
-                        {
-                            Console.WriteLine(z.Caption);
-                        }
-
-                        int index = nameRu.IndexOf("|");
-                        nameRu = (index < 0)
-                            ? nameRu
-                            : nameRu.Remove(index, 1);
-
-                        index = nameEn.IndexOf("|");
-                        nameEn = (index < 0)
-                            ? nameEn
-                            : nameEn.Remove(index, 1);
-
-                        if (nameRu.Equals("<b>🇷🇺</b>")) msg = nameEn + "\r\n" + price;
-                        else msg = nameEn + "\r\n" + nameRu + "\r\n" + price;
-
-                        if (media.Count > 0)
-                        {
-                            await client.SendMediaGroupAsync(media, chatId);
-                            await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                            Console.WriteLine("Not found");
+                            msg += "❌Карта " + cpName + " была не найдена\r\n";
                         }
                     }
+
+                    List<IAlbumInputMedia> media = new List<IAlbumInputMedia>();
+
+                    var firstCardMuId = 0;
+                    foreach (var foundCard in ComboList)
+                    {
+                        if (firstCardMuId != foundCard.multiverseId)
+                        {
+                            firstCardMuId = foundCard.multiverseId;
+                            var imp = new InputMediaPhoto(new InputMedia("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + foundCard.multiverseId + "&type=card"))
+                            {
+                                //Caption = foundCard.name
+                            };
+                            media.Add(imp);
+                        }
+                    }
+
+                    foreach (var z in media)
+                    {
+                        Console.WriteLine(z.Caption);
+                    }
+
+                    int index = nameRu.IndexOf("|");
+                    nameRu = (index < 0)
+                        ? nameRu
+                        : nameRu.Remove(index, 1);
+
+                    index = nameEn.IndexOf("|");
+                    nameEn = (index < 0)
+                        ? nameEn
+                        : nameEn.Remove(index, 1);
+
+                    if (nameRu.Equals("<b>🇷🇺</b>")) msg = nameEn + "\r\n" + price;
+                    else msg = nameEn + "\r\n" + nameRu + "\r\n" + price;
+
+                    if (media.Count > 0)
+                    {
+                        await client.SendMediaGroupAsync(media, chatId);
+                        await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                    }
+
                 }
                 else
                 {
-                    msg += nameEn + "\r\n" + nameRu + (nameRu.Length>0?"\r\n":"") + price;
-                    var req = WebRequest.Create("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card");
+                    msg += nameEn + "\r\n" + nameRu + (nameRu.Length > 0 ? "\r\n" : "") + price;
+                    WebRequest req;
+                    if (card.multiverseId > 0)
+                        req = WebRequest.Create("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card");
+                    else
+                        try
+                        {
+                            req = WebRequest.Create(CardData.GetTcgPlayerImage(card.tcgplayerProductId));
+                        }
+                        catch
+                        {
+                            req = null;
+                        }
 
-                    using (Stream fileStream = req.GetResponse().GetResponseStream())
+                    if (req != null)
                     {
-                        await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream), msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        using (Stream fileStream = req.GetResponse().GetResponseStream())
+                        {
+                            await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream), msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        }
+                    }
+                    else
+                    {
+                        await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
                     }
                 }
             }
             else
             {
-                msg = nameEn + "\r\n" + nameRu + "\r\n" + price;
-                await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyToMessageId:message.MessageId);
+                //msg = nameEn + "\r\n" + nameRu + "\r\n" + price;
+                await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyToMessageId: message.MessageId);
             }
         }
 
