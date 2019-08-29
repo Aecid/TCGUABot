@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,6 +12,7 @@ using TCGUABot.Data.Models;
 
 namespace TCGUABot.Pages.Tournaments
 {
+    [Authorize(Roles = "Admin, Store Owner, Judge, Event Organizer")]
     public class EditModel : PageModel
     {
         private readonly TCGUABot.Data.ApplicationDbContext _context;

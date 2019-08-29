@@ -31,7 +31,7 @@ namespace TCGUABot.Models.Commands
 
                 if (card.rulings.Count > 0)
                 {
-                    msg += "\r\nРулинги: ";
+                    msg += "\r\n\r\nРулинги: ";
                     foreach (var ruling in card.rulings)
                     {
                         msg += "\r\n📝<b>" + ruling.date + ":</b> <i>" + ruling.text + "</i>\r\n";
@@ -41,6 +41,9 @@ namespace TCGUABot.Models.Commands
                 {
                     msg += "\r\n<b>❌Рулинги не найдены</b>";
                 }
+
+                msg += "\r\n\r\n" + "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card";
+
             }
             else
             {

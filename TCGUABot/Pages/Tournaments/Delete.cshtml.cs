@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using TCGUABot.Data.Models;
 
 namespace TCGUABot.Pages.Tournaments
 {
+    [Authorize(Roles = "Admin, Store Owner, Judge, Event Organizer")]
     public class DeleteModel : PageModel
     {
         private readonly TCGUABot.Data.ApplicationDbContext _context;
@@ -49,6 +51,8 @@ namespace TCGUABot.Pages.Tournaments
 
             if (Tournament != null)
             {
+                var entities = _context.TournamentUserPairs.Where(tu => tu.TournamentId == Tournament.Id);
+                _context.TournamentUserPairs.RemoveRange(entities);
                 _context.Tournaments.Remove(Tournament);
                 await _context.SaveChangesAsync();
             }

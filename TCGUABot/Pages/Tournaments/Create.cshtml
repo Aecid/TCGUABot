@@ -14,24 +14,9 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Tournament.CreationDate" class="control-label"></label>
-                <input asp-for="Tournament.CreationDate" class="form-control" />
-                <span asp-validation-for="Tournament.CreationDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Tournament.StartDate" class="control-label"></label>
-                <input asp-for="Tournament.StartDate" class="form-control" />
-                <span asp-validation-for="Tournament.StartDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="Tournament.PlannedDate" class="control-label"></label>
                 <input asp-for="Tournament.PlannedDate" class="form-control" />
                 <span asp-validation-for="Tournament.PlannedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Tournament.EndDate" class="control-label"></label>
-                <input asp-for="Tournament.EndDate" class="form-control" />
-                <span asp-validation-for="Tournament.EndDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Tournament.Name" class="control-label"></label>
@@ -52,11 +37,6 @@
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="Tournament.IsClosed" /> @Html.DisplayNameFor(model => model.Tournament.IsClosed))
                 </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="Tournament.CreatorId" class="control-label"></label>
-                <input asp-for="Tournament.CreatorId" class="form-control" />
-                <span asp-validation-for="Tournament.CreatorId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

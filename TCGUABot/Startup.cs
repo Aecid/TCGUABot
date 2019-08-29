@@ -62,6 +62,26 @@ namespace TCGUABot
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddReact();
 
+            services.AddAuthorization(ops =>
+            {
+                ops.AddPolicy("Admin", policy =>
+                {
+                    policy.RequireRole("Admin");
+                });
+                ops.AddPolicy("Store Owner", policy =>
+                {
+                    policy.RequireRole("Store Owner");
+                });
+                ops.AddPolicy("Event Organizer", policy =>
+                {
+                    policy.RequireRole("Event Organizer");
+                });
+                ops.AddPolicy("Judge", policy =>
+                {
+                    policy.RequireRole("Judge");
+                });
+            });
+
             services.AddMvc( options =>
               {
                   options.InputFormatters.Insert(0, new TextPlainInputFormatter());
@@ -71,6 +91,10 @@ namespace TCGUABot
                 .AddJsonOptions(options =>
                 {
                     options.SerializerSettings.DateFormatString = "0:MM/dd/yy, H:mm";
+                })
+                .AddRazorPagesOptions(ops =>
+                {
+
                 });
 
             Startup.StaticServices = services;

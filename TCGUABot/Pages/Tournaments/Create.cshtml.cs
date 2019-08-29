@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,13 +12,16 @@ using TCGUABot.Data.Models;
 
 namespace TCGUABot.Pages.Tournaments
 {
+    [Authorize(Roles = "Admin, Store Owner, Judge, Event Organizer")]
     public class CreateModel : PageModel
     {
-        private readonly TCGUABot.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CreateModel(TCGUABot.Data.ApplicationDbContext context)
+        public CreateModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public IActionResult OnGet()
@@ -34,6 +39,9 @@ namespace TCGUABot.Pages.Tournaments
                 return Page();
             }
 
+            Tournament.CreationDate = DateTime.UtcNow;
+            var user = await _userManager.GetUserAsync(User);
+            Tournament.CreatorId = user.Id;
             _context.Tournaments.Add(Tournament);
             await _context.SaveChangesAsync();
 
