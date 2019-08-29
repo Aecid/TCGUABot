@@ -45,10 +45,9 @@ namespace TCGUABot.Models.Commands
                     }
                     if (TList.Count > 1) msg += "\r\n";
 
-                    buttonList.Add(InlineKeyboardButton.WithCallbackData(tourney.Name));
+                    buttonList.Add(InlineKeyboardButton.WithUrl(tourney.Name, "https://ace.od.ua/Tournaments/Details?id=" + tourney.Id));
                     buttonList.Add(InlineKeyboardButton.WithCallbackData("✅", "t" + "|" + "1" + "|" + tourney.Id + "|" + message.MessageId));
                     buttonList.Add(InlineKeyboardButton.WithCallbackData("❌", "t" + "|" + "0" + "|" + tourney.Id + "|" + message.MessageId));
-                    //buttonList.Add(InlineKeyboardButton.WithUrl("Детали", "https://ace.od.ua/Tournaments/Details?id=" + tourney.Id));
 
                     keyboardList.Add(buttonList);
                 }

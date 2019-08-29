@@ -46,7 +46,7 @@ namespace TCGUABot
                 options.UseNpgsql(
                     Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDefaultIdentity<ApplicationUser>()
+            services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -68,7 +68,6 @@ namespace TCGUABot
               }
             )
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddControllersAsServices()
                 .AddJsonOptions(options =>
                 {
                     options.SerializerSettings.DateFormatString = "0:MM/dd/yy, H:mm";
