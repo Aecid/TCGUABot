@@ -34,6 +34,7 @@ namespace TCGUABot
             commandsList.Add(new CardRulingsCommand());
             commandsList.Add(new ComboCommand());
             commandsList.Add(new AdStartCommand());
+            commandsList.Add(new CardOracleCommand());
 
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddJsonFile("appsettings.json");

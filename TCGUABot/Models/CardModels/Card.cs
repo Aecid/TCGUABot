@@ -50,8 +50,8 @@ namespace TCGUABot.Models
         public string type;
         //public List<string> types;
         //public string uuid;
-        //public string power;
-        //public string toughness;
+        public string power;
+        public string toughness;
 
         public string ruName
         {
