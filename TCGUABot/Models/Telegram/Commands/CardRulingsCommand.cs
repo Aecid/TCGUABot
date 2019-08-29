@@ -44,7 +44,7 @@ namespace TCGUABot.Models.Commands
             }
 
             if (msg.Length <= 4096)
-            await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
             else
             {
                 msg = msg.Replace("<b>", "").Replace("</b>", "").Replace("<i>", "").Replace("</i>", "");
@@ -70,4 +70,5 @@ namespace TCGUABot.Models.Commands
             for (int i = 0; i < str.Length; i += maxChunkSize)
                 yield return str.Substring(i, Math.Min(maxChunkSize, str.Length - i));
         }
+    }
 }
