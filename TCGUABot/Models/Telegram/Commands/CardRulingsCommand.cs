@@ -54,7 +54,7 @@ namespace TCGUABot.Models.Commands
                 }
                 else
                 {
-                    var msgs = Split(msg, 4096);
+                    var msgs = SplitByChunks(msg, 4096);
                     foreach (var ms in msgs)
                     {
                         Console.WriteLine(ms);
@@ -65,10 +65,9 @@ namespace TCGUABot.Models.Commands
             }
         }
 
-        static IEnumerable<string> Split(string str, int chunkSize)
+        static IEnumerable<string> SplitByChunks(string str, int maxChunkSize)
         {
-            return Enumerable.Range(0, str.Length / chunkSize)
-                .Select(i => str.Substring(i * chunkSize, chunkSize));
+            for (int i = 0; i < str.Length; i += maxChunkSize)
+                yield return str.Substring(i, Math.Min(maxChunkSize, str.Length - i));
         }
-    }
 }

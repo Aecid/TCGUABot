@@ -24,12 +24,11 @@ namespace TCGUABot.Models.Commands
                 msg += "<b>🇺🇸" + card.name + "</b>\r\n";
                 if (card.foreignData.Any(c => c.language.Equals("Russian"))) msg += "<b>🇷🇺" + card.ruName + "</b>\r\n";
                 msg += "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card";
-                msg += "\r\n" + card.type;
-                msg += "\r\n" + card.manaCost;
-                msg += "\r\n<b>Text:</b>\r\n";
+                msg += "\r\n<b>" + card.type + "</b>";
+                msg += "\r\n<b>" + card.manaCost + "</b>";
                 msg += card.text;
                 if (!string.IsNullOrEmpty(card.power) && !string.IsNullOrEmpty(card.toughness))
-                msg += "\r\n<b>" + card.power + "/" + card.toughness + "</b>";
+                msg += "\r\n<b>" + card.power + " / " + card.toughness + "</b>";
 
             }
             else
