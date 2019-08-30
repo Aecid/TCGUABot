@@ -32,11 +32,37 @@ namespace TCGUABot.Models.CallbackHandlers
                     Id = query.From.Id,
                     FirstName = query.From.FirstName,
                     LastName = query.From.LastName,
-                    Username = query.From.Username
+                    Username = query.From.Username,
+                    EmojiStatus = "🧙‍♂️"
                 };
 
                 context.TelegramUsers.Add(user);
                 context.SaveChanges();
+            }
+            else
+            {
+                var existingUser = context.TelegramUsers.FirstOrDefault(u => u.Id == query.From.Id);
+                var areChanges = false;
+                if (existingUser.FirstName != query.From.FirstName)
+                {
+                    areChanges = true;
+                    existingUser.FirstName = query.From.FirstName;
+                }
+                if (existingUser.LastName != query.From.LastName)
+                {
+                    areChanges = true;
+                    existingUser.LastName = query.From.LastName;
+                }
+                if (existingUser.Username != query.From.Username)
+                {
+                    areChanges = true;
+                    existingUser.Username = query.From.Username;
+                }
+
+                if (areChanges)
+                {
+                    context.SaveChanges();
+                }
             }
 
             if (value == "1") //register for tourney
@@ -98,7 +124,10 @@ namespace TCGUABot.Models.CallbackHandlers
                         foreach (var player in tourneyPlayers)
                         {
 
-                            msg += "\r\n🧙‍♂️ " + "<a href=\"tg://user?id="+ player.PlayerTelegramId + "\">"+ context.TelegramUsers.FirstOrDefault(u => u.Id == player.PlayerTelegramId).Name +"</a>";
+                            var tplayer = context.TelegramUsers.FirstOrDefault(u => u.Id == player.PlayerTelegramId);
+                            var status = string.IsNullOrEmpty(tplayer.EmojiStatus) ? "🧙‍♂️" : tplayer.EmojiStatus;
+                            msg += "\r\n" + status + tplayer.Name;
+                            //msg += "\r\n🧙‍♂️ " + "<a href=\"tg://user?id="+ player.PlayerTelegramId + "\">"+ context.TelegramUsers.FirstOrDefault(u => u.Id == player.PlayerTelegramId).Name +"</a>";
                         }
                     }
                     //msg += "\r\n<i>" + tourney.Description + "</i>";

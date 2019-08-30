@@ -40,7 +40,10 @@ namespace TCGUABot.Models.Commands
                     {
                         foreach (var player in tourney.TournamentUserPairs)
                         {
-                            msg += "\r\n🧙‍♂️ " + "<a href=\"tg://user?id=" + player.PlayerTelegramId + "\">" + context.TelegramUsers.FirstOrDefault(u => u.Id == player.PlayerTelegramId).Name + "</a>";
+                            //msg += "\r\n🧙‍♂️ " + "<a href=\"tg://user?id=" + player.PlayerTelegramId + "\">" + context.TelegramUsers.FirstOrDefault(u => u.Id == player.PlayerTelegramId).Name + "</a>";
+                            var tplayer = context.TelegramUsers.FirstOrDefault(u => u.Id == player.PlayerTelegramId);
+                            var status = string.IsNullOrEmpty(tplayer.EmojiStatus) ? "🧙‍♂️" : tplayer.EmojiStatus;
+                            msg += "\r\n" + status + tplayer.Name;
                         }
                     }
                     if (TList.Count > 1) msg += "\r\n";
@@ -54,7 +57,15 @@ namespace TCGUABot.Models.Commands
 
                 var keyboard = new InlineKeyboardMarkup(keyboardList);
 
-                await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyMarkup: keyboard);
+                var tourneyMessage = await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyMarkup: keyboard, disableNotification: true);
+                try
+                {
+                    await client.PinChatMessageAsync(chatId, tourneyMessage.MessageId, true);
+                }
+                catch
+                {
+
+                }
             }
         }
     }
