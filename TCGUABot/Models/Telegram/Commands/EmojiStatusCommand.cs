@@ -22,7 +22,7 @@ namespace TCGUABot.Models.Commands
         public override async void Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
         {
             var emoji = message.Text.Replace("/status ", "");
-            if (Emoji.IsEmoji(emoji))
+            if (Emoji.IsEmoji(emoji, 1) || Emoji.All.ToList().Any(e => e.Sequence.AsString == emoji))
             {
                 var isExistingUser = context.TelegramUsers.Any(u => u.Id == message.From.Id);
                 if (!isExistingUser)
@@ -75,7 +75,15 @@ namespace TCGUABot.Models.Commands
             else
             {
                 var chatId = message.Chat.Id;
-                await client.SendTextMessageAsync(chatId, "Probably \""+emoji+"\" is not an emoji.", replyToMessageId: message.MessageId);
+
+                if (emoji == "/status")
+                {
+                    await client.SendTextMessageAsync(chatId, "Usage: /status {single emoji}", replyToMessageId: message.MessageId);
+                }
+                else
+                {
+                    await client.SendTextMessageAsync(chatId, "Probably \"" + emoji + "\" is not a single emoji.", replyToMessageId: message.MessageId);
+                }
             }
         }
     }
