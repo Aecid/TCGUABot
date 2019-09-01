@@ -14,16 +14,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Tournament[0].CreationDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Tournament[0].StartDate)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Tournament[0].PlannedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Tournament[0].EndDate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Tournament[0].Name)
@@ -31,54 +22,49 @@
             <th>
                 @Html.DisplayNameFor(model => model.Tournament[0].Description)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Tournament[0].IsLocked)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Tournament[0].IsClosed)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Tournament[0].CreatorId)
-            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Tournament) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreationDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PlannedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsLocked)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsClosed)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatorId)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.Tournament)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PlannedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+        <tr><th colspan="4">Old tournaments:</th></tr>
+        @foreach (var item in Model.OutdatedTournament)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PlannedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+
     </tbody>
 </table>

@@ -124,18 +124,6 @@ namespace TCGUABot.Controllers
             return View();
         }
 
-        [HttpGet("/CardCommand/{cardName}", Name = "CardCommandCall")]
-        public async Task<string> CardCommand(string cardName)
-        {
-
-            var msg = string.Empty;
-
-            var command = new CardCommand();
-            command.Execute(new Message() { Text = "/c "+cardName, Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
-
-            return msg;
-        }
-
         [HttpGet("/weirdCards", Name = "weirdCards")]
         public string GetCard()
         {

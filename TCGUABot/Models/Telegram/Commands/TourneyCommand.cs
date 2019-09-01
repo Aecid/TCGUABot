@@ -20,14 +20,34 @@ namespace TCGUABot.Models.Commands
 
         public override async void Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
         {
-            var TList = context.Tournaments.Where(t => t.IsClosed == false).ToList();
             var chatId = message.Chat.Id;
+            var generatedMessage = GenerateTourneyList(message, context);
+            var msg = generatedMessage.Item1;
+            var keyboard = generatedMessage.Item2;
+
+            if (!string.IsNullOrEmpty(msg) && keyboard != null)
+            {
+                var tourneyMessage = await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyMarkup: keyboard, disableNotification: true);
+                try //in case of not being an admin in chat
+                {
+                    await client.PinChatMessageAsync(chatId, tourneyMessage.MessageId, true);
+                }
+                catch
+                {
+
+                }
+            }
+        }
+
+        public static Tuple<string, InlineKeyboardMarkup> GenerateTourneyList(Message message, ApplicationDbContext context)
+        {
+            var TList = context.Tournaments.Where(t => t.IsClosed == false && DateTime.Compare(t.PlannedDate, DateTime.Now.AddHours(10)) > 0).OrderBy(t => t.PlannedDate).ToList();
+            var chatId = message.Chat.Id;
+            var msg = string.Empty;
+            var keyboardList = new List<List<InlineKeyboardButton>>();
 
             if (TList.Count > 0)
             {
-                var msg = string.Empty;
-                var keyboardList = new List<List<InlineKeyboardButton>>();
-
                 foreach (var tourney in TList)
                 {
                     var buttonList = new List<InlineKeyboardButton>();
@@ -46,7 +66,7 @@ namespace TCGUABot.Models.Commands
                             msg += "\r\n" + status + tplayer.Name;
                         }
                     }
-                    if (TList.Count > 1) msg += "\r\n";
+                    if (TList.Count > 1) msg += "\r\n\r\n";
 
                     buttonList.Add(InlineKeyboardButton.WithUrl(tourney.Name, "https://ace.od.ua/Tournaments/Details?id=" + tourney.Id));
                     buttonList.Add(InlineKeyboardButton.WithCallbackData("✅", "t" + "|" + "1" + "|" + tourney.Id + "|" + message.MessageId));
@@ -55,18 +75,11 @@ namespace TCGUABot.Models.Commands
                     keyboardList.Add(buttonList);
                 }
 
-                var keyboard = new InlineKeyboardMarkup(keyboardList);
-
-                var tourneyMessage = await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyMarkup: keyboard, disableNotification: true);
-                try
-                {
-                    await client.PinChatMessageAsync(chatId, tourneyMessage.MessageId, true);
-                }
-                catch
-                {
-
-                }
             }
+
+            var keyboard = new InlineKeyboardMarkup(keyboardList);
+
+            return new Tuple<string, InlineKeyboardMarkup>(msg, keyboard);
         }
     }
 }

@@ -20,10 +20,13 @@ namespace TCGUABot.Pages.Tournaments
         }
 
         public IList<Tournament> Tournament { get;set; }
+        public IList<Tournament> OutdatedTournament { get; set; }
+
 
         public async Task OnGetAsync()
         {
-            Tournament = await _context.Tournaments.ToListAsync();
+            Tournament = await _context.Tournaments.Where(t => DateTime.Compare(t.PlannedDate, DateTime.Now.AddHours(10)) > 0).OrderBy(t => t.PlannedDate).ToListAsync();
+            OutdatedTournament = await _context.Tournaments.Where(t => DateTime.Compare(t.PlannedDate, DateTime.Now.AddHours(10)) <= 0).OrderByDescending(t => t.PlannedDate).ToListAsync();
         }
     }
 }

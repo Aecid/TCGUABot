@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TCGUABot.Data;
 using TCGUABot.Data.Models;
 using TCGUABot.Models.CallbackHandlers;
+using TCGUABot.Models.Commands;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -105,42 +106,12 @@ namespace TCGUABot.Models.CallbackHandlers
             var TList = context.Tournaments.Where(t => t.IsClosed == false).ToList();
             var chatId = query.Message.Chat.Id;
 
-            var msg = string.Empty;
+            var generatedMesssage = TourneyCommand.GenerateTourneyList(query.Message, context);
+            var msg = generatedMesssage.Item1;
+            var keyboard = generatedMesssage.Item2;
 
-            if (TList.Count > 0)
+            if (!string.IsNullOrEmpty(msg) && keyboard != null)
             {
-                var keyboardList = new List<List<InlineKeyboardButton>>();
-
-                foreach (var tourney in TList)
-                {
-                    var buttonList = new List<InlineKeyboardButton>();
-
-                    msg += "<b>" + tourney.PlannedDate;
-                    msg += " - ";
-                    msg += tourney.Name + "</b>";
-                    var tourneyPlayers = context.TournamentUserPairs.Where(p => p.TournamentId == tourney.Id).ToList();
-                    if (tourneyPlayers.Count > 0)
-                    {
-                        foreach (var player in tourneyPlayers)
-                        {
-
-                            var tplayer = context.TelegramUsers.FirstOrDefault(u => u.Id == player.PlayerTelegramId);
-                            var status = string.IsNullOrEmpty(tplayer.EmojiStatus) ? "🧙‍♂️" : tplayer.EmojiStatus;
-                            msg += "\r\n" + status + tplayer.Name;
-                            //msg += "\r\n🧙‍♂️ " + "<a href=\"tg://user?id="+ player.PlayerTelegramId + "\">"+ context.TelegramUsers.FirstOrDefault(u => u.Id == player.PlayerTelegramId).Name +"</a>";
-                        }
-                    }
-                    //msg += "\r\n<i>" + tourney.Description + "</i>";
-                    if (TList.Count > 1) msg += "\r\n";
-
-                    buttonList.Add(InlineKeyboardButton.WithUrl(tourney.Name, "https://ace.od.ua/Tournaments/Details?id=" + tourney.Id));
-                    buttonList.Add(InlineKeyboardButton.WithCallbackData("✅", "t" + "|" + "1" + "|" + tourney.Id + "|" + query.Message.MessageId));
-                    buttonList.Add(InlineKeyboardButton.WithCallbackData("❌", "t" + "|" + "0" + "|" + tourney.Id + "|" + query.Message.MessageId));
-
-                    keyboardList.Add(buttonList);
-                }
-
-                var keyboard = new InlineKeyboardMarkup(keyboardList);
 
                 try
                 {

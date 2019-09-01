@@ -97,6 +97,8 @@ namespace TCGUABot
 
                 });
 
+            services.AddHostedService<TimeService>();
+
             Startup.StaticServices = services;
 
             return services.BuildServiceProvider();
