@@ -72,12 +72,12 @@ namespace TCGUABot.Helpers.TelegramOAuth.Middleware
                 return HandleRequestResult.Fail($"Authorization state: {authorized}");
             }
 
-            TelegramUser telegramUser = new TelegramUser(parameters[Fields.Id], parameters[Fields.Username]);
+            TelegramUser telegramUser = new TelegramUser(parameters[Fields.Id]);
 
             ClaimsIdentity identity = new ClaimsIdentity(new[]
             {
                 new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", telegramUser.Id,"http://www.w3.org/2001/XMLSchema#string", telegramOAuthHandler.ClaimsIssuer),
-                new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", telegramUser.Username,"http://www.w3.org/2001/XMLSchema#string", telegramOAuthHandler.ClaimsIssuer)
+                //new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", telegramUser.Username,"http://www.w3.org/2001/XMLSchema#string", telegramOAuthHandler.ClaimsIssuer)
             }, telegramOAuthHandler.ClaimsIssuer);
 
             AuthenticationProperties authenticationProperties = null;
@@ -107,12 +107,10 @@ namespace TCGUABot.Helpers.TelegramOAuth.Middleware
         private class TelegramUser
         {
             public string Id { get; }
-            public string Username { get; }
 
-            public TelegramUser(string id, string username)
+            public TelegramUser(string id)
             {
                 Id = id;
-                Username = username;
             }
         }
 

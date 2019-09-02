@@ -43,12 +43,11 @@ namespace TCGUABot.Helpers.TelegramOAuth.Widget
         {
             if (_disposed) throw new ObjectDisposedException(nameof(LoginWidget));
             if (fields == null) throw new ArgumentNullException(nameof(fields));
-            if (fields.Count < 5) return Authorization.MissingFields;
+            if (fields.Count < 4) return Authorization.MissingFields;
 
             if (!fields.ContainsKey(Field.AuthDate) ||
                 !fields.ContainsKey(Field.FirstName) ||
                 !fields.ContainsKey(Field.Id) ||
-                !fields.ContainsKey(Field.Username) ||
                 !fields.ContainsKey(Field.Hash)
             ) return Authorization.MissingFields;
 
@@ -66,21 +65,23 @@ namespace TCGUABot.Helpers.TelegramOAuth.Widget
                 Field.Id + "=" + fields[Field.Id] + '\n' +
                 (fields.ContainsKey(Field.LastName) ? (Field.LastName + "=" + fields[Field.LastName] + '\n') : "") +
                 (fields.ContainsKey(Field.PhotoUrl) ? (Field.PhotoUrl + "=" + fields[Field.PhotoUrl] + '\n') : "") +
-                Field.Username + "=" + fields[Field.Username];
+                (fields.ContainsKey(Field.Username) ? (Field.Username + "=" + fields[Field.Username]) : "");
+
+            if (data_check_string.EndsWith("\n")) data_check_string = data_check_string.Substring(0, data_check_string.Length - 1);
 
             byte[] signature = _hmac.ComputeHash(Encoding.UTF8.GetBytes(data_check_string));
             string hash = fields[Field.Hash];
 
             // Taken from: bool MihaZupan.Algorithms.Hex.ByteArrayMatchesHexString_Lowercase(byte[] bytes, string hex)
             // Adapted from: https://stackoverflow.com/a/14333437/6845657
-            for (int i = 0; i < signature.Length; i++)
-            {
-                if (hash[i * 2] != 87 + (signature[i] >> 4) + ((((signature[i] >> 4) - 10) >> 31) & -39)) return Authorization.InvalidHash;
-                if (hash[i * 2 + 1] != 87 + (signature[i] & 0xF) + ((((signature[i] & 0xF) - 10) >> 31) & -39)) return Authorization.InvalidHash;
-            }
+            //for (int i = 0; i < signature.Length; i++)
+            //{
+            //    if (hash[i * 2] != 87 + (signature[i] >> 4) + ((((signature[i] >> 4) - 10) >> 31) & -39)) return Authorization.InvalidHash;
+            //    if (hash[i * 2 + 1] != 87 + (signature[i] & 0xF) + ((((signature[i] & 0xF) - 10) >> 31) & -39)) return Authorization.InvalidHash;
+            //}
 
             // Alternative method (14x slower):
-            // if (BitConverter.ToString(signature).Replace("-", "").ToLower() != hash) return Authorization.InvalidHash;
+            if (BitConverter.ToString(signature).Replace("-", "").ToLower() != hash) return Authorization.InvalidHash;
             return Authorization.Valid;
         }
 

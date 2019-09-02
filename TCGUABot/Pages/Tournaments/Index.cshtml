@@ -31,6 +31,11 @@
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.PlannedDate)
+                    @{ if (DateTime.Compare(item.PlannedDate, TimeService.GetLocalTime()) < 0)
+                        {
+                            <text>ongoing!</text>
+                        }
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Name)

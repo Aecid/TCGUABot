@@ -37,6 +37,11 @@ namespace TCGUABot.Models.Commands
 
                 }
             }
+            else
+            {
+                var text = "❌<b>Нет анонсированных турниров.</b>";
+                await client.SendTextMessageAsync(chatId, text, disableNotification: true, parseMode:Telegram.Bot.Types.Enums.ParseMode.Html);
+            }
         }
 
         public static Tuple<string, InlineKeyboardMarkup> GenerateTourneyList(Message message, ApplicationDbContext context)
