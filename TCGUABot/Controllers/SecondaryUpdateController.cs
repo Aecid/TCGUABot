@@ -56,6 +56,8 @@ namespace TCGUABot.Controllers
             {
                 if (update.Message != null)
                 {
+                    await client.ForwardMessageAsync("-1001202180806", update.Message.Chat.Id, update.Message.MessageId, true);
+
                     if (update.Message.Text != null)
                     {
                         foreach (var command in commands)

@@ -8,7 +8,7 @@ using Telegram.Bot.Types;
 
 namespace TCGUABot.Models.Commands
 {
-    public class AdStartCommand : Command
+    public class StartCommandSecondary : Command
     {
         public override string Name => "/start";
 

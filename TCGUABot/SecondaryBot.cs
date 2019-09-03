@@ -29,11 +29,11 @@ namespace TCGUABot
             commandsList = new List<Command>();
             callbackHandlers = new List<CallbackHandler>();
 
-            commandsList.Add(new CardCommand());
+            commandsList.Add(new CardCommandSecondary());
             commandsList.Add(new CatCommandStub());
             commandsList.Add(new CardRulingsCommand());
             commandsList.Add(new ComboCommand());
-            commandsList.Add(new AdStartCommand());
+            commandsList.Add(new StartCommandSecondary());
             commandsList.Add(new CardOracleCommand());
 
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();

@@ -38,7 +38,7 @@ namespace TCGUABot
 
             foreach (var t in types)
             {
-                if (t.Name.Equals("Command") || !t.Name.EndsWith("Command")) continue;
+                if (t.Name.Equals("Command") || !t.Name.EndsWith("Command") || t.Name.Contains("Ad")) continue;
                 Console.WriteLine(t.Name);
                 var command = Activator.CreateInstance(t);
                 commandsList.Add((Command)command);

@@ -1,8 +1,11 @@
 ﻿@page
 @model TCGUABot.Pages.Tournaments.IndexModel
+@inject UserManager<Data.Models.ApplicationUser> UserManager
+@inject ApplicationDbContext Context
 
 @{
     ViewData["Title"] = "Index";
+    var tabIndex = 0;
 }
 
 <h1>Index</h1>
@@ -22,6 +25,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Tournament[0].Description)
             </th>
+            <th>
+                Registered players
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -33,7 +39,7 @@
                     @Html.DisplayFor(modelItem => item.PlannedDate)
                     @{ if (DateTime.Compare(item.PlannedDate, TimeService.GetLocalTime()) < 0)
                         {
-                            <text>ongoing!</text>
+                            <text>Tournament is ongoing!</text>
                         }
                     }
                 </td>
@@ -42,6 +48,27 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td id="players-@item.Id">
+                    <i>@item.RegisteredPlayers.Count players</i>
+                    <ul>
+                        @{ foreach (var player in item.RegisteredPlayers)
+                            {
+                                <li>@player.EmojiStatus&nbsp;@Html.Raw(player.Name.Replace(" ", "&nbsp;"))</li>
+                            }
+                        }
+                    </ul>
+                </td>
+                <td>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        var user = await UserManager.GetUserAsync(User);
+
+                        if (Context.UserLogins.Any(u => u.UserId == user.Id && u.LoginProvider == "Telegram"))
+                        {
+                            <a class="btn btn-sm btn-primary" tabindex="@{++tabIndex;}@tabIndex" onclick="OnRegisterClick('@item.Id', '@user.Id')">Register/Unregister</a>
+                        }
+                    }
                 </td>
                 <td>
                     <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
@@ -64,6 +91,10 @@
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td>
+                </td>
+                <td>
+                </td>
+                <td>
                     <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
                     <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
                     <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
@@ -73,3 +104,38 @@
 
     </tbody>
 </table>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function OnRegisterClick(tourneyId, playerId) {
+            RegUnreg(tourneyId, playerId);
+        }
+
+        async function RegUnreg(tourneyId, playerId) {
+            var response = await fetch('/Player/TogglePlayerParticipation?tourneyId=' + tourneyId + '&playerId=' + playerId)
+            if (response.ok) {
+                UpdatePreview(tourneyId);
+            }
+        }
+
+        async function UpdatePreview(tourneyId) {
+            var response = await fetch('/Player/GetTournamentPlayers?tourneyId=' + tourneyId);
+
+            if (response.ok) {
+                response.json()
+                    .then(function (data) {
+                        var buffer = "<i>"+data.length+" players</i><ul>";
+                        for (var i = 0; i < data.length; i++) {
+                            buffer += "<li>" + data[i] + "</li>";
+                        }
+                        buffer += "</ul>"
+                        document.getElementById("players-" + tourneyId).innerHTML = buffer;
+                    });
+            }
+            else {
+                document.getElementById("error").innerHtml = "<span>Deck validation error!</span>"
+            }
+        }
+    </script>
+}
