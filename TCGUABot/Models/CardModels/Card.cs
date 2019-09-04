@@ -96,9 +96,9 @@ namespace TCGUABot.Models
         public string language;
         public int multiverseId;
         public string name;
-        //public string text;
-        //public string type;
-        //public string flavorText;
+        public string text;
+        public string type;
+        public string flavorText;
     }
 
     public class Ruling

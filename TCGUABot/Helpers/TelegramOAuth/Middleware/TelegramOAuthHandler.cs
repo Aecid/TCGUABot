@@ -64,6 +64,21 @@ namespace TCGUABot.Helpers.TelegramOAuth.Middleware
                 telegramOAuthHandler.Context.Request.Query.Keys.ToDictionary(k => k,
                     v => telegramOAuthHandler.Context.Request.Query[v].FirstOrDefault());
 
+            if (Request.Query.ContainsKey("id") && Request.Query.ContainsKey("hash"))
+            {
+                var Items = new Dictionary<string, string>()
+                {
+                    { ".redirect", "/Identity/Account/ExternalLogin?returnUrl=%2F&handler=Callback" },
+                    { "LoginProvider", "Telegram" }
+                };
+                var properties = new AuthenticationProperties(Items);
+
+                try
+                {
+                    Request.Headers.Add("Cookie", "__Telegram = " + Options.StateDataFormat.Protect(properties));
+                }
+                catch { }
+            }
 
             Authorization authorized = loginWidget.CheckAuthorization(parameters);
 
@@ -84,12 +99,23 @@ namespace TCGUABot.Helpers.TelegramOAuth.Middleware
 
             var cookie = Request.Cookies["__Telegram"];
 
-            if (string.IsNullOrEmpty(cookie))
+            if (string.IsNullOrEmpty(cookie) && !Request.Query.ContainsKey("hash"))
             {
                 return HandleRequestResult.Fail("State cookie not present");
             }
 
             authenticationProperties = telegramOAuthHandler.Options.StateDataFormat.Unprotect(cookie);
+
+            if (Request.Query.ContainsKey("id") && Request.Query.ContainsKey("hash"))
+            {
+                var ItemsA = new Dictionary<string, string>()
+                {
+                    { ".redirect", "/Identity/Account/ExternalLogin?returnUrl=%2F&handler=Callback" },
+                    { "LoginProvider", "Telegram" }
+                };
+
+                authenticationProperties = new AuthenticationProperties(ItemsA);
+            }
 
             if (authenticationProperties == null)
             {

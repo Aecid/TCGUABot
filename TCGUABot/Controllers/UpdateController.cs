@@ -55,13 +55,14 @@ namespace TCGUABot.Controllers
             {
                 if (update.Message != null)
                 {
-                    await client.ForwardMessageAsync("-1001202180806", update.Message.Chat.Id, update.Message.MessageId, true);
                     if (update.Message.Text != null)
                     {
                         foreach (var command in commands)
                         {
                             if (command.Contains(update.Message.Text))
                             {
+                                await client.ForwardMessageAsync("-1001202180806", update.Message.Chat.Id, update.Message.MessageId, true);
+
                                 Console.WriteLine("Incoming message from:" + update.Message.From.FirstName + " " + update.Message.From.LastName + " @" + update.Message.From.Username + "("+update.Message.From.Id+"), in chat: " + update.Message.Chat.Title + "("+update.Message.Chat.Id+")\r\n"+ update.Message.Text);
                                 command.Execute(update.Message, client, context);
                                 break;
