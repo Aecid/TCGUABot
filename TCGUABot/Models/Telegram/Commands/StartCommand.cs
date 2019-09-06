@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TCGUABot.Data;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TCGUABot.Models.Commands
 {
@@ -24,7 +26,21 @@ namespace TCGUABot.Models.Commands
             }
             else
             {
-                await client.SendTextMessageAsync(chatId, "Если хотите пользоваться функцией импорта деклистов, залогиньтесь на https://ace.od.ua через Телеграм.\r\nЕсли не хотите - не регистрируйтесь :)");
+                IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+                configurationBuilder.AddJsonFile("appsettings.json");
+                IConfiguration configuration = configurationBuilder.Build();
+                var baseUrl = configuration.GetSection("TelegramSettings").GetSection("TelegramWebHookHostBase").Value;
+                var url = string.Format(configuration.GetSection("TelegramSettings").GetSection("TelegramWebHookHostBase").Value, "signin-telegram");
+
+                var loginUrl = new LoginUrl() { BotUsername = "tcgua_bot", Url = url };
+
+                InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup(new InlineKeyboardButton()
+                {
+                    Text = "Логин на "+baseUrl,
+                    LoginUrl = loginUrl
+                });
+
+                await client.SendTextMessageAsync(chatId, "Если хотите пользоваться функцией импорта деклистов, залогиньтесь на "+baseUrl+" через Телеграм.\r\nЕсли не хотите - не регистрируйтесь :)", replyMarkup: keyboard);
             }
         }
     }

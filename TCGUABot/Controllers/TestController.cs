@@ -33,6 +33,18 @@ namespace TCGUABot.Controllers
             return msg;
         }
 
+        [HttpGet("/Test/QueryCommand/{query}", Name = "QueryCommandCall")]
+        public async Task<string> QueryCommand(string query)
+        {
+
+            var msg = string.Empty;
+
+            var command = new QueryCommand();
+            command.Execute(new Message() { Text = "/q "+query, Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
+
+            return msg;
+        }
+
         [HttpGet("/Test/TourneyCommand", Name = "TourneyCommandCall")]
         public async Task<string> TourneyCommand()
         {
@@ -43,6 +55,12 @@ namespace TCGUABot.Controllers
             command.Execute(new Message() { Text = "/tourney", Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
 
             return msg;
+        }
+
+        [HttpGet("/Test/GetProductDetailsById/{productId}", Name = "GetProductDetailsById")]
+        public string GetProductDetailsById(int productId)
+        {
+            return CardData.GetTcgProductDetails(productId);
         }
     }
 }

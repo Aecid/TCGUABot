@@ -36,7 +36,7 @@ namespace TCGUABot.Models.Commands
                     int.TryParse(matches[0].Groups[1].Value, out card.count);
                     card.name = matches[0].Groups[2].Value;
                     card.set = matches[0].Groups[3].Value.Replace("DAR", "DOM");
-                    int.TryParse(matches[0].Groups[4].Value, out card.collectorNumber);
+                    card.collectorNumber = matches[0].Groups[4].Value;
 
                     if (side) deck.SideBoard.Add(card);
                     else deck.MainDeck.Add(card);

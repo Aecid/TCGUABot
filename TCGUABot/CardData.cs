@@ -15,6 +15,7 @@ namespace TCGUABot
     public class CardData
     {
         private static CardData instance = null;
+        public static List<string> Names = new List<string>();
         private static readonly object padlock = new object();
         public List<Set> Sets = new List<Set>();
         public string Version = string.Empty;
@@ -88,6 +89,21 @@ namespace TCGUABot
                 }
                 ////var json = GetModernCards();
                 ////Sets = JsonConvert.DeserializeObject<Dictionary<string, Set>>(json);
+            }
+
+            foreach (var set in Sets)
+            {
+                foreach (var card in set.cards)
+                {
+                    if (!Names.Contains(card.name))
+                    {
+                        Names.Add(card.name);
+                    }
+                    if (!Names.Contains(card.ruName) && !string.IsNullOrEmpty(card.ruName))
+                    {
+                        Names.Add(card.ruName);
+                    }
+                }
             }
         }
 
@@ -203,7 +219,45 @@ namespace TCGUABot
 
             return result;
         }
+        //http://api.tcgplayer.com/v1.17.0/catalog/products/137942,132438?getExtendedFields=true
 
+        public static string GetTcgProductDetails(int productKey)
+        {
+            IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddJsonFile("appsettings.json");
+            IConfiguration configuration = configurationBuilder.Build();
+
+            var result = new Dictionary<string, float>();
+            var version = configuration.GetSection("TCGPlayer").GetSection("Version").Value;
+
+            var url = "https://api.tcgplayer.com/" + version + "/catalog/products/" + productKey.ToString() + "?getExtendedFields=true";
+            var request = (HttpWebRequest)WebRequest.Create(url);
+
+            request.Method = "GET";
+            request.ContentType = "application/json";
+            request.Headers.Add("Authorization", "Bearer " + BearerToken);
+
+            var content = string.Empty;
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                using (var stream = response.GetResponseStream())
+                {
+                    using (var sr = new StreamReader(stream))
+                    {
+                        content = sr.ReadToEnd();
+                    }
+                }
+            }
+
+            try
+            {
+                return content;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Something went wrong with tcgplayer image" + "\r\n" + e.Message + "\r\n" + e.InnerException.Message);
+            }
+        }
         public static string GetTcgPlayerImage(int productKey)
         {
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
@@ -244,7 +298,7 @@ namespace TCGUABot
             }
             catch (Exception e)
             {
-                throw new Exception("Something went wrong with tcgplayer image" + "\r\n"+e.Message+"\r\n"+e.InnerException.Message);
+                throw new Exception("Something went wrong with tcgplayer image" + "\r\n" + e.Message + "\r\n" + e.InnerException.Message);
             }
         }
 

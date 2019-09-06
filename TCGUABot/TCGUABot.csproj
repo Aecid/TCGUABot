@@ -35,6 +35,58 @@
 
 
   <ItemGroup>
+    <None Include="wwwroot\img\mana\0.svg" />
+    <None Include="wwwroot\img\mana\1.svg" />
+    <None Include="wwwroot\img\mana\10.svg" />
+    <None Include="wwwroot\img\mana\11.svg" />
+    <None Include="wwwroot\img\mana\12.svg" />
+    <None Include="wwwroot\img\mana\13.svg" />
+    <None Include="wwwroot\img\mana\14.svg" />
+    <None Include="wwwroot\img\mana\15.svg" />
+    <None Include="wwwroot\img\mana\16.svg" />
+    <None Include="wwwroot\img\mana\17.svg" />
+    <None Include="wwwroot\img\mana\18.svg" />
+    <None Include="wwwroot\img\mana\19.svg" />
+    <None Include="wwwroot\img\mana\2.svg" />
+    <None Include="wwwroot\img\mana\20.svg" />
+    <None Include="wwwroot\img\mana\2B.svg" />
+    <None Include="wwwroot\img\mana\2G.svg" />
+    <None Include="wwwroot\img\mana\2R.svg" />
+    <None Include="wwwroot\img\mana\2U.svg" />
+    <None Include="wwwroot\img\mana\2W.svg" />
+    <None Include="wwwroot\img\mana\3.svg" />
+    <None Include="wwwroot\img\mana\4.svg" />
+    <None Include="wwwroot\img\mana\5.svg" />
+    <None Include="wwwroot\img\mana\6.svg" />
+    <None Include="wwwroot\img\mana\7.svg" />
+    <None Include="wwwroot\img\mana\8.svg" />
+    <None Include="wwwroot\img\mana\9.svg" />
+    <None Include="wwwroot\img\mana\B.svg" />
+    <None Include="wwwroot\img\mana\BG.svg" />
+    <None Include="wwwroot\img\mana\BP.svg" />
+    <None Include="wwwroot\img\mana\C.svg" />
+    <None Include="wwwroot\img\mana\G.svg" />
+    <None Include="wwwroot\img\mana\GP.svg" />
+    <None Include="wwwroot\img\mana\GU.svg" />
+    <None Include="wwwroot\img\mana\GW.svg" />
+    <None Include="wwwroot\img\mana\R.svg" />
+    <None Include="wwwroot\img\mana\RG.svg" />
+    <None Include="wwwroot\img\mana\RP.svg" />
+    <None Include="wwwroot\img\mana\RW.svg" />
+    <None Include="wwwroot\img\mana\S.svg" />
+    <None Include="wwwroot\img\mana\U.svg" />
+    <None Include="wwwroot\img\mana\UB.svg" />
+    <None Include="wwwroot\img\mana\UP.svg" />
+    <None Include="wwwroot\img\mana\UR.svg" />
+    <None Include="wwwroot\img\mana\W.svg" />
+    <None Include="wwwroot\img\mana\WB.svg" />
+    <None Include="wwwroot\img\mana\WP.svg" />
+    <None Include="wwwroot\img\mana\WU.svg" />
+    <None Include="wwwroot\img\mana\X.svg" />
+  </ItemGroup>
+
+
+  <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -75,7 +75,10 @@ namespace TCGUABot.Models
                 }
                 else if (!string.IsNullOrEmpty(set))
                 {
-                    var card = CardData.Instance.Sets.FirstOrDefault(s => s.code.Equals(set) && s.type != "promo" && s.type != "funny" && s.type != "box").cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
+                    Card card = new Card();
+                    if (importCard.multiverseId > 0) card = CardData.Instance.Sets.FirstOrDefault(s => s.cards.Any(d => d.multiverseId == importCard.multiverseId)).cards.FirstOrDefault(c => c.multiverseId == importCard.multiverseId);
+                    if (card == null) card = CardData.Instance.Sets.FirstOrDefault(s => s.code.Equals(set) && s.type != "promo" && s.type != "funny" && s.type != "box").cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
+                    //if (card == null) break;
                     if (card.name.Equals(importCard.name))
                     {
                         deckList.Add(importCard.count + " " + card.name);
@@ -95,7 +98,9 @@ namespace TCGUABot.Models
                 var set = importCard.set?.Replace("(", "").Replace(")", "").Replace("DAR", "DOM");
                 if (!string.IsNullOrEmpty(set))
                 {
-                    var card = CardData.Instance.Sets.FirstOrDefault(s => s.code.Equals(set)).cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
+                    Card card = new Card();
+                    if (importCard.multiverseId > 0) card = CardData.Instance.Sets.FirstOrDefault(s => s.cards.Any(d => d.multiverseId == importCard.multiverseId)).cards.FirstOrDefault(c => c.multiverseId == importCard.multiverseId);
+                    if (card == null) card = CardData.Instance.Sets.FirstOrDefault(s => s.code.Equals(set) && s.type != "promo" && s.type != "funny" && s.type != "box").cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
                     if (card.name.Equals(importCard.name))
                     {
                         deckList.Add(importCard.count + " " + card.name);
@@ -137,7 +142,7 @@ namespace TCGUABot.Models
                             int.TryParse(matches[0].Groups[1].Value, out card.count);
                             card.name = matches[0].Groups[2].Value;
                             card.set = matches[0].Groups[3].Value.Replace("(DAR)", "(DOM)");
-                            int.TryParse(matches[0].Groups[4].Value, out card.collectorNumber);
+                            card.collectorNumber = matches[0].Groups[4].Value;
 
                             var tempCard = Helpers.CardSearch.GetCardByName(card.name, card.set);
                             if (tempCard != null)
@@ -164,7 +169,7 @@ namespace TCGUABot.Models
             else
             {
                 bool sideBoard = false;
-                var deckArray = text.Replace("sideboard", "\r\n\r\n", StringComparison.CurrentCultureIgnoreCase)
+                var deckArray = text.Replace("\r\n", "{{nl}}").Replace("\n", "\r\n").Replace("{{nl}}", "\r\n").Replace("sideboard", "\r\n\r\n", StringComparison.CurrentCultureIgnoreCase)
                     .Split(new string[] { "\r\n\r\n" },
                                StringSplitOptions.RemoveEmptyEntries);
                 if (deckArray.Length > 1) sideBoard = true;
@@ -177,18 +182,18 @@ namespace TCGUABot.Models
                     importCard.name = match.Groups[2].Value.Trim();
                     importCard.count = int.Parse(match.Groups[1].Value.Trim());
 
-                    var tempCard = Helpers.CardSearch.GetCardByName(importCard.name);
+                    var tempCard = Helpers.CardSearch.GetCardByName(importCard.name, true);
                     if (tempCard==null)
                     {
                         importCard.multiverseId = 0;
-                        importCard.collectorNumber = 0;
+                        importCard.collectorNumber = "0";
                         importCard.set = "NONE";
                     }
                     else
                     {
-                        var set = CardData.Instance.Sets.FirstOrDefault(s => tempCard.printings.Contains(s.code) && s.type != "promo" && s.type != "funny" && s.type != "box");
+                        var set = CardData.Instance.Sets.FirstOrDefault(s => tempCard.printings.Contains(s.code) && s.type != "promo" && s.type != "box");
                         importCard.set = set.code;
-                        importCard.collectorNumber = int.Parse(tempCard.number);
+                        importCard.collectorNumber = tempCard.number;
                         importCard.multiverseId = tempCard.multiverseId;
                     }
 
@@ -208,7 +213,7 @@ namespace TCGUABot.Models
                         if (tempCard == null)
                         {
                             importCard.multiverseId = 0;
-                            importCard.collectorNumber = 0;
+                            importCard.collectorNumber = "0";
                             importCard.set = "NONE";
                         }
                         else
@@ -217,11 +222,11 @@ namespace TCGUABot.Models
                             importCard.set = set.code;
                             try
                             {
-                                importCard.collectorNumber = int.Parse(tempCard.number);
+                                importCard.collectorNumber = tempCard.number;
                             }
                             catch
                             {
-                                importCard.collectorNumber = 0;
+                                importCard.collectorNumber = "0";
                             }
                             importCard.multiverseId = tempCard.multiverseId;
                         }
@@ -314,31 +319,33 @@ namespace TCGUABot.Models
 
 
                 var result = string.Empty;
-                result += "<div class=\"deck-short\">";
+                result += "<div>";
+                result += "<table>";
 
                 foreach (var item in all)
                 {
                     if (item.Value.Count > 0)
                     {
-                        result += "<p><b>" + item.Key + "</b><br/>";
+                        result += "<tr><th colspan=\"3\">" + item.Key + "</th></tr>";
 
                         foreach (var card in item.Value)
                         {
                             if (card.Key.multiverseId > 0)
                             {
                                 Card foundCard = Helpers.CardSearch.GetCardByMultiverseId(int.Parse(card.Key.multiverseId.ToString()));
-                                result += card.Value + " " +
+                                result += "<tr><td>" + card.Value + "</td><td>" +
                                     "<a target =\"_blank\"" +
                                     "class=\"gathererTooltip\" " +
                                     "data-image=\"https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + foundCard.multiverseId + "&type=card\" " +
                                     "data-width=\"223px\"" +
                                     "data-height=\"311px\"" +
                                     "href=\"https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=" + foundCard.multiverseId + "\"" +
-                                    ">" + foundCard.name + "</a><br/>";
+                                    ">" + foundCard.name + "</a></td>";
+                                result += "<td style=\"white-space:nowrap\">" + card.Key.manaCost + "</td></tr>";
                             }
                             else
                             {
-                                result += card.Value + " " + card.Key.name + "<br/>";
+                                result += "<td>" + card.Value + "</td><td colspan=\"2\">" + card.Key.name + "</td></tr>";
                             }
                         }
                     }
@@ -346,35 +353,92 @@ namespace TCGUABot.Models
 
                 if (deck.SideBoard.Count > 0)
                 {
-                    result += "</p><p><b>Sideboard:</b><br/>";
+                    result += "<tr><th colspan=\"3\">Sideboard</th></tr>";
                     foreach (var card in deck.SideBoard)
                     {
                         if (card.Key.multiverseId > 0)
                         {
                             Card foundCard = Helpers.CardSearch.GetCardByMultiverseId(int.Parse(card.Key.multiverseId.ToString()));
-                            result += card.Value + " " +
+                            result += "<tr><td>" + card.Value + "</td><td>" +
                                 "<a target =\"_blank\"" +
                                 "class=\"gathererTooltip\" " +
                                 "data-image=\"https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + foundCard.multiverseId + "&type=card\" " +
                                 "data-width=\"223px\"" +
                                 "data-height=\"311px\"" +
                                 "href=\"https://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=" + foundCard.multiverseId + "\"" +
-                                ">" + foundCard.name + "</a><br/>";
+                                ">" + foundCard.name + "</a></td>";
+                            result += "<td style=\"white-space:nowrap\">" + card.Key.manaCost + "</td></tr>";
                         }
                         else
                         {
-                            result += card.Value + " " + card.Key.name + "<br/>";
+                            result += "<td>" + card.Value + "</td><td colspan=\"2\">" + card.Key.name + "</td></tr>";
                         }
                     }
-                    result += "</p>";
+                    result += "</table>";
                 }
                 result += "</div>";
-                return result;
+                return ReplaceManaSymbols(result);
             }
             else
             {
                 return "No cards";
             }
+        }
+
+        public static string ReplaceManaSymbols(string text)
+        {
+            return text.Replace("{1}", "<img class=\"mana\" src = \"/img/mana/1.svg\"/>")
+                .Replace("{2}", "<img class=\"mana\" src = \"/img/mana/2.svg\"/>")
+                .Replace("{3}", "<img class=\"mana\" src = \"/img/mana/3.svg\"/>")
+                .Replace("{4}", "<img class=\"mana\" src = \"/img/mana/4.svg\"/>")
+                .Replace("{5}", "<img class=\"mana\" src = \"/img/mana/5.svg\"/>")
+                .Replace("{6}", "<img class=\"mana\" src = \"/img/mana/6.svg\"/>")
+                .Replace("{7}", "<img class=\"mana\" src = \"/img/mana/7.svg\"/>")
+                .Replace("{8}", "<img class=\"mana\" src = \"/img/mana/8.svg\"/>")
+                .Replace("{9}", "<img class=\"mana\" src = \"/img/mana/9.svg\"/>")
+                .Replace("{10}", "<img class=\"mana\" src = \"/img/mana/10.svg\"/>")
+                .Replace("{11}", "<img class=\"mana\" src = \"/img/mana/11.svg\"/>")
+                .Replace("{12}", "<img class=\"mana\" src = \"/img/mana/12.svg\"/>")
+                .Replace("{13}", "<img class=\"mana\" src = \"/img/mana/13.svg\"/>")
+                .Replace("{14}", "<img class=\"mana\" src = \"/img/mana/14.svg\"/>")
+                .Replace("{15}", "<img class=\"mana\" src = \"/img/mana/15.svg\"/>")
+                .Replace("{16}", "<img class=\"mana\" src = \"/img/mana/16.svg\"/>")
+                .Replace("{17}", "<img class=\"mana\" src = \"/img/mana/17.svg\"/>")
+                .Replace("{18}", "<img class=\"mana\" src = \"/img/mana/18.svg\"/>")
+                .Replace("{19}", "<img class=\"mana\" src = \"/img/mana/19.svg\"/>")
+                .Replace("{20}", "<img class=\"mana\" src = \"/img/mana/20.svg\"/>")
+                .Replace("{U}", "<img class=\"mana\" src = \"/img/mana/U.svg\"/>")
+                .Replace("{R}", "<img class=\"mana\" src = \"/img/mana/R.svg\"/>")
+                .Replace("{G}", "<img class=\"mana\" src = \"/img/mana/G.svg\"/>")
+                .Replace("{W}", "<img class=\"mana\" src = \"/img/mana/W.svg\"/>")
+                .Replace("{B}", "<img class=\"mana\" src = \"/img/mana/B.svg\"/>")
+                .Replace("{U/P}", "<img class=\"mana\" src = \"/img/mana/UP.svg\"/>")
+                .Replace("{R/P}", "<img class=\"mana\" src = \"/img/mana/RP.svg\"/>")
+                .Replace("{G/P}", "<img class=\"mana\" src = \"/img/mana/GP.svg\"/>")
+                .Replace("{W/P}", "<img class=\"mana\" src = \"/img/mana/WP.svg\"/>")
+                .Replace("{B/P}", "<img class=\"mana\" src = \"/img/mana/BP.svg\"/>")
+                .Replace("{0}", "<img class=\"mana\" src = \"/img/mana/0.svg\"/>")
+                .Replace("{X}", "<img class=\"mana\" src = \"/img/mana/X.svg\"/>")
+                .Replace("{B/G}", "<img class=\"mana\" src = \"/img/mana/BG.svg\"/>")
+                .Replace("{G/U}", "<img class=\"mana\" src = \"/img/mana/GU.svg\"/>")
+                .Replace("{G/W}", "<img class=\"mana\" src = \"/img/mana/GW.svg\"/>")
+                .Replace("{R/G}", "<img class=\"mana\" src = \"/img/mana/RG.svg\"/>")
+                .Replace("{R/W}", "<img class=\"mana\" src = \"/img/mana/RW.svg\"/>")
+                .Replace("{U/R}", "<img class=\"mana\" src = \"/img/mana/UR.svg\"/>")
+                .Replace("{U/B}", "<img class=\"mana\" src = \"/img/mana/UB.svg\"/>")
+                .Replace("{W/U}", "<img class=\"mana\" src = \"/img/mana/WU.svg\"/>")
+                .Replace("{W/B}", "<img class=\"mana\" src = \"/img/mana/WB.svg\"/>")
+                .Replace("{B/R}", "<img class=\"mana\" src = \"/img/mana/BR.svg\"/>")
+                .Replace("{C}", "<img class=\"mana\" src = \"/img/mana/C.svg\"/>")
+                .Replace("{S}", "<img class=\"mana\" src = \"/img/mana/S.svg\"/>")
+                .Replace("{2/U}", "<img class=\"mana\" src = \"/img/mana/2U.svg\"/>")
+                .Replace("{2/R}", "<img class=\"mana\" src = \"/img/mana/2R.svg\"/>")
+                .Replace("{2/B}", "<img class=\"mana\" src = \"/img/mana/2B.svg\"/>")
+                .Replace("{2/G}", "<img class=\"mana\" src = \"/img/mana/2G.svg\"/>")
+                .Replace("{2/W}", "<img class=\"mana\" src = \"/img/mana/2W.svg\"/>")
+                ;
+
+
         }
     }
 
@@ -383,7 +447,7 @@ namespace TCGUABot.Models
         public string name;
         public int count;
         public string set;
-        public int collectorNumber;
+        public string collectorNumber;
         public int? multiverseId;
         public string scryfallId;
 

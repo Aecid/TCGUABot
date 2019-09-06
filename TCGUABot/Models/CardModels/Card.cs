@@ -53,6 +53,7 @@ namespace TCGUABot.Models
         public string power;
         public string toughness;
 
+        public string Set { get; set; }
         public string ruName
         {
             get
