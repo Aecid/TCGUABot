@@ -17,7 +17,7 @@ namespace TCGUABot
         private static CardData instance = null;
         public static List<string> Names = new List<string>();
         private static readonly object padlock = new object();
-        public List<Set> Sets = new List<Set>();
+        public readonly List<Set> Sets = new List<Set>();
         public string Version = string.Empty;
         public static string BearerToken { get; private set; }
         public static CardData Instance

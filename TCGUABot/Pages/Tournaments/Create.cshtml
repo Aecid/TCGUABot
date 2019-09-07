@@ -1,5 +1,6 @@
 ﻿@page
 @model TCGUABot.Pages.Tournaments.CreateModel
+@inject UserManager<Data.Models.ApplicationUser> UserManager
 
 @{
     ViewData["Title"] = "Create";
@@ -8,6 +9,12 @@
 <h1>Create</h1>
 
 <h4>Tournament</h4>
+@if (User.Identity.IsAuthenticated)
+{
+    var user = await UserManager.GetUserAsync(User);
+    <a class="btn btn-sm btn-primary beleren" href="/Tournament/CreateDefaultTournament?type=sat&creator=@user.Id">Saturday Modern Tournament</a>
+    <a class="btn btn-sm btn-primary beleren" href="/Tournament/CreateDefaultTournament?type=sun&creator=@user.Id">Sunday Limited Tournament</a>
+}
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -46,7 +53,7 @@
 </div>
 
 <div>
-    <a asp-page="Index">Back to List</a>
+    <a>Back to List</a>
 </div>
 
 @section Scripts {

@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using TCGUABot.Data;
 using TCGUABot.Data.Models;
+using TCGUABot.Helpers;
 using TCGUABot.Models;
 using TCGUABot.Models.Commands;
 using Telegram.Bot.Types;
@@ -20,11 +21,11 @@ using Z.EntityFramework.Plus;
 
 namespace TCGUABot.Controllers
 {
-    public class PlayerController : Controller
+    public class TournamentController : Controller
     {
         ApplicationDbContext context { get; set; }
         UserManager<ApplicationUser> userManager { get; set; }
-        public PlayerController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public TournamentController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             this.context = context;
             this.userManager = userManager;
@@ -78,6 +79,49 @@ namespace TCGUABot.Controllers
             }
             context.SaveChanges();
             return Ok();
+        }
+
+        [Authorize(Roles = "Admin, Store Owner, Judge, Event Organizer")]
+        [HttpGet]
+        public async Task<ActionResult> CreateDefaultTournament([FromQuery] string type, string creator)
+        {
+            DateTime now = TimeService.GetLocalTime();
+            var tourneyTime = new DateTime(now.Year, now.Month, now.Day, 11, 00, 00);
+            string name = "";
+
+            if (type == "sat")
+            {
+                tourneyTime = tourneyTime.Next(DayOfWeek.Saturday);
+                name = "Modern - Corvin";
+            }
+            
+            if (type == "sun")
+            {
+                tourneyTime = tourneyTime.Next(DayOfWeek.Sunday);
+                name = "Limited - Corvin";
+            }
+
+            if (!context.Tournaments.Any(d => d.PlannedDate == tourneyTime))
+            {
+                var tourney = new Tournament()
+                {
+                    PlannedDate = tourneyTime,
+                    CreationDate = TimeService.GetLocalTime(),
+                    CreatorId = creator,
+                    Name = name,
+                    Description = "Default tournament"
+                };
+
+                context.Tournaments.Add(tourney);
+                context.SaveChanges();
+
+                return Redirect("/Tournaments");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Tournament already exists");
+                return BadRequest(ModelState);
+            }
         }
     }
 }

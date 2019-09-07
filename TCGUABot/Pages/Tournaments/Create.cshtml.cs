@@ -39,7 +39,7 @@ namespace TCGUABot.Pages.Tournaments
                 return Page();
             }
 
-            Tournament.CreationDate = DateTime.UtcNow;
+            Tournament.CreationDate = TimeService.GetLocalTime();
             var user = await _userManager.GetUserAsync(User);
             Tournament.CreatorId = user.Id;
             _context.Tournaments.Add(Tournament);

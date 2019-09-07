@@ -4,106 +4,68 @@
 @inject ApplicationDbContext Context
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Tournaments";
     var tabIndex = 0;
 }
 
-<h1>Index</h1>
+<h4 class="beleren">Tournaments</h4>
 
 <p>
     <a asp-page="Create">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Tournament[0].PlannedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Tournament[0].Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Tournament[0].Description)
-            </th>
-            <th>
-                Registered players
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Tournament)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PlannedDate)
-                    @{ if (DateTime.Compare(item.PlannedDate, TimeService.GetLocalTime()) < 0)
-                        {
-                            <text>Tournament is ongoing!</text>
-                        }
-                    }
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td id="players-@item.Id">
-                    <i>@item.RegisteredPlayers.Count players</i>
-                    <ul>
-                        @{ foreach (var player in item.RegisteredPlayers)
-                            {
-                                <li>@player.EmojiStatus&nbsp;@Html.Raw(player.Name.Replace(" ", "&nbsp;"))</li>
-                            }
-                        }
-                    </ul>
-                </td>
-                <td>
-                    @if (User.Identity.IsAuthenticated)
+<div class="tournaments-container">
+    @foreach (var item in Model.Tournament)
+    {
+    <div class="single-tournament">
+        <a class="edit-tournament" asp-page="./Edit" asp-route-id="@item.Id">📝</a>
+        <a class="delete-tournament" asp-page="./Delete" asp-route-id="@item.Id">❌</a>
+        
+        <div>
+            <a class="tournament-name" asp-page="./Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.PlannedDate) - @Html.DisplayFor(modelItem => item.Name)</a>
+        </div>
+        <div class="alert-warning">
+            @{ if (DateTime.Compare(item.PlannedDate, TimeService.GetLocalTime()) < 0)
+                {
+                    <text>Турнир уже начался!</text>
+                }
+            }
+        </div>
+        <div id="players-@item.Id">
+            <i>@item.RegisteredPlayers.Count players</i>
+            <ul>
+                @{ foreach (var player in item.RegisteredPlayers)
                     {
-                        var user = await UserManager.GetUserAsync(User);
-
-                        if (Context.UserLogins.Any(u => u.UserId == user.Id && u.LoginProvider == "Telegram"))
-                        {
-                            <a class="btn btn-sm btn-primary" tabindex="@{++tabIndex;}@tabIndex" onclick="OnRegisterClick('@item.Id', '@user.Id')">Register/Unregister</a>
-                        }
+                        var status = @player.EmojiStatus ?? "🧙‍♂️";
+                        <li>@status&nbsp;@Html.Raw(player.Name.Replace(" ", "&nbsp;"))</li>
                     }
-                </td>
-                <td>
-                    <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
-        }
-        <tr><th colspan="4">Old tournaments:</th></tr>
-        @foreach (var item in Model.OutdatedTournament)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PlannedDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                    <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
-        }
+                }
+            </ul>
+        </div>
+        <div>
+            @if (User.Identity.IsAuthenticated)
+            {
+                var user = await UserManager.GetUserAsync(User);
 
-    </tbody>
-</table>
+                if (Context.UserLogins.Any(u => u.UserId == user.Id && u.LoginProvider == "Telegram"))
+                {
+                    <a class="btn btn-sm btn-primary beleren" tabindex="@{++tabIndex;}@tabIndex" onclick="OnRegisterClick('@item.Id', '@user.Id')">Register/Unregister</a>
+                }
+            }
+        </div>
+    </div>
+        <hr />
+
+    }
+</div>
+
+<h4 class="beleren">Old tournaments:</h4>
+<ul>
+    @foreach (var item in Model.OutdatedTournament)
+    {
+        <li><a asp-page="./Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.PlannedDate) - @Html.DisplayFor(modelItem => item.Name)</a></li>
+    }
+</ul>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
@@ -113,19 +75,19 @@
         }
 
         async function RegUnreg(tourneyId, playerId) {
-            var response = await fetch('/Player/TogglePlayerParticipation?tourneyId=' + tourneyId + '&playerId=' + playerId)
+            var response = await fetch('/Tournament/TogglePlayerParticipation?tourneyId=' + tourneyId + '&playerId=' + playerId)
             if (response.ok) {
                 UpdatePreview(tourneyId);
             }
         }
 
         async function UpdatePreview(tourneyId) {
-            var response = await fetch('/Player/GetTournamentPlayers?tourneyId=' + tourneyId);
+            var response = await fetch('/Tournament/GetTournamentPlayers?tourneyId=' + tourneyId);
 
             if (response.ok) {
                 response.json()
                     .then(function (data) {
-                        var buffer = "<i>"+data.length+" players</i><ul>";
+                        var buffer = "<i>" + data.length + " players</i><ul>";
                         for (var i = 0; i < data.length; i++) {
                             buffer += "<li>" + data[i] + "</li>";
                         }
