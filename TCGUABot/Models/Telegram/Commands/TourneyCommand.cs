@@ -56,7 +56,7 @@ namespace TCGUABot.Models.Commands
                 foreach (var tourney in TList)
                 {
                     var buttonList = new List<InlineKeyboardButton>();
-                    msg += "<b>" + tourney.PlannedDate;
+                    msg += "<b>" + string.Format("{0:ddd, dd'/'MM'/'yy HH:mm}", tourney.PlannedDate);
                     msg += " - ";
                     msg += tourney.Name + "</b>";
                     var tourneyPlayers = context.TournamentUserPairs.Where(p => p.TournamentId == tourney.Id).ToList();
