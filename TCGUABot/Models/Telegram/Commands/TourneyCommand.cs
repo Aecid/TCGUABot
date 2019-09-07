@@ -46,7 +46,7 @@ namespace TCGUABot.Models.Commands
 
         public static Tuple<string, InlineKeyboardMarkup> GenerateTourneyList(Message message, ApplicationDbContext context)
         {
-            var TList = context.Tournaments.Where(t => t.IsClosed == false && DateTime.Compare(t.PlannedDate, DateTime.Now.AddHours(10)) > 0).OrderBy(t => t.PlannedDate).ToList();
+            var TList = context.Tournaments.Where(t => t.IsClosed == false && DateTime.Compare(t.PlannedDate.AddHours(10), TimeService.GetLocalTime()) > 0).OrderBy(t => t.PlannedDate).ToList();
             var chatId = message.Chat.Id;
             var msg = string.Empty;
             var keyboardList = new List<List<InlineKeyboardButton>>();
@@ -60,15 +60,15 @@ namespace TCGUABot.Models.Commands
                     msg += " - ";
                     msg += tourney.Name + "</b>";
                     var tourneyPlayers = context.TournamentUserPairs.Where(p => p.TournamentId == tourney.Id).ToList();
-
                     if (tourneyPlayers != null && tourneyPlayers.Count > 0)
                     {
+                        int count = 0;
                         foreach (var player in tourney.TournamentUserPairs)
                         {
                             //msg += "\r\n🧙‍♂️ " + "<a href=\"tg://user?id=" + player.PlayerTelegramId + "\">" + context.TelegramUsers.FirstOrDefault(u => u.Id == player.PlayerTelegramId).Name + "</a>";
                             var tplayer = context.TelegramUsers.FirstOrDefault(u => u.Id == player.PlayerTelegramId);
                             var status = string.IsNullOrEmpty(tplayer.EmojiStatus) ? "🧙‍♂️" : tplayer.EmojiStatus;
-                            msg += "\r\n" + status + tplayer.Name;
+                            msg += "\r\n" + (++count) + ". " + status + tplayer.Name;
                         }
                     }
                     if (TList.Count > 1) msg += "\r\n\r\n";
