@@ -5,8 +5,12 @@ a.navbar-brand {
   white-space: normal;
   text-align: center;
   word-break: break-all;
+  font-family: BelerenSmallCaps;
 }
 
+.nav-link {
+    font-family: BelerenSmallCaps;
+}
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
@@ -53,4 +57,440 @@ body {
   /* Set the fixed height of the footer here */
   height: 60px;
   line-height: 60px; /* Vertically center the text there */
+}
+
+@font-face {
+    font-family: "Beleren";
+    src: url("/fonts/Beleren-Bold.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: "BelerenSmallCaps";
+    src: url("/fonts/Beleren-Small-Caps.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: "Plaintin";
+    src: url("/fonts/MPlantin.ttf") format('truetype');
+}
+
+.deck-short {
+    -webkit-columns: 4 150px;
+    -moz-columns: 4 150px;
+    columns: 4 150px;
+    -webkit-column-gap: 2em;
+    -moz-column-gap: 2em;
+    column-gap: 2em;
+}
+
+.deck-visual-playmat {
+    padding: 10px;
+    position: relative;
+    background-size: cover;
+    color: #fff;
+    padding-bottom: 75px;
+    margin-top: 10px
+}
+
+    .deck-visual-playmat:before,
+    .deck-visual-playmat:after {
+        display: table;
+        content: " "
+    }
+
+    .deck-visual-playmat:after {
+        clear: both
+    }
+
+.deck-visual-playmat-maindeck {
+    float: left;
+    width: 700px;
+    overflow: hidden;
+    margin-top: 20px;
+    margin-left: 65px
+}
+
+    .deck-visual-playmat-maindeck:before,
+    .deck-visual-playmat-maindeck:after {
+        display: table;
+        content: " "
+    }
+
+    .deck-visual-playmat-maindeck:after {
+        clear: both
+    }
+
+.deck-visual-pile {
+    position: relative;
+    width: 148px;
+    min-height: 275px;
+    height: auto;
+    display: inline-block
+}
+
+.deck-visual-pile-card {
+    position: absolute;
+    border-radius: 10px;
+    width: 148px;
+    height: 207px;
+}
+
+.deck-visual-pile-card-0 {
+    z-index: 1;
+    top: 0
+}
+
+.deck-visual-pile-card-1 {
+    z-index: 2;
+    top: 20px
+}
+
+.deck-visual-pile-card-2 {
+    z-index: 3;
+    top: 40px
+}
+
+.deck-visual-pile-card-3 {
+    z-index: 4;
+    top: 60px
+}
+
+.deck-visual-pile-card-4 {
+    z-index: 5;
+    top: 60px
+}
+
+.deck-visual-pile-card-5 {
+    z-index: 6;
+    top: 175px
+}
+
+.deck-visual-pile-card-6 {
+    z-index: 7;
+    top: 210px
+}
+
+.deck-visual-pile-card-7 {
+    z-index: 8;
+    top: 245px
+}
+
+.deck-visual-pile-card-8 {
+    z-index: 9;
+    top: 240px
+}
+
+.deck-visual-pile-card-9 {
+    z-index: 10;
+    top: 270px
+}
+
+.deck-visual-pile-card-10 {
+    z-index: 11;
+    top: 300px
+}
+
+.deck-visual-pile-card-11 {
+    z-index: 12;
+    top: 330px
+}
+
+.deck-visual-pile-card-12 {
+    z-index: 13;
+    top: 360px
+}
+
+.deck-visual-pile-card-13 {
+    z-index: 14;
+    top: 390px
+}
+
+.deck-visual-pile-card-14 {
+    z-index: 15;
+    top: 420px
+}
+
+.deck-visual-pile-card-ru-0 {
+    z-index: 1;
+    top: 0;
+    display: none;
+}
+
+.deck-visual-pile-card-ru-1 {
+    z-index: 2;
+    top: 35px;
+    display: none;
+}
+
+.deck-visual-pile-card-ru-2 {
+    z-index: 3;
+    top: 70px;
+    display: none;
+}
+
+.deck-visual-pile-card-ru-3 {
+    z-index: 4;
+    top: 105px;
+    display: none;
+}
+
+.deck-visual-pile-card-ru-0:hover {
+    z-index: 16;
+    top: 0;
+    display: block;
+}
+
+.deck-visual-pile-card-ru-1:hover {
+    z-index: 17;
+    top: 35px;
+    display: block;
+}
+
+.deck-visual-pile-card-ru-2:hover {
+    z-index: 18;
+    top: 70px;
+    display: block;
+}
+
+.deck-visual-pile-card-ru-3:hover {
+    z-index: 19;
+    top: 105px;
+    display: block;
+}
+
+.cardname {
+    position: absolute;
+    width: 148px;
+    text-align: center;
+    vertical-align: middle;
+    top: 30px;
+    padding: 20px;
+    color: white;
+    font-size: large;
+    font-weight: 700;
+    z-index: 20;
+    text-shadow: 0px 0px 5px black, 0 0 20px gray, 0 0 20px dimgray;
+}
+
+div.oracle span.en {
+    display: inline;
+}
+
+div.oracle:hover span.en {
+    display: none;
+}
+
+div.oracle span.ru {
+    display: none;
+}
+
+div.oracle:hover span.ru {
+    display: inline;
+}
+
+
+.cardcount {
+    position: absolute;
+    width: 148px;
+    text-align: center;
+    vertical-align: middle;
+    color: white;
+    font-size: 50px;
+    z-index: 21;
+    top: 100px;
+    font-weight: 900;
+    text-shadow: 0px 0px 5px black, 0 0 20px gray, 0 0 20px dimgray;
+}
+
+.oracle {
+    width: 148px;
+    height: 207px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+
+.deck-visual-playmat-sideboard {
+    margin-top: 20px;
+    margin-left: 25px;
+    margin-right: 84.3333333333px;
+    float: left
+}
+
+    .deck-visual-playmat-sideboard:before,
+    .deck-visual-playmat-sideboard:after {
+        display: table;
+        content: " "
+    }
+
+    .deck-visual-playmat-sideboard:after {
+        clear: both
+    }
+
+.deck-visual-side-pile {
+    position: relative;
+    width: 148.6666666667px;
+    height: 297.3333333333px;
+    display: inline-block
+}
+
+.deck-visual-side-pile-card {
+    position: absolute;
+    border-radius: 10px;
+    width: 148.6666666667px;
+    height: 207.3333333333px
+}
+
+.deck-visual-pile-side-card-0 {
+    top: 0
+}
+
+.deck-visual-pile-side-card-1 {
+    top: 50px;
+    margin-left: 74.3333333333px
+}
+
+.deck-visual-pile-side-card-2 {
+    top: 100px
+}
+
+.deck-visual-pile-side-card-3 {
+    top: 150px;
+    margin-left: 74.3333333333px
+}
+
+.deck-visual-pile-side-card-4 {
+    top: 200px
+}
+
+.deck-visual-pile-side-card-5 {
+    top: 250px;
+    margin-left: 74.3333333333px
+}
+
+.deck-visual-pile-side-card-6 {
+    top: 300px
+}
+
+.deck-visual-pile-side-card-7 {
+    top: 350px;
+    margin-left: 74.3333333333px
+}
+
+.deck-visual-pile-side-card-8 {
+    top: 400px
+}
+
+.deck-visual-pile-side-card-9 {
+    top: 450px;
+    margin-left: 74.3333333333px
+}
+
+.deck-visual-pile-side-card-10 {
+    top: 500px
+}
+
+.deck-visual-pile-side-card-11 {
+    top: 550px;
+    margin-left: 74.3333333333px
+}
+
+.deck-visual-pile-side-card-12 {
+    top: 600px
+}
+
+.deck-visual-pile-side-card-13 {
+    top: 650px;
+    margin-left: 74.3333333333px
+}
+
+.deck-visual-pile-side-card-14 {
+    top: 700px
+}
+
+.deck-visual-pile-side-ru-card-0 {
+    top: 0;
+    z-index: 100;
+}
+
+.deck-visual-pile-side-ru-card-1 {
+    top: 50px;
+    margin-left: 74.3333333333px;
+    z-index: 100;
+}
+
+.deck-visual-pile-side-ru-card-2 {
+    top: 100px;
+    z-index: 100;
+}
+
+.deck-visual-pile-side-ru-card-3 {
+    top: 150px;
+    margin-left: 74.3333333333px;
+    z-index: 100;
+}
+
+.deck-visual-pile-side-ru-card-4 {
+    top: 200px;
+    z-index: 100;
+}
+
+.deck-visual-pile-side-ru-card-5 {
+    top: 250px;
+    margin-left: 74.3333333333px;
+    z-index: 100;
+}
+
+.deck-visual-pile-side-ru-card-6 {
+    top: 300px;
+    z-index: 100;
+}
+
+.deck-visual-pile-side-ru-card-7 {
+    top: 350px;
+    margin-left: 74.3333333333px;
+    z-index: 100;
+}
+
+.deck-visual-pile-side-ru-card-8 {
+    top: 400px;
+    z-index: 100;
+}
+
+.deck-visual-pile-side-ru-card-9 {
+    top: 450px;
+    margin-left: 74.3333333333px;
+    z-index: 100;
+}
+
+.deck-visual-pile-side-ru-card-10 {
+    top: 500px;
+    z-index: 100;
+}
+
+.deck-visual-pile-side-ru-card-11 {
+    top: 550px;
+    margin-left: 74.3333333333px;
+    z-index: 100;
+}
+
+.deck-visual-pile-side-ru-card-12 {
+    top: 600px;
+    z-index: 100;
+}
+
+.deck-visual-pile-side-ru-card-13 {
+    top: 650px;
+    margin-left: 74.3333333333px;
+    z-index: 100;
+}
+
+.deck-visual-pile-side-ru-card-14 {
+    top: 700px;
+    z-index: 100;
+}
+
+.mana {
+    height: 15px;
+    width: 15px;
 }
