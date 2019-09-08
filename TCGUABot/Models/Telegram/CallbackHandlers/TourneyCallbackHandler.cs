@@ -21,9 +21,7 @@ namespace TCGUABot.Models.CallbackHandlers
             //                    buttonList.Add(InlineKeyboardButton.WithCallbackData("✅", "t" + "|" + "1" + "|" + tourney.Id + "|" + message.MessageId));
             var dataArray = query.Data.Split("|");
             var name = dataArray[0];
-            var value = dataArray[1];
-            var tourneyId = dataArray[2];
-            var messageId = dataArray[3];
+            var tourneyId = dataArray[1];
 
             var isExistingUser = context.TelegramUsers.Any(u => u.Id == query.From.Id);
             if (!isExistingUser)
@@ -66,42 +64,34 @@ namespace TCGUABot.Models.CallbackHandlers
                 }
             }
 
-            if (value == "1") //register for tourney
+
+
+            var tourney = context.Tournaments.FirstOrDefault(t => t.Id == tourneyId);
+
+            if (context.TournamentUserPairs.Any(p => p.TournamentId == tourneyId))
             {
-
-                var tourney = context.Tournaments.FirstOrDefault(t => t.Id == tourneyId);
-
-                if (context.TournamentUserPairs.Any(p => p.TournamentId == tourneyId))
-                {
-                    if (!context.TournamentUserPairs.Any(p => p.PlayerTelegramId == query.From.Id && p.TournamentId == tourneyId))
-                    {
-                        var firstPId = context.UserLogins.FirstOrDefault(l => l.ProviderKey == query.From.Id.ToString());
-                        var playerId = firstPId == null ? "0" : firstPId.UserId;
-                        context.TournamentUserPairs.Add(new TournamentUserPair() { PlayerTelegramId = query.From.Id, DeckId="", PlayerId = playerId, TournamentId = tourneyId });
-                        context.SaveChanges();
-                    }
-                }
-                else
+                if (!context.TournamentUserPairs.Any(p => p.PlayerTelegramId == query.From.Id && p.TournamentId == tourneyId))
                 {
                     var firstPId = context.UserLogins.FirstOrDefault(l => l.ProviderKey == query.From.Id.ToString());
                     var playerId = firstPId == null ? "0" : firstPId.UserId;
                     context.TournamentUserPairs.Add(new TournamentUserPair() { PlayerTelegramId = query.From.Id, DeckId = "", PlayerId = playerId, TournamentId = tourneyId });
                     context.SaveChanges();
                 }
+                else
+                {
+                    var userPair = context.TournamentUserPairs.FirstOrDefault(u => u.PlayerTelegramId == query.From.Id && u.TournamentId == tourneyId);
+                    context.TournamentUserPairs.Remove(userPair);
+                    context.SaveChanges();
+                }
             }
-
-            if (value == "0")
+            else
             {
-                var tourney = context.Tournaments.FirstOrDefault(t => t.Id == tourneyId);
-
-                    if (context.TournamentUserPairs.Any(p => p.PlayerTelegramId == query.From.Id && p.TournamentId == tourneyId))
-                    {
-                        var userPair = context.TournamentUserPairs.FirstOrDefault(u => u.PlayerTelegramId == query.From.Id && u.TournamentId == tourneyId);
-                        context.TournamentUserPairs.Remove(userPair);
-                        context.SaveChanges();
-                    }
-                
+                var firstPId = context.UserLogins.FirstOrDefault(l => l.ProviderKey == query.From.Id.ToString());
+                var playerId = firstPId == null ? "0" : firstPId.UserId;
+                context.TournamentUserPairs.Add(new TournamentUserPair() { PlayerTelegramId = query.From.Id, DeckId = "", PlayerId = playerId, TournamentId = tourneyId });
+                context.SaveChanges();
             }
+
 
             var TList = context.Tournaments.Where(t => t.IsClosed == false).ToList();
             var chatId = query.Message.Chat.Id;

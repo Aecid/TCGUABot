@@ -1,0 +1,17 @@
+{
+  "name": "Black Sea Team Bot",
+  "short_name": "TCGUABot",
+  "description": "MTG companion service",
+  "icons": [
+    {
+      "src": "/img/logo192x192.png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/img/logo512x512.png",
+      "sizes": "512x512"
+    }
+  ],
+  "display": "standalone",
+  "start_url": "/"
+}

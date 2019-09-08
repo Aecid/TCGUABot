@@ -56,9 +56,16 @@ namespace TCGUABot.Models.Commands
                 foreach (var tourney in TList)
                 {
                     var buttonList = new List<InlineKeyboardButton>();
-                    msg += "<b>" + string.Format("{0:ddd, dd'/'MM'/'yy HH:mm}", tourney.PlannedDate);
+                    msg += "<a href=\"https://ace.od.ua/Tournaments/Details?id=" + tourney.Id + "\">" + string.Format("{0:ddd, dd'/'MM'/'yy HH:mm}", tourney.PlannedDate);
                     msg += " - ";
-                    msg += tourney.Name + "</b>";
+                    msg += tourney.Name + "</a>";
+                    if (!string.IsNullOrEmpty(tourney.EntryFee))
+                    {
+                        var entryFee = tourney.EntryFee.Contains("бесплатно", StringComparison.InvariantCultureIgnoreCase) ? "🔥<i>бесплатно!</i>🔥" : tourney.EntryFee;
+                        entryFee = tourney.EntryFee.Equals("0") ? "🔥<i>бесплатно!</i>🔥" : tourney.EntryFee;
+                        msg += "\r\n<b>Стоимость: </b>" + entryFee;
+                    }
+                    if (!string.IsNullOrEmpty(tourney.Rewards)) msg += "\r\n<b>Призы: </b>" + tourney.Rewards;
                     var tourneyPlayers = context.TournamentUserPairs.Where(p => p.TournamentId == tourney.Id).ToList();
                     if (tourneyPlayers != null && tourneyPlayers.Count > 0)
                     {
@@ -73,9 +80,10 @@ namespace TCGUABot.Models.Commands
                     }
                     if (TList.Count > 1) msg += "\r\n\r\n";
 
-                    buttonList.Add(InlineKeyboardButton.WithUrl(tourney.Name, "https://ace.od.ua/Tournaments/Details?id=" + tourney.Id));
-                    buttonList.Add(InlineKeyboardButton.WithCallbackData("✅", "t" + "|" + "1" + "|" + tourney.Id + "|" + message.MessageId));
-                    buttonList.Add(InlineKeyboardButton.WithCallbackData("❌", "t" + "|" + "0" + "|" + tourney.Id + "|" + message.MessageId));
+                    //buttonList.Add(InlineKeyboardButton.WithUrl(tourney.Name, "https://ace.od.ua/Tournaments/Details?id=" + tourney.Id));
+                    //buttonList.Add(InlineKeyboardButton.WithCallbackData("✅", "t" + "|" + "1" + "|" + tourney.Id + "|" + message.MessageId));
+                    //buttonList.Add(InlineKeyboardButton.WithCallbackData("❌", "t" + "|" + "0" + "|" + tourney.Id + "|" + message.MessageId));
+                    buttonList.Add(InlineKeyboardButton.WithCallbackData(string.Format("{0:ddd HH:mm}", tourney.PlannedDate) + " " + tourney.Name, "t" + "|" + tourney.Id));
 
                     keyboardList.Add(buttonList);
                 }

@@ -19,14 +19,28 @@
     <div class="single-tournament">
         <a class="edit-tournament" asp-page="./Edit" asp-route-id="@item.Id">📝</a>
         <a class="delete-tournament" asp-page="./Delete" asp-route-id="@item.Id">❌</a>
-        
+
         <div>
-            <a class="tournament-name" asp-page="./Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.PlannedDate) - @Html.DisplayFor(modelItem => item.Name)</a>
+            <a class="tournament-name" asp-page="./Details" asp-route-id="@item.Id">@Html.Raw(string.Format("{0:ddd, dd'/'MM'/'yy HH:mm}", item.PlannedDate)) - @Html.DisplayFor(modelItem => item.Name)</a>
         </div>
+        @if (!string.IsNullOrEmpty(item.EntryFee))
+        {
+        var entryFee = item.EntryFee.Contains("бесплатно", StringComparison.InvariantCultureIgnoreCase) ? "🔥<i>бесплатно!</i>🔥":item.EntryFee;
+        entryFee = item.EntryFee.Equals("0") ? "🔥бесплатно!🔥" : item.EntryFee;
+        <div>
+            <b>Стоимость участия: </b>@entryFee
+        </div>
+        }
+        @if (!string.IsNullOrEmpty(item.Rewards))
+        {
+        <div>
+            <b>Призы: </b>@Html.DisplayFor(modelItem => item.Rewards)
+        </div>
+        }
         <div class="alert-warning">
             @{ if (DateTime.Compare(item.PlannedDate, TimeService.GetLocalTime()) < 0)
                 {
-                    <text>Турнир уже начался!</text>
+                <text>Турнир уже начался!</text>
                 }
             }
         </div>
@@ -36,7 +50,7 @@
                 @{ foreach (var player in item.RegisteredPlayers)
                     {
                         var status = @player.EmojiStatus ?? "🧙‍♂️";
-                        <li>@status&nbsp;@Html.Raw(player.Name.Replace(" ", "&nbsp;"))</li>
+                    <li>@status&nbsp;@Html.Raw(player.Name.Replace(" ", "&nbsp;"))</li>
                     }
                 }
             </ul>
@@ -48,7 +62,7 @@
 
                 if (Context.UserLogins.Any(u => u.UserId == user.Id && u.LoginProvider == "Telegram"))
                 {
-                    <a class="btn btn-sm btn-primary beleren" tabindex="@{++tabIndex;}@tabIndex" onclick="OnRegisterClick('@item.Id', '@user.Id')">Register/Unregister</a>
+            <a class="btn btn-sm btn-primary beleren" tabindex="@{++tabIndex;}@tabIndex" onclick="OnRegisterClick('@item.Id', '@user.Id')">Register/Unregister</a>
                 }
             }
         </div>
