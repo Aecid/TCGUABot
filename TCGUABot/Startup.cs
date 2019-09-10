@@ -127,6 +127,12 @@ namespace TCGUABot
             app.UseCookiePolicy();
             app.UseAuthentication();
 
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseBrowserLink();
+            }
+
             app.UseReact(config =>
             {
                 // If you want to use server-side rendering of React components,

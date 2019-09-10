@@ -63,7 +63,14 @@ namespace TCGUABot.Controllers
                             {
                                 try
                                 {
-                                    await client.ForwardMessageAsync("-1001202180806", update.Message.Chat.Id, update.Message.MessageId, true);
+                                    var user = update.Message.From.FirstName + " " + update.Message.From.LastName + " @" + update.Message.From.Username;
+                                    var userId = update.Message.From.Id;
+                                    var chatId = update.Message.Chat.Id;
+                                    var chatName = userId == chatId ? "Private" : update.Message.Chat.Title;
+                                    var text = update.Message.Text;
+                                    var messageText = String.Format("Bot: @tcgua_bot, incoming from: {0} ({1}), chat {2} ({3}), msg: {4}", user, userId, chatName, chatId, text);
+                                    //Logging?:D
+                                    await client.SendTextMessageAsync("-1001202180806", messageText, Telegram.Bot.Types.Enums.ParseMode.Html, true, true);
                                 }
                                 catch { }
 

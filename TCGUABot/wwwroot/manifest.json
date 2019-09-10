@@ -1,6 +1,6 @@
 {
   "name": "Black Sea Team Bot",
-  "short_name": "TCGUABot",
+  "short_name": "BlackSeaTeamBot",
   "description": "MTG companion service",
   "icons": [
     {
@@ -13,5 +13,5 @@
     }
   ],
   "display": "standalone",
-  "start_url": "/"
+  "start_url": "https://ace.od.ua"
 }

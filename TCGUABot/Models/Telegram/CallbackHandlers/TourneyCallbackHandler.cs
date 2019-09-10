@@ -23,48 +23,9 @@ namespace TCGUABot.Models.CallbackHandlers
             var name = dataArray[0];
             var tourneyId = dataArray[1];
 
-            var isExistingUser = context.TelegramUsers.Any(u => u.Id == query.From.Id);
-            if (!isExistingUser)
-            {
-                var user = new TelegramUser()
-                {
-                    Id = query.From.Id,
-                    FirstName = query.From.FirstName,
-                    LastName = query.From.LastName,
-                    Username = query.From.Username,
-                    EmojiStatus = "🧙‍♂️"
-                };
+            var tUser = query.From;
 
-                context.TelegramUsers.Add(user);
-                context.SaveChanges();
-            }
-            else
-            {
-                var existingUser = context.TelegramUsers.FirstOrDefault(u => u.Id == query.From.Id);
-                var areChanges = false;
-                if (existingUser.FirstName != query.From.FirstName)
-                {
-                    areChanges = true;
-                    existingUser.FirstName = query.From.FirstName;
-                }
-                if (existingUser.LastName != query.From.LastName)
-                {
-                    areChanges = true;
-                    existingUser.LastName = query.From.LastName;
-                }
-                if (existingUser.Username != query.From.Username)
-                {
-                    areChanges = true;
-                    existingUser.Username = query.From.Username;
-                }
-
-                if (areChanges)
-                {
-                    context.SaveChanges();
-                }
-            }
-
-
+            Helpers.TelegramUtil.AddUser(tUser, context);
 
             var tourney = context.Tournaments.FirstOrDefault(t => t.Id == tourneyId);
 

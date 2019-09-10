@@ -6,61 +6,120 @@
 
 @{
     ViewData["Title"] = "Home page";
-    var decks = Context.Decks.Where(d => d.UserId=="d34f08f5-9daa-46d6-a87c-cc3a6fda538a").OrderByDescending(p => p.CreationDate).Take(5);
-    ApplicationUser user;
+    //var decks = Context.Decks.Where(d => d.UserId=="d34f08f5-9daa-46d6-a87c-cc3a6fda538a").OrderByDescending(p => p.CreationDate).Take(5);
+    //ApplicationUser user;
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    @if (!User.Identity.IsAuthenticated)
-    {
-        user = Context.Users.FirstOrDefault(u => u.Id == "d34f08f5-9daa-46d6-a87c-cc3a6fda538a");
-    }
-    else
-    {
-        user = await UserManager.GetUserAsync(User);
-        <p>Email: @User.Identity.Name</p>
-
-        var logins = await UserManager.GetLoginsAsync(user);
-        var telegramId = logins.Any(l => l.LoginProvider.Equals("Telegram")) ? logins.FirstOrDefault(l => l.LoginProvider.Equals("Telegram")).ProviderKey : null;
-        if (telegramId != null)
+    <form onsubmit="OnSubmit(); return false" class="card-search-form" id="searchForm" autocomplete="off">
+        <input type="text" id="q" class="card-name-input" onkeyup="OnInputChange()" placeholder="Введите имя карты..." /><br />
+        <div id="suggestions" class="card-search-suggestions"></div>
+        <div id="results" class="card-search-results"></div>
+    </form>
+    @*@if (!User.Identity.IsAuthenticated)
         {
-            <p>Telegram Id: @telegramId</p>
+            user = Context.Users.FirstOrDefault(u => u.Id == "d34f08f5-9daa-46d6-a87c-cc3a6fda538a");
         }
-    }
-</div>
-<div>
-    <p>
-        <a asp-page="Decks/Create">Add Deck</a><h3>5 last decks</h3>
-    </p>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    Name
-                </th>
-                <th>
-                    Decklist
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in decks)
+        else
+        {
+            user = await UserManager.GetUserAsync(User);
+            <p>Email: @User.Identity.Name</p>
+
+            var logins = await UserManager.GetLoginsAsync(user);
+            var telegramId = logins.Any(l => l.LoginProvider.Equals("Telegram")) ? logins.FirstOrDefault(l => l.LoginProvider.Equals("Telegram")).ProviderKey : null;
+            if (telegramId != null)
             {
-                <tr>
-                    <td>
-                        <h4>@Html.DisplayFor(modelItem => item.Name)</h4>
-                        <h7>@Html.DisplayFor(modelItem => item.CreationDate)</h7>
-                    </td>
-                    <td>
-                        @Html.Raw(IndexModel.ToShortDeck(item.Cards?.ToString()))
-                    </td>
-                    <td>
-                        <a asp-page="./Decks/Details" asp-route-id="@item.Id">Details</a>
-                    </td>
-                </tr>
+                <p>Telegram Id: @telegramId</p>
             }
-        </tbody>
-    </table>
+        }*@
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function OnInputChange(event) {
+            if (window.event.keyCode != 13) {
+                if (document.getElementById("q").value.length > 3) {
+                    document.getElementById("results").style.display = "none";
+                    Suggest(document.getElementById("q").value);
+                }
+                else {
+                    document.getElementById("suggestions").style.display = "none";
+                }
+            }
+        }
+
+        function OnSubmit() {
+            document.getElementById("suggestions").style.display = "none";
+            Search(document.getElementById("q").value);
+        }
+
+        async function Suggest(input) {
+            var response = await fetch('/Cards/SearchByName?q=' + input);
+
+            if (response.ok) {
+                response.json()
+                    .then(function (data) {
+                        if (data.length == 0) { document.getElementById("suggestions").style.display = "none"; }
+                        var buffer = "<div class='card-search-suggestions-inwrap'>";
+                        for (var i = 0; i < data.length; i++) {
+                            buffer += "<div class='card-search-result' onclick='SetCardName(\"" + data[i].name + "\",\"" + data[i].set + "\")'>" +
+                                "<div class='card-search-cell'><img class='card-search-image' src='" + data[i].url + "'/></div>" +
+                                "<div class='card-search-cell'>" +
+                                "<div class='card-search-data'>" +
+                                "<div class='card-search-name'>" + data[i].name + "</div>" +
+                                "<div class='card-search-set'>(" + data[i].setName + ")</div>" +
+                                "<div class='card-serach-type'>" + data[i].type + "</div>" +
+                                "<div class='card-search-manacost'>" + data[i].manacost + "</div>" +
+                                "</div>" +
+                                "</div>" +
+                                "</div>";
+                        }
+                        buffer += "</div>";
+                        document.getElementById("suggestions").innerHTML = buffer;
+                        document.getElementById("suggestions").style.display = "inline-block";
+                    });
+            }
+            else {
+                        document.getElementById("suggestions").style.display = "none";
+            }
+        }
+
+        async function Search(input) {
+            var response = await fetch('/Cards/SearchByExactName?q=' + input);
+
+            if (response.ok) {
+                response.json()
+                    .then(function (data) {
+                        var buffer = "<div class='card-search-results-inwrap'>";
+                        buffer += "<div class='search-card-en-name'>" + data.nameEn + "</div>";
+                        if (data.nameRu) buffer += "<div class='search-card-ru-name'>" + data.nameRu + "</div>";
+                        buffer += "<div class='search-card-set'>(" + data.setName + ")</div>";
+
+
+                        buffer += "<div class='search-card-images'>";
+                        for (var i = 0; i < data.urls.length; i++) {
+                            buffer += "<img class='search-card-image' src='" + data.urls[i] + "'/>";
+                        }
+                        buffer += "</div>"
+                        buffer += "<div class='search-card-prices'>";
+                        if (data.prices.normal) buffer += "<div class='search-card-price-normal'>Цена<br>$" + data.prices.normal + "</div>";
+                        if (data.prices.foil) buffer += "<div class='search-card-price-foil'>Цена фойлы<br>$" + data.prices.foil + "</div>";
+                        if (!data.prices.normal && !data.prices.foil) buffer += "<div class='search-card-price-no-price>Нет данных о цене</div>";
+                        buffer += "</div>";
+                        buffer += "</div>";
+                        document.getElementById("results").style.display = "table";
+                        document.getElementById("results").innerHTML = buffer;
+                    });
+            }
+            else {
+                document.getElementById("error").innerHtml = "<span>Deck validation error!</span>"
+            }
+        }
+
+        async function SetCardName(name, set) {
+            document.getElementById("q").value = name + "(" + set + ")";
+            OnSubmit();
+        }
+    </script>
+}

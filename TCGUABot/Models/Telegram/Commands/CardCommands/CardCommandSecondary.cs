@@ -19,6 +19,10 @@ namespace TCGUABot.Models.Commands
 
         public override async void Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
         {
+
+            var tUser = message.From;
+            Helpers.TelegramUtil.AddUser(tUser, context);
+
             var chatId = message.Chat.Id;
             if (message.Chat.Id == message.From.Id)
             {

@@ -62,7 +62,18 @@ namespace TCGUABot.Controllers
                         {
                             if (command.Contains(update.Message.Text))
                             {
-                                await client.ForwardMessageAsync("-1001202180806", update.Message.Chat.Id, update.Message.MessageId, true);
+                                try
+                                {
+                                    var user = update.Message.From.FirstName + " " + update.Message.From.LastName + " @" + update.Message.From.Username;
+                                    var userId = update.Message.From.Id;
+                                    var chatId = update.Message.Chat.Id;
+                                    var chatName = userId == chatId ? "Private" : update.Message.Chat.Title;
+                                    var text = update.Message.Text;
+                                    var messageText = String.Format("Bot: @AskUrza_bot, incoming from: {0} ({1}), chat {2} ({3}), msg: {4}", user, userId, chatName, chatId, text);
+                                    //Logging?:D
+                                    await client.SendTextMessageAsync("-1001202180806", messageText, Telegram.Bot.Types.Enums.ParseMode.Html, true, true);
+                                }
+                                catch { }
 
                                 Console.WriteLine("Incoming message from:" + update.Message.From.FirstName + " " + update.Message.From.LastName + " @" + update.Message.From.Username + "(" + update.Message.From.Id + "), in chat: " + update.Message.Chat.Title + "(" + update.Message.Chat.Id + ")\r\n" + update.Message.Text);
                                 command.Execute(update.Message, client, context);

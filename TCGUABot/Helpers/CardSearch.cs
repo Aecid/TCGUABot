@@ -28,6 +28,7 @@ namespace TCGUABot.Helpers
                         card = set.cards.LastOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant()) && f.multiverseId > 0));
                     }
 
+                    card.Set = set.code;
                     return card;
                 }
                 else
@@ -100,6 +101,7 @@ namespace TCGUABot.Helpers
                     card = setToSearch.cards.FirstOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Equals(name.ToLowerInvariant())));
                 }
 
+                card.Set = set;
 
                 return card;
             }

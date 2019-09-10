@@ -6,9 +6,114 @@ for details on configuring this project to bundle and minify static web assets. 
     flex-direction: column;
 }
 
+.card-name-input {
+    width: 100%;
+    font-family: Beleren;
+    padding: 0px 5px 0px 5px;
+    max-width: 350px;
+    box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.2), 0 0px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.search-card-en-name {
+    text-align: center;
+    vertical-align: middle;
+    font-family: Beleren;
+    font-size: larger;
+}
+
+.search-card-ru-name {
+    font-weight: bold;
+    font-family: Beleren;
+    font-size: larger;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.search-card-images {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.search-card-prices {
+    display: table-row;
+    font-family: Beleren;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.search-card-price-normal {
+    text-align: center;
+    vertical-align: middle;
+    float: left;
+    width: 50%;
+}
+
+.search-card-price-foil {
+    text-align: center;
+    vertical-align: middle;
+    float: left;
+    width: 50%;
+}
+
+.card-search-results {
+    /*border: 1px solid #a9a9a9;*/
+    display: none;
+    width: auto;
+    height: auto;
+    margin: 0 auto;
+    margin-top: 20px;
+    padding: 7px 20px 10px 20px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.card-search-results-inwrap {
+    display: table;
+}
+
+.card-search-suggestions {
+    /*border: 1px solid #a9a9a9;*/
+    display: none;
+    width: auto;
+    height: 450px;
+    max-height: 450px;
+    overflow-y: scroll;
+    margin: 0 auto;
+    padding: 7px 10px 0px 10px;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.card-search-suggestions-inwrap {
+    display: table;
+}
+
+    .card-search-result {
+        display: table-row;
+    }
+
+    .card-search-result:hover {
+        background: powderblue;
+    }
+.card-search-name {
+    font-family: Beleren;
+    font-size: larger;
+}
+
+.card-search-cell {
+    font-weight: bold;
+    font-size: small;
+    display: table-cell;
+    padding: 0.5em;
+    vertical-align: middle;
+}
+
+.card-search-image {
+    width:75px;
+}
+
 .single-tournament {
-    background-color:powderblue;
-    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     padding: 10px;
     position: relative;
 }

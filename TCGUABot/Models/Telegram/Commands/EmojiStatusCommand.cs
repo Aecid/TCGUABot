@@ -24,47 +24,8 @@ namespace TCGUABot.Models.Commands
             var emoji = message.Text.Replace("/status ", "");
             if (Emoji.IsEmoji(emoji, 1) || Emoji.All.ToList().Any(e => e.Sequence.AsString == emoji))
             {
-                var isExistingUser = context.TelegramUsers.Any(u => u.Id == message.From.Id);
-                if (!isExistingUser)
-                {
-                    var user = new TelegramUser()
-                    {
-                        Id = message.From.Id,
-                        FirstName = message.From.FirstName,
-                        LastName = message.From.LastName,
-                        Username = message.From.Username,
-                        EmojiStatus = "🧙‍♂️"
-
-                    };
-
-                    context.TelegramUsers.Add(user);
-                    context.SaveChanges();
-                }
-                else
-                {
-                    var existingUser = context.TelegramUsers.FirstOrDefault(u => u.Id == message.From.Id);
-                    var areChanges = false;
-                    if (existingUser.FirstName != message.From.FirstName)
-                    {
-                        areChanges = true;
-                        existingUser.FirstName = message.From.FirstName;
-                    }
-                    if (existingUser.LastName != message.From.LastName)
-                    {
-                        areChanges = true;
-                        existingUser.LastName = message.From.LastName;
-                    }
-                    if (existingUser.Username != message.From.Username)
-                    {
-                        areChanges = true;
-                        existingUser.Username = message.From.Username;
-                    }
-
-                    if (areChanges)
-                    {
-                        context.SaveChanges();
-                    }
-                }
+                var tUser = message.From;
+                Helpers.TelegramUtil.AddUser(tUser, context);
 
                 var telegramUser = context.TelegramUsers.FirstOrDefault(u => u.Id == message.From.Id);
                 telegramUser.EmojiStatus = emoji;
