@@ -12,46 +12,50 @@ namespace TCGUABot.Helpers
     {
         public static void AddUser(User telegramUser, ApplicationDbContext context)
         {
-            var isExistingUser = context.TelegramUsers.Any(u => u.Id == telegramUser.Id);
-            if (!isExistingUser)
+            try
             {
-                var user = new TelegramUser()
+                var isExistingUser = context.TelegramUsers.Any(u => u.Id == telegramUser.Id);
+                if (!isExistingUser)
                 {
-                    Id = telegramUser.Id,
-                    FirstName = telegramUser.FirstName,
-                    LastName = telegramUser.LastName,
-                    Username = telegramUser.Username,
-                    EmojiStatus = "🧙‍♂️"
-                };
+                    var user = new TelegramUser()
+                    {
+                        Id = telegramUser.Id,
+                        FirstName = telegramUser.FirstName,
+                        LastName = telegramUser.LastName,
+                        Username = telegramUser.Username,
+                        EmojiStatus = "🧙‍♂️"
+                    };
 
-                context.TelegramUsers.Add(user);
-                context.SaveChanges();
-            }
-            else
-            {
-                var existingUser = context.TelegramUsers.FirstOrDefault(u => u.Id == telegramUser.Id);
-                var areChanges = false;
-                if (existingUser.FirstName != telegramUser.FirstName)
-                {
-                    areChanges = true;
-                    existingUser.FirstName = telegramUser.FirstName;
-                }
-                if (existingUser.LastName != telegramUser.LastName)
-                {
-                    areChanges = true;
-                    existingUser.LastName = telegramUser.LastName;
-                }
-                if (existingUser.Username != telegramUser.Username)
-                {
-                    areChanges = true;
-                    existingUser.Username = telegramUser.Username;
-                }
-
-                if (areChanges)
-                {
+                    context.TelegramUsers.Add(user);
                     context.SaveChanges();
                 }
+                else
+                {
+                    var existingUser = context.TelegramUsers.FirstOrDefault(u => u.Id == telegramUser.Id);
+                    var areChanges = false;
+                    if (existingUser.FirstName != telegramUser.FirstName)
+                    {
+                        areChanges = true;
+                        existingUser.FirstName = telegramUser.FirstName;
+                    }
+                    if (existingUser.LastName != telegramUser.LastName)
+                    {
+                        areChanges = true;
+                        existingUser.LastName = telegramUser.LastName;
+                    }
+                    if (existingUser.Username != telegramUser.Username)
+                    {
+                        areChanges = true;
+                        existingUser.Username = telegramUser.Username;
+                    }
+
+                    if (areChanges)
+                    {
+                        context.SaveChanges();
+                    }
+                }
             }
+            catch { }
         }
     }
 }

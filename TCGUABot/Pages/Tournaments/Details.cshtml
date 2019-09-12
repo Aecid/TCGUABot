@@ -1,73 +1,138 @@
 ﻿@page
+@using Newtonsoft.Json;
 @model TCGUABot.Pages.Tournaments.DetailsModel
 
 @{
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+@{
+    bool isJudge = User.Identity.IsAuthenticated && User.IsInRole("Judge");
+}
 
-<div>
-    <h4>Tournament</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Tournament.CreationDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Tournament.CreationDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Tournament.StartDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Tournament.StartDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Tournament.PlannedDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Tournament.PlannedDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Tournament.EndDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Tournament.EndDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Tournament.Name)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Tournament.Name)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Tournament.Description)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Tournament.Description)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Tournament.IsLocked)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Tournament.IsLocked)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Tournament.IsClosed)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Tournament.IsClosed)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Tournament.CreatorId)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Tournament.CreatorId)
-        </dd>
-    </dl>
+
+<h4> @Html.DisplayFor(model => model.Tournament.Name)</h4>
+
+<div class="row">
+    <div class="col-md-4">
+        <section>
+            <h6>Information</h6>
+            <div>
+                @Html.Raw(string.Format("{0:ddd, dd'/'MM'/'yy HH:mm}", Model.Tournament.PlannedDate))
+            </div>
+            <div>
+                @Html.DisplayFor(model => model.Tournament.Description)
+            </div>
+        </section>
+    </div>
+    <div class="col-md-6 col-md-offset-2 shadow-div section">
+        <section>
+            <h6>Registered Players</h6>
+            <div class="t-table" id="registeredPlayers">
+                <img src="~/img/loader.gif"/>
+            </div>
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <hr />
+                <div class="dropdown-container">
+                    <a class="btn btn-sm btn-primary beleren text-white" onclick="OnRegisterClick('@Model.Tournament.Id', '@Model.CurrentUser.Id' )">Register/Unregister</a>
+                    <a class="btn btn-sm btn-primary beleren text-white" onclick="ToggleDecks()">Register deck</a>
+                    <div class="add-deck-registration shadow-div" id="decks-dropdown" style="display: none">
+                        @{ foreach (var deck in Model.PlayerDecks)
+                            {
+                            <div class="t-row highlight" onclick="RegisterDeck('@deck.Id')"><div class="t-cell">@deck.Name</div></div>
+                            }
+                        }
+                    </div>
+                </div>
+
+            }
+        </section>
+    </div>
+
 </div>
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.Tournament.Id">Edit</a> |
     <a asp-page="./Index">Back to List</a>
 </div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+<script>
+
+        window.onload = UpdatePlayers;
+
+    function ToggleDecks() {
+        if (document.getElementById('decks-dropdown').style.display == "none") document.getElementById('decks-dropdown').style.display = "block";
+        else document.getElementById('decks-dropdown').style.display = "none";
+    }
+    async function UpdatePlayers() {
+        //document.getElementById("registeredPlayers").innerHTML = "<img src='~/img/loader.gif/>";
+            var tourneyId = "@Model.Tournament.Id";
+            var playerId = "@Model.CurrentUser?.Id";
+            var decks = @Html.Raw(JsonConvert.SerializeObject(Model.PlayerDecks));
+
+            var response = await fetch('/Tournament/GetTournamentPlayersWithDetails?tourneyId=' + tourneyId + '&playerId=' + playerId);
+
+            if (response.ok) {
+                response.json()
+                    .then(function (data) {
+                        var buffer = "<div class='tourney-details-players'>Players total: " + data.length + "</div>";
+                        for (var i = 0; i < data.length; i++) {
+                            buffer += "<div class=\"t-row\">";
+                            buffer += "<div class=\"t-cell\">";
+                            buffer += data[i].player.emojiStatus;
+                            buffer += data[i].player.name;
+                            buffer += "</div>";
+                            buffer += "<div class=\"t-cell\">";
+                            if (data[i].current) buffer += "";
+                            buffer += "</div>";
+                            buffer += "<div class=\"t-cell\">";
+                            @{ if (isJudge)
+                {
+                    <text>if (data[i].hasDeck) buffer += "<a href=\"/Decks/Details?id=" + data[i].deckId + "\">Deck: " + data[i].deckName + "</a>";
+                    else
+                    {
+                        buffer += "No deck registered";
+                            }
+                            </text>
+                                }
+                                else
+                                {
+                                <text>
+                            if (data[i].hasDeck && data[i].current) buffer += "<a href=\"/Decks/Details?id=" + data[i].deckId + "\">Deck: " + data[i].deckName + "</a>";
+                            </text>
+                 }
+            }
+                            buffer += "</div>";
+                                buffer += "</div>";
+            }
+
+                        document.getElementById("registeredPlayers").innerHTML = buffer;
+                    });
+            }
+    }
+
+            function OnRegisterClick(tourneyId, playerId) {
+            RegUnreg(tourneyId, playerId);
+        }
+
+        async function RegUnreg(tourneyId, playerId) {
+            var response = await fetch('/Tournament/TogglePlayerParticipation?tourneyId=' + tourneyId + '&playerId=' + playerId)
+            if (response.ok) {
+                UpdatePlayers();
+            }
+        }
+
+    async function RegisterDeck(deckId) {
+        document.getElementById('decks-dropdown').style.display = "none";
+            var tourneyId = "@Model.Tournament.Id";
+            var playerId = "@Model.CurrentUser?.Id";
+            var response = await fetch('/Tournament/SetDeck?tourneyId=' + tourneyId + '&playerId=' + playerId + '&deckId=' + deckId);
+
+            if (response.ok) {
+                UpdatePlayers();
+            }
+        }
+</script>
+}

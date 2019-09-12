@@ -16,22 +16,6 @@
         <div id="suggestions" class="card-search-suggestions"></div>
         <div id="results" class="card-search-results"></div>
     </form>
-    @*@if (!User.Identity.IsAuthenticated)
-        {
-            user = Context.Users.FirstOrDefault(u => u.Id == "d34f08f5-9daa-46d6-a87c-cc3a6fda538a");
-        }
-        else
-        {
-            user = await UserManager.GetUserAsync(User);
-            <p>Email: @User.Identity.Name</p>
-
-            var logins = await UserManager.GetLoginsAsync(user);
-            var telegramId = logins.Any(l => l.LoginProvider.Equals("Telegram")) ? logins.FirstOrDefault(l => l.LoginProvider.Equals("Telegram")).ProviderKey : null;
-            if (telegramId != null)
-            {
-                <p>Telegram Id: @telegramId</p>
-            }
-        }*@
 </div>
 
 @section Scripts {
@@ -81,7 +65,7 @@
                     });
             }
             else {
-                        document.getElementById("suggestions").style.display = "none";
+                document.getElementById("suggestions").style.display = "none";
             }
         }
 

@@ -37,6 +37,7 @@ namespace TCGUABot.Models.Commands
                 msg = "<b>❌Карта не найдена.</b>";
             }
 
+            if (chatId == -1001330824758) msg = msg.Replace("🇷🇺", "🏳‍🌈");
             await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
         }
     }

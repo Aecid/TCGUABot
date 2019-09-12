@@ -19,6 +19,9 @@ namespace TCGUABot.Models.Commands
 
         public override async void Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
         {
+            var tUser = message.From;
+            Helpers.TelegramUtil.AddUser(tUser, context);
+
             var chatId = message.Chat.Id;
             await client.SendChatActionAsync(chatId, Telegram.Bot.Types.Enums.ChatAction.UploadPhoto);
             string text = string.Empty;
@@ -71,7 +74,7 @@ namespace TCGUABot.Models.Commands
             }
             else
             {
-                msg = "<b>❌Карта не найдена по запросу \"" + text + "\".</b>";
+                msg = "<b>❌Карта не найдена по запросу \"" + text + "\".</b>\r\nПопробуйте ввести в чат <b>\"@tcgua_bot имякарты\"</b> и подождать подсказку от бота.";
             }
 
             if (card != null)
@@ -141,6 +144,12 @@ namespace TCGUABot.Models.Commands
                     if (media.Count > 0)
                     {
                         await client.SendMediaGroupAsync(media, chatId);
+                        if (chatId == -1001330824758)
+                        {
+                            msg = msg.Replace("🇷🇺", "🏳‍🌈");
+                            msg = msg.Replace("Цена", "Ціна");
+                            msg = msg.Replace("фойлы", "фойли");
+                        }
                         await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
                     }
 
@@ -165,18 +174,35 @@ namespace TCGUABot.Models.Commands
                     {
                         using (Stream fileStream = req.GetResponse().GetResponseStream())
                         {
+                            if (chatId == -1001330824758)
+                            {
+                                msg = msg.Replace("🇷🇺", "🏳‍🌈");
+                                msg = msg.Replace("Цена", "Ціна");
+                                msg = msg.Replace("фойлы", "фойли");
+                            }
                             await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream), msg, Telegram.Bot.Types.Enums.ParseMode.Html);
                         }
                     }
                     else
                     {
+                        if (chatId == -1001330824758)
+                        {
+                            msg = msg.Replace("🇷🇺", "🏳‍🌈");
+                            msg = msg.Replace("Цена", "Ціна");
+                            msg = msg.Replace("фойлы", "фойли");
+                        }
                         await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
                     }
                 }
             }
             else
             {
-                //msg = nameEn + "\r\n" + nameRu + "\r\n" + price;
+                if (chatId == -1001330824758)
+                {
+                    msg = msg.Replace("🇷🇺", "🏳‍🌈");
+                    msg = msg.Replace("Цена", "Ціна");
+                    msg = msg.Replace("фойлы", "фойли");
+                }
                 await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyToMessageId: message.MessageId);
             }
         }

@@ -34,14 +34,9 @@ namespace TCGUABot.Controllers
         [HttpGet]
         public JsonResult GetTournamentPlayers([FromQuery] string tourneyId)
         {
-            var registeredPlayers = new List<TelegramUser>();
-            var pairList = context.TournamentUserPairs.Where(u => u.TournamentId == tourneyId).ToList();
-            foreach (var pair in pairList)
-            {
-                registeredPlayers.Add(context.TelegramUsers.FirstOrDefault(u => u.Id == pair.PlayerTelegramId));
-            }
-
             var result = new List<string>();
+
+            var registeredPlayers = GetTournamentPlayersAsList(tourneyId);
 
             foreach (var player in registeredPlayers)
             {
@@ -49,6 +44,94 @@ namespace TCGUABot.Controllers
             }
 
             return Json(result);
+        }
+
+        public List<TelegramUser> GetTournamentPlayersAsList(string tourneyId)
+        {
+            var registeredPlayers = new List<TelegramUser>();
+            var pairList = context.TournamentUserPairs.Where(u => u.TournamentId == tourneyId).ToList();
+            foreach (var pair in pairList)
+            {
+                registeredPlayers.Add(context.TelegramUsers.FirstOrDefault(u => u.Id == pair.PlayerTelegramId));
+            }
+
+            return registeredPlayers;
+        }
+
+        [HttpGet]
+        public ActionResult GetTournamentPlayersWithDetails([FromQuery] string tourneyId, [FromQuery] string playerId)
+        {
+            try
+            {
+                var isJudge = User.Identity.IsAuthenticated && User.IsInRole("Judge");
+                var players = GetTournamentPlayersAsList(tourneyId);
+                var playerDeckPairs = context.TournamentUserPairs.Where(p => p.TournamentId == tourneyId);
+                string telegramId = "";
+                try
+                {
+                    telegramId = context.UserLogins.FirstOrDefault(l => l.UserId == playerId)?.ProviderKey;
+                }
+                catch { }
+                var result = new List<ExpandoObject>();
+                foreach (var player in players)
+                {
+                    dynamic pl = new ExpandoObject();
+                    pl.player = player;
+                    var isCurrent = player.Id.ToString() == telegramId;
+                    pl.current = isCurrent;
+                    var playerDeck = playerDeckPairs.FirstOrDefault(p => p.PlayerTelegramId == player.Id);
+
+                    if (playerDeck != null && !string.IsNullOrEmpty(playerDeck.DeckId))
+                    {
+                        if (isJudge || isCurrent)
+                        {
+                            pl.deckId = playerDeck.DeckId;
+                            pl.deckName = context.Decks.FirstOrDefault(d => d.Id == playerDeck.DeckId).Name;
+                            pl.hasDeck = true;
+                        }
+                    }
+                    else pl.hasDeck = false;
+
+                    result.Add(pl);
+                }
+
+                return Ok(result);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+
+            //foreach (var player in players)
+            //{
+            //    html += "<div class=\"d-sm-table-row\">";
+            //    html += "<div class=\"d-sm-table-cell\">";
+            //    html += player;
+            //    html += "</div>";
+            //    html += "<div class=\"d-sm-table-cell\">";
+            //    if (telegramId == null) html += "Not registered";
+            //    if (player.Id.ToString() == telegramId)
+            //    {
+            //        html += "<button/>";
+            //    }
+            //    html += "</div>";
+            //    html += "<div class=\"d-sm-table-cell\">";
+            //    if (telegramId!=null)
+            //    {
+            //        if (context.TournamentUserPairs.FirstOrDefault(t => t.Id.ToString() == tourneyId && t.PlayerTelegramId.ToString() == telegramId).DeckId!=null)
+            //        {
+            //            html += "Here comes add deck button";
+            //        }
+            //        else
+            //        {
+            //            html += "<a href=\"/Decks/Details?id=abdd4a8f-7ce6-4d09-8695-457d4aa6ed23\">Deck</a>";
+            //        }
+            //    }
+            //    html += "</div>";
+            //    html += "</div>";
+            //}
+
+            //return html;
         }
 
         [Authorize]
@@ -81,9 +164,31 @@ namespace TCGUABot.Controllers
             return Ok();
         }
 
+        [Authorize]
+        [HttpGet]
+        public ActionResult SetDeck([FromQuery] string tourneyId, [FromQuery] string playerId, [FromQuery] string deckId)
+        {
+            var playerTelegramId = context.UserLogins.FirstOrDefault(u => u.UserId == playerId)?.ProviderKey;
+            if (playerTelegramId == null) return Forbid();
+
+            var player = context.TelegramUsers.FirstOrDefault(u => u.Id == long.Parse(playerTelegramId));
+
+            try
+            {
+                context.TournamentUserPairs.FirstOrDefault(p => p.PlayerTelegramId == long.Parse(playerTelegramId) && p.TournamentId == tourneyId).DeckId = deckId;
+                context.SaveChanges();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
         [Authorize(Roles = "Admin, Store Owner, Judge, Event Organizer")]
         [HttpGet]
-        public async Task<ActionResult> CreateDefaultTournament([FromQuery] string type, string creator)
+        public ActionResult CreateDefaultTournament([FromQuery] string type, string creator)
         {
             DateTime now = TimeService.GetLocalTime();
             var tourneyTime = new DateTime(now.Year, now.Month, now.Day, 11, 00, 00);
@@ -123,5 +228,7 @@ namespace TCGUABot.Controllers
                 return BadRequest(ModelState);
             }
         }
+
+
     }
 }

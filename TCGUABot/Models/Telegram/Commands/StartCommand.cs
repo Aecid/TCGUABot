@@ -18,30 +18,27 @@ namespace TCGUABot.Models.Commands
         {
 
             var chatId = message.Chat.Id;
-            var login = context.UserLogins.FirstOrDefault(l => l.LoginProvider == "Telegram" && l.ProviderKey == message.From.Id.ToString());
-            if (login != null)
-            {
-                var user = context.Users.FirstOrDefault(u => u.Id == login.UserId);
-                await client.SendTextMessageAsync(chatId, "Вы зарегистрированы как "+user.Email);
-            }
-            else
-            {
-                IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-                configurationBuilder.AddJsonFile("appsettings.json");
-                IConfiguration configuration = configurationBuilder.Build();
-                var baseUrl = configuration.GetSection("TelegramSettings").GetSection("TelegramWebHookHostBase").Value;
-                var url = string.Format(configuration.GetSection("TelegramSettings").GetSection("TelegramWebHookHostBase").Value, "signin-telegram");
+            var tUser = message.From;
+            Helpers.TelegramUtil.AddUser(tUser, context);
+            await client.SendTextMessageAsync(chatId, @"Привет!
 
-                var loginUrl = new LoginUrl() { BotUsername = "tcgua_bot", Url = url };
+Поиск карт по имени происходит через имя бота: введите, например, ""@tcgua_bot bolt"" и подождите подсказок от бота.
+Цены в боте показываются по медиане TCGPlayer.
 
-                InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup(new InlineKeyboardButton()
-                {
-                    Text = "Логин на "+baseUrl,
-                    LoginUrl = loginUrl
-                });
+Доступные команды:
+/c {cardname} - ищет карту по названию на русском или английском. Пример: ""/c lightning bolt""
 
-                await client.SendTextMessageAsync(chatId, "Если хотите пользоваться функцией импорта деклистов, залогиньтесь на "+baseUrl+" через Телеграм.\r\nЕсли не хотите - не регистрируйтесь :)", replyMarkup: keyboard);
-            }
+/rs {cardname} - показывает дополнительные рулинги карты. Пример: ""/rs lich's mirror""
+
+/oracle {cardname} - показывает текст карты и ссылку на картинку. Пример ""/oracle Tarmogoyf""
+
+/оракл {cardname} - показывает русский текст карты если у карты есть перевод на русский. Пример ""/оракл Утечка Маны""
+
+/tourney - показывает анонсированные турниры в Одессе (турниры в других локациях в разработке)
+
+/import {deckImport} - вы можете импортировать деку из MTG Arena и сохранить её на сайте. Если вы не зарегистрированы на сайте или не связали аккаунт на сайте с аккаунтом телеграмма, дека может быть удалена в любой момент
+
+/login - авторизирует пользователя на сайте и создает аккаунт привязанный к телеграмму");
         }
     }
 }

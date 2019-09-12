@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -173,6 +174,13 @@ namespace TCGUABot.Controllers
             context.SaveChanges();
             
             return deckId;
+        }
+
+        [Authorize]
+        [HttpGet]
+        public ActionResult GetPlayerDecks([FromQuery]string playerId)
+        {
+            return Json(context.Decks.Where(p => p.UserId == playerId));
         }
     }
 }
