@@ -44,7 +44,7 @@ namespace TCGUABot
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
 
 
             services.AddDefaultIdentity<ApplicationUser>()
@@ -101,6 +101,7 @@ namespace TCGUABot
                 });
 
             services.AddHostedService<TimeService>();
+            services.AddHostedService<TimeServiceOneMinute>();
 
             Startup.StaticServices = services;
 

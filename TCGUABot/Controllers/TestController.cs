@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TCGUABot.Data;
@@ -31,6 +32,26 @@ namespace TCGUABot.Controllers
             command.Execute(new Message() { Text = "/c " + cardName, Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
 
             return msg;
+        }
+
+        [HttpGet("/Test/SettingsCommand", Name = "SettingsCommandCall")]
+        public async Task<string> SettingsCommand(string cardName)
+        {
+
+            var msg = string.Empty;
+
+            var command = new CardCommand();
+            command.Execute(new Message() { Text = "/c " + cardName, Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
+
+            return msg;
+        }
+
+        [HttpGet("/Test/Spoilers", Name="MythisSpoilersCall")]
+        public ActionResult MS()
+        {
+            var z = Helpers.MythicSpoilerParsing.GetNewSpoilers(context);
+
+            return Ok(z);
         }
 
         [HttpGet("/Test/QueryCommand/{query}", Name = "QueryCommandCall")]

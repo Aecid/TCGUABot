@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -55,6 +56,11 @@ namespace TCGUABot.Controllers
             {
                 if (update.Message != null)
                 {
+                    if (update.Message.Chat != null)
+                    {
+                        Helpers.TelegramUtil.AddChat(update.Message.Chat.Id, context, update.Message.Chat.Id == update.Message.From.Id);
+                    }
+
                     if (update.Message.Text != null)
                     {
                         foreach (var command in commands)
@@ -75,7 +81,7 @@ namespace TCGUABot.Controllers
                                 catch { }
 
                                 Console.WriteLine("Incoming message from:" + update.Message.From.FirstName + " " + update.Message.From.LastName + " @" + update.Message.From.Username + "("+update.Message.From.Id+"), in chat: " + update.Message.Chat.Title + "("+update.Message.Chat.Id+")\r\n"+ update.Message.Text);
-                                command.Execute(update.Message, client, context);
+                                await command.Execute(update.Message, client, context);
                                 break;
                             }
                         }

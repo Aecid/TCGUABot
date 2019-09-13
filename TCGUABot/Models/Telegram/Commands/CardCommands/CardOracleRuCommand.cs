@@ -12,7 +12,7 @@ namespace TCGUABot.Models.Commands
     {
         public override string Name => "/оракл ";
 
-        public override async void Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
+        public override async Task Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
         {
             var text = message.Text.Replace("/оракл ", "");
             var msg = string.Empty;

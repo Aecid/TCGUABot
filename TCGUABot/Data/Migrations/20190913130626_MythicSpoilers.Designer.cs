@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TCGUABot.Data;
@@ -9,9 +10,10 @@ using TCGUABot.Data;
 namespace TCGUABot.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190913130626_MythicSpoilers")]
+    partial class MythicSpoilers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -201,30 +203,6 @@ namespace TCGUABot.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Decks");
-                });
-
-            modelBuilder.Entity("TCGUABot.Data.Models.MythicSpoiler", b =>
-                {
-                    b.Property<string>("Url")
-                        .ValueGeneratedOnAdd();
-
-                    b.HasKey("Url");
-
-                    b.ToTable("MythicSpoilers");
-                });
-
-            modelBuilder.Entity("TCGUABot.Data.Models.TelegramChat", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Language");
-
-                    b.Property<bool>("SendSpoilers");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TelegramChats");
                 });
 
             modelBuilder.Entity("TCGUABot.Data.Models.TelegramUser", b =>

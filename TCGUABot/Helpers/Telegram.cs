@@ -57,5 +57,26 @@ namespace TCGUABot.Helpers
             }
             catch { }
         }
+
+public static void AddChat(long chatId, ApplicationDbContext context, bool isPrivate=false)
+        {
+            try
+            {
+                var isExistingChat = context.TelegramChats.FirstOrDefault(c => c.Id == chatId);
+                if (isExistingChat == null)
+                {
+                    TelegramChat chat = new TelegramChat();
+                    chat.Id = chatId;
+                    chat.Language = "ru";
+                    if (isPrivate)
+                        chat.SendSpoilers = false;
+                    else chat.SendSpoilers = true;
+
+                    context.TelegramChats.Add(chat);
+                    context.SaveChanges();
+                }
+            }
+            catch { }
+        }
     }
 }

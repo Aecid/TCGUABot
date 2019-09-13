@@ -18,7 +18,7 @@ namespace TCGUABot.Models.Commands
     {
         public override string Name => "/import";
 
-        public override async void Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
+        public override async Task Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
         {
             var text = message.Text.Replace("/import ", "");
             var deck = ImportDeck.StringToDeck(text, null);

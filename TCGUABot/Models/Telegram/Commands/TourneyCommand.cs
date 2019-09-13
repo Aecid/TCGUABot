@@ -18,7 +18,7 @@ namespace TCGUABot.Models.Commands
     {
         public override string Name => "/tourney";
 
-        public override async void Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
+        public override async Task Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
         {
             var chatId = message.Chat.Id;
             var generatedMessage = GenerateTourneyList(message, context);

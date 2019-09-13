@@ -20,6 +20,8 @@ namespace TCGUABot.Data
         public DbSet<Tournament> Tournaments { get; set; }
         public DbSet<TournamentUserPair> TournamentUserPairs { get; set; }
         public DbSet<TelegramUser> TelegramUsers { get; set; }
+        public DbSet<TelegramChat> TelegramChats { get; set; }
+        public DbSet<MythicSpoiler> MythicSpoilers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

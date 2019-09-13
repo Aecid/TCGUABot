@@ -17,7 +17,7 @@ namespace TCGUABot.Models.Commands
     {
         public override string Name => "/c ";
 
-        public override async void Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
+        public override async Task Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
         {
             var tUser = message.From;
             Helpers.TelegramUtil.AddUser(tUser, context);
