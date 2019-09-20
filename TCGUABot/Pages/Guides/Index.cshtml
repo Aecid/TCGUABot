@@ -1,0 +1,48 @@
+﻿@page
+@model TCGUABot.Pages.Guides.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DeckGuide[0].Keywords)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeckGuide[0].Format)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeckGuide[0].Url)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.DeckGuide) {
+        <tr>
+            <td>
+                @Html.Raw(string.Join(", ", item.Keywords))
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Format)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Url)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

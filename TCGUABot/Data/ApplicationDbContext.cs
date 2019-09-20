@@ -22,6 +22,8 @@ namespace TCGUABot.Data
         public DbSet<TelegramUser> TelegramUsers { get; set; }
         public DbSet<TelegramChat> TelegramChats { get; set; }
         public DbSet<MythicSpoiler> MythicSpoilers { get; set; }
+        public DbSet<TradingCard> TradingCards { get; set; }
+        public DbSet<DeckGuide> DeckGuides { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -34,6 +36,14 @@ namespace TCGUABot.Data
                    .Entity<Tournament>()
                    .Property(e => e.Id)
                    .HasDefaultValueSql("uuid_generate_v4()");
+
+            builder.Entity<TradingCard>()
+                .Property(p => p.Id)
+                .ValueGeneratedOnAdd();
+
+            builder.Entity<DeckGuide>()
+                .Property(p => p.Id)
+                .ValueGeneratedOnAdd();
 
             base.OnModelCreating(builder);
         }

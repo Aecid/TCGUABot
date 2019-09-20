@@ -25,8 +25,8 @@ namespace TCGUABot.Pages.Tournaments
 
         public async Task OnGetAsync()
         {
-            Tournament = await _context.Tournaments.Where(t => DateTime.Compare(t.PlannedDate.AddHours(10), TimeService.GetLocalTime()) > 0).OrderBy(t => t.PlannedDate).ToListAsync();
-            OutdatedTournament = await _context.Tournaments.Where(t => DateTime.Compare(t.PlannedDate.AddHours(10), TimeService.GetLocalTime()) <= 0).OrderByDescending(t => t.PlannedDate).ToListAsync();
+            Tournament = await _context.Tournaments.Where(t => DateTime.Compare(t.PlannedDate.AddHours(1), TimeService.GetLocalTime()) > 0).OrderBy(t => t.PlannedDate).ToListAsync();
+            OutdatedTournament = await _context.Tournaments.Where(t => DateTime.Compare(t.PlannedDate.AddHours(1), TimeService.GetLocalTime()) <= 0).OrderByDescending(t => t.PlannedDate).ToListAsync();
         
             foreach (var tourney in Tournament)
             {

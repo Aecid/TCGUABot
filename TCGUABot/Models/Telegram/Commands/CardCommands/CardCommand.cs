@@ -7,6 +7,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TCGUABot.Data;
+using TCGUABot.Resources;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.InputFiles;
@@ -50,22 +51,28 @@ namespace TCGUABot.Models.Commands
 
             string nameEn = string.Empty;
             string nameRu = string.Empty;
+            string set = string.Empty;
+            var lang = context.TelegramChats.FirstOrDefault(f => f.Id == chatId)?.Language;
+            lang = lang == null ? "ru" : lang;
+
 
             string price = string.Empty;
             if (card != null)
             {
-                nameEn += "<b>🇺🇸 " + card.name + "</b>";
-                if (card.foreignData.Any(c => c.language.Equals("Russian"))) nameRu += "<b>🇷🇺 " + card.ruName + "</b>";
+                nameEn += "<b>"+Lang.Res(lang).enFlag+" " + card.name + "</b>";
+                if (card.foreignData.Any(c => c.language.Equals("Russian"))) nameRu += "<b>"+ Lang.Res(lang).ruFlag+" " + card.ruName + " </b>";
+                set = "<i>("+CardData.Instance.Sets.FirstOrDefault(s => s.code.Equals(card.Set, StringComparison.InvariantCultureIgnoreCase)).name+")</i>";
+
 
                 try
                 {
                     var prices = CardData.GetTcgPlayerPrices(card.tcgplayerProductId);
                     if (prices["normal"] > 0)
-                        price += "Цена: <b>$" + prices["normal"].ToString() + "</b>\r\n";
+                        price += Lang.Res(lang).price+": <b>$" + prices["normal"].ToString() + "</b>\r\n";
                     if (prices["foil"] > 0)
-                        price += "Цена фойлы: <b>$" + prices["foil"].ToString() + "</b>\r\n";
+                        price += Lang.Res(lang).priceFoil + ": <b>$" + prices["foil"].ToString() + "</b>\r\n";
                     if (prices["normal"] == 0 && prices["foil"] == 0)
-                        price += "Цена: <i>Нет данных о цене</i>\r\n";
+                        price += Lang.Res(lang).price + ": <i>"+ Lang.Res(lang).priceNoData + "</i>\r\n";
 
                 }
                 catch
@@ -74,15 +81,17 @@ namespace TCGUABot.Models.Commands
             }
             else
             {
-                msg = "<b>❌Карта не найдена по запросу \"" + text + "\".</b>\r\nПопробуйте ввести в чат <b>\"@tcgua_bot имякарты\"</b> и подождать подсказку от бота.";
+                msg = "<b>❌" + Lang.Res(lang).cardNotFoundByRequest + " \"" + text + "\".</b>\r\n" + Lang.Res(lang).tryAtTcgua + ".";
             }
 
             if (card != null)
             {
                 if (card.names != null && card.names.Count > 0)
                 {
-                    nameEn = "<b>🇺🇸</b>";
-                    nameRu = "<b>🇷🇺</b>";
+                    nameEn = "<b>"+ Lang.Res(lang).enFlag +"</b>";
+                    nameRu = "<b>"+ Lang.Res(lang).ruFlag +"</b>";
+                    set = "<i>(" + CardData.Instance.Sets.FirstOrDefault(s => s.code == card.Set).name + ")</i>";
+
                     var ComboList = new List<Card>();
 
                     foreach (var comboPiece in card.names)
@@ -103,7 +112,7 @@ namespace TCGUABot.Models.Commands
                         else
                         {
                             Console.WriteLine("Not found");
-                            msg += "❌Карта " + cpName + " была не найдена\r\n";
+                            msg += "❌"+ Lang.Res(lang).cardNotFoundByRequest+" \"" + cpName + "\"\r\n";
                         }
                     }
 
@@ -138,25 +147,19 @@ namespace TCGUABot.Models.Commands
                         ? nameEn
                         : nameEn.Remove(index, 1);
 
-                    if (nameRu.Equals("<b>🇷🇺</b>")) msg = nameEn + "\r\n" + price;
-                    else msg = nameEn + "\r\n" + nameRu + "\r\n" + price;
+                    if (nameRu.Equals("<b>"+ Lang.Res(lang).ruFlag + "</b>")) msg = nameEn + "\r\n" + set + "\r\n" + price;
+                    else msg = nameEn + "\r\n" + nameRu + "\r\n" + set + "\r\n" + price;
 
                     if (media.Count > 0)
                     {
                         await client.SendMediaGroupAsync(media, chatId);
-                        if (chatId == -1001330824758)
-                        {
-                            msg = msg.Replace("🇷🇺", "🏳‍🌈");
-                            msg = msg.Replace("Цена", "Ціна");
-                            msg = msg.Replace("фойлы", "фойли");
-                        }
                         await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
                     }
 
                 }
                 else
                 {
-                    msg += nameEn + "\r\n" + nameRu + (nameRu.Length > 0 ? "\r\n" : "") + price;
+                    msg += nameEn + "\r\n" + nameRu + (nameRu.Length > 0 ? "\r\n" : "") + set + "\r\n" + price;
                     WebRequest req;
                     if (card.multiverseId > 0)
                         req = WebRequest.Create("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card");
@@ -174,35 +177,17 @@ namespace TCGUABot.Models.Commands
                     {
                         using (Stream fileStream = req.GetResponse().GetResponseStream())
                         {
-                            if (chatId == -1001330824758)
-                            {
-                                msg = msg.Replace("🇷🇺", "🏳‍🌈");
-                                msg = msg.Replace("Цена", "Ціна");
-                                msg = msg.Replace("фойлы", "фойли");
-                            }
                             await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream), msg, Telegram.Bot.Types.Enums.ParseMode.Html);
                         }
                     }
                     else
                     {
-                        if (chatId == -1001330824758)
-                        {
-                            msg = msg.Replace("🇷🇺", "🏳‍🌈");
-                            msg = msg.Replace("Цена", "Ціна");
-                            msg = msg.Replace("фойлы", "фойли");
-                        }
                         await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
                     }
                 }
             }
             else
             {
-                if (chatId == -1001330824758)
-                {
-                    msg = msg.Replace("🇷🇺", "🏳‍🌈");
-                    msg = msg.Replace("Цена", "Ціна");
-                    msg = msg.Replace("фойлы", "фойли");
-                }
                 await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyToMessageId: message.MessageId);
             }
         }

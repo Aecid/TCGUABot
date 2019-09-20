@@ -101,6 +101,8 @@ namespace TCGUABot.Helpers
                     card = setToSearch.cards.FirstOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Equals(name.ToLowerInvariant())));
                 }
 
+                if (card == null) return null;
+                
                 card.Set = set;
 
                 return card;

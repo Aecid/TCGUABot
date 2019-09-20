@@ -17,6 +17,8 @@ using TCGUABot.Helpers.TelegramOAuth.Middleware;
 using TCGUABot.Data.Models;
 using TCGUABot.Helpers;
 using React.AspNet;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using TCGUABot.Services;
 
 namespace TCGUABot
 {
@@ -100,6 +102,7 @@ namespace TCGUABot
 
                 });
 
+            services.AddTransient<IEmailSender, EmailSender>();
             services.AddHostedService<TimeService>();
             services.AddHostedService<TimeServiceOneMinute>();
 

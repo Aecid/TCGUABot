@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TCGUABot.Data;
+using TCGUABot.Resources;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -19,10 +20,14 @@ namespace TCGUABot.Models.Commands
             var chatId = message.Chat.Id;
             var card = Helpers.CardSearch.GetCardByName(text);
 
+            var lang = context.TelegramChats.FirstOrDefault(f => f.Id == chatId)?.Language;
+            lang = lang == null ? "ru" : lang;
+
             if (card != null)
             {
-                msg += "<b>🇺🇸" + card.name + "</b>\r\n";
-                if (card.foreignData.Any(c => c.language.Equals("Russian"))) msg += "<b>🇷🇺" + card.ruName + "</b>";
+
+                msg += "<b>"+ Lang.Res(lang).enFlag + card.name + "</b>\r\n";
+                if (card.foreignData.Any(c => c.language.Equals("Russian"))) msg += "<b>" + Lang.Res(lang).ruFlag + card.ruName + "</b>";
                 msg += "\r\n<b>" + card.type + "</b>";
                 msg += "\r\n<b>" + card.manaCost + "</b>";
                 msg += "\r\n" + card.text;
@@ -39,7 +44,7 @@ namespace TCGUABot.Models.Commands
                 }
                 else
                 {
-                    msg += "\r\n<b>❌Рулинги не найдены</b>";
+                    msg += "\r\n<b>❌"+ Lang.Res(lang).rulingsNotFound + "</b>";
                 }
 
                 msg += "\r\n\r\n" + "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card";
@@ -47,9 +52,8 @@ namespace TCGUABot.Models.Commands
             }
             else
             {
-                msg = "<b>❌Карта не найдена.</b>";
+                msg = "<b>❌" + Lang.Res(lang).cardNotFoundByRequest + " \"" + text + "\"</b>";
             }
-            if (chatId == -1001330824758) msg = msg.Replace("🇷🇺", "🏳‍🌈");
 
             if (msg.Length <= 4096)
 

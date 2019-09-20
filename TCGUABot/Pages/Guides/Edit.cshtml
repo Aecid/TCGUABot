@@ -1,0 +1,45 @@
+﻿@page
+@model TCGUABot.Pages.Guides.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>DeckGuide</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="DeckGuide.Id" />
+            <div class="form-group">
+                <label asp-for="DeckGuide.KeywordsSeparated" class="control-label"></label>
+                <input asp-for="DeckGuide.KeywordsSeparated" class="form-control" />
+                <span asp-validation-for="DeckGuide.KeywordsSeparated" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DeckGuide.Format" class="control-label"></label>
+                <input asp-for="DeckGuide.Format" class="form-control" />
+                <span asp-validation-for="DeckGuide.Format" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DeckGuide.Url" class="control-label"></label>
+                <input asp-for="DeckGuide.Url" class="form-control" />
+                <span asp-validation-for="DeckGuide.Url" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

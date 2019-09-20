@@ -29,7 +29,7 @@ namespace TCGUABot.Controllers
             var msg = string.Empty;
 
             var command = new CardCommand();
-            command.Execute(new Message() { Text = "/c " + cardName, Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
+            await command.Execute(new Message() { Text = "/c " + cardName, Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
 
             return msg;
         }
@@ -41,7 +41,19 @@ namespace TCGUABot.Controllers
             var msg = string.Empty;
 
             var command = new CardCommand();
-            command.Execute(new Message() { Text = "/c " + cardName, Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
+            await command.Execute(new Message() { Text = "/c " + cardName, Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
+
+            return msg;
+        }
+
+        [HttpGet("/Test/GuideCommand", Name = "GuideCommandCall")]
+        public async Task<string> GuideCommand(string keyWord)
+        {
+
+            var msg = string.Empty;
+
+            var command = new GuideCommand();
+            await command.Execute(new Message() { Text = "/guide " + keyWord, Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
 
             return msg;
         }
@@ -61,7 +73,7 @@ namespace TCGUABot.Controllers
             var msg = string.Empty;
 
             var command = new QueryCommand();
-            command.Execute(new Message() { Text = "/q "+query, Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
+            await command.Execute(new Message() { Text = "/q "+query, Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
 
             return msg;
         }
@@ -73,7 +85,7 @@ namespace TCGUABot.Controllers
             var msg = string.Empty;
 
             var command = new TourneyCommand();
-            command.Execute(new Message() { Text = "/tourney", Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
+            await command.Execute(new Message() { Text = "/tourney", Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
 
             return msg;
         }

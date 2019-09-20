@@ -38,8 +38,6 @@ namespace TCGUABot.Controllers
             {
                 var results = new List<dynamic>();
                 bool ruLang = false;
-
-                var k = 0;
                 foreach (var set in CardData.Instance.Sets)
                 {
                     List<Card> cards = new List<Card>();
@@ -91,7 +89,7 @@ namespace TCGUABot.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e);
             }
         }
 

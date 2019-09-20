@@ -7,6 +7,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TCGUABot.Data;
+using TCGUABot.Resources;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.InputFiles;
@@ -46,10 +47,13 @@ namespace TCGUABot.Models.Commands
 
         public static Tuple<string, InlineKeyboardMarkup> GenerateTourneyList(Message message, ApplicationDbContext context)
         {
-            var TList = context.Tournaments.Where(t => t.IsClosed == false && DateTime.Compare(t.PlannedDate.AddHours(10), TimeService.GetLocalTime()) > 0).OrderBy(t => t.PlannedDate).ToList();
+            var TList = context.Tournaments.Where(t => t.IsClosed == false && DateTime.Compare(t.PlannedDate.AddHours(1), TimeService.GetLocalTime()) > 0).OrderBy(t => t.PlannedDate).ToList();
             var chatId = message.Chat.Id;
             var msg = string.Empty;
             var keyboardList = new List<List<InlineKeyboardButton>>();
+
+            var lang = context.TelegramChats.FirstOrDefault(f => f.Id == chatId)?.Language;
+            lang = lang == null ? "ru" : lang;
 
             if (TList.Count > 0)
             {
@@ -62,10 +66,10 @@ namespace TCGUABot.Models.Commands
                     if (!string.IsNullOrEmpty(tourney.EntryFee))
                     {
                         var entryFee = tourney.EntryFee.Contains("бесплатно", StringComparison.InvariantCultureIgnoreCase) ? "🔥<i>бесплатно!</i>🔥" : tourney.EntryFee;
-                        entryFee = tourney.EntryFee.Equals("0") ? "🔥<i>бесплатно!</i>🔥" : tourney.EntryFee;
-                        msg += "\r\n<b>Стоимость: </b>" + entryFee;
+                        entryFee = tourney.EntryFee.Equals("0") ? "🔥<i>" + Lang.Res(lang).free + "</i>🔥" : tourney.EntryFee;
+                        msg += "\r\n<b>"+ Lang.Res(lang).entryFee + ": </b>" + entryFee;
                     }
-                    if (!string.IsNullOrEmpty(tourney.Rewards)) msg += "\r\n<b>Призы: </b>" + tourney.Rewards;
+                    if (!string.IsNullOrEmpty(tourney.Rewards)) msg += "\r\n<b>"+ Lang.Res(lang).rewards + ": </b>" + tourney.Rewards;
                     var tourneyPlayers = context.TournamentUserPairs.Where(p => p.TournamentId == tourney.Id).ToList();
                     if (tourneyPlayers != null && tourneyPlayers.Count > 0)
                     {
@@ -83,7 +87,8 @@ namespace TCGUABot.Models.Commands
                     //buttonList.Add(InlineKeyboardButton.WithUrl(tourney.Name, "https://ace.od.ua/Tournaments/Details?id=" + tourney.Id));
                     //buttonList.Add(InlineKeyboardButton.WithCallbackData("✅", "t" + "|" + "1" + "|" + tourney.Id + "|" + message.MessageId));
                     //buttonList.Add(InlineKeyboardButton.WithCallbackData("❌", "t" + "|" + "0" + "|" + tourney.Id + "|" + message.MessageId));
-                    buttonList.Add(InlineKeyboardButton.WithCallbackData(string.Format("{0:ddd HH:mm}", tourney.PlannedDate) + " " + tourney.Name, "t" + "|" + tourney.Id));
+                    var formatString = (DateTime.Compare(tourney.PlannedDate, TimeService.GetLocalTime().AddDays(7)) > 0) ? "{0:dd/MM ddd HH:mm}" : "{0:ddd HH:mm}";
+                    buttonList.Add(InlineKeyboardButton.WithCallbackData(string.Format(formatString, tourney.PlannedDate) + " " + tourney.Name, "t" + "|" + tourney.Id));
 
                     keyboardList.Add(buttonList);
                 }

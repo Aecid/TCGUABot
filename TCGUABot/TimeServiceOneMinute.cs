@@ -40,7 +40,8 @@ namespace TCGUABot
             var results = Helpers.MythicSpoilerParsing.GetNewSpoilers(_context);
             var client = await Bot.Get();
             var chats = _context.TelegramChats.Where(tc => tc.SendSpoilers == true).ToList();
-
+            //for testing purposes
+            //results.Add(new Data.Models.MythicSpoiler() { Url = "http://fossfolks.com/wp-content/uploads/images/news/small-business-calendar-software-testing.jpg" });
             if (results.Count <= 5)
             {
                 foreach (var result in results)
@@ -48,15 +49,24 @@ namespace TCGUABot
                     try
                     {
                         var req = WebRequest.Create(result.Url);
-
-                        foreach (var chat in chats)
+                        
+                        using (Stream fileStream = req.GetResponse().GetResponseStream())
                         {
-                            using (Stream fileStream = req.GetResponse().GetResponseStream())
-                            {
-                                var caption = "<b>Cпойлер!</b>";
+                            var data = ReadFully(fileStream);
 
-                                await client.SendPhotoAsync(chat.Id, new InputOnlineFile(fileStream), caption: caption, Telegram.Bot.Types.Enums.ParseMode.Html);
-                                await Task.Delay(300);
+                            foreach (var chat in chats)
+                            {
+                                using (Stream stream = new MemoryStream(data))
+                                {
+
+                                    var caption = result.Url.Replace(".jpg", ".html");
+                                    try
+                                    {
+                                        await client.SendPhotoAsync(chat.Id, new InputOnlineFile(stream), caption: caption, Telegram.Bot.Types.Enums.ParseMode.Html);
+                                        await Task.Delay(300);
+                                    }
+                                    catch { }
+                                }
                             }
                         }
                     }
@@ -70,15 +80,30 @@ namespace TCGUABot
             {
                 foreach (var chat in chats)
                 {
-                        var msg = "Lots of new spoilers at http://www.mythicspoiler.com/newspoilers.html";
+                    var msg = "Lots of new spoilers at http://www.mythicspoiler.com/newspoilers.html";
 
-                        await client.SendTextMessageAsync(chat.Id, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                    await client.SendTextMessageAsync(chat.Id, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
 
-                        await Task.Delay(300);
-                  
+                    await Task.Delay(300);
+
                 }
             }
         }
+
+        public static byte[] ReadFully(Stream input)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
+        }
+
 
         public Task StopAsync(CancellationToken cancellationToken)
         {

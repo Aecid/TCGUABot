@@ -11,11 +11,12 @@ namespace TCGUABot.Data.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public long Id { get; set; }
         public int ProductId { get; set; }
 
         public string Name { get; set; }
         public string Set { get; set; }
+        public bool isPromo { get; set; }
         public bool IsFoil { get; set; }
         public string Notes { get; set; }
         public float Price { get; set; }

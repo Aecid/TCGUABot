@@ -15,6 +15,7 @@ namespace TCGUABot.Models.Commands
         public override async Task Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
         {
             var isPrivate = message.Chat.Id == message.From.Id;
+            var msg = string.Empty;
 
             ChatMember[] admins = new ChatMember[0];
             if (!isPrivate)
@@ -35,6 +36,7 @@ namespace TCGUABot.Models.Commands
                             var text = message.Text.Replace("/settings set lang ", "").Trim();
                             if (langs.Contains(text))
                             {
+                                msg += "<b>lang</b> was set to <b>" + text + "</b>\r\n";
                                 context.TelegramChats.FirstOrDefault(tc => tc.Id == message.Chat.Id).Language = text;
                             }
                             else
@@ -50,6 +52,7 @@ namespace TCGUABot.Models.Commands
 
                             if (bool.TryParse(message.Text.Replace("/settings set sendSpoilers ", "").Trim(), out text))
                             {
+                                msg += "<b>sendSpoilers</b> was set to <b>" + text.ToString() + "</b>\r\n";
                                 context.TelegramChats.FirstOrDefault(tc => tc.Id == message.Chat.Id).SendSpoilers = text;
                             }
                             else
@@ -59,12 +62,15 @@ namespace TCGUABot.Models.Commands
                             }
                         }
                     }
+                    else
+                    {
+                        msg += "Usage: <b>/settings set {setting} {value}</b>\r\nExample: /settings set lang ua\r\n";
+                    }
 
 
                     var chatData = context.TelegramChats.FirstOrDefault(tc => tc.Id == message.Chat.Id);
-                    var msg = "";
-                    msg += "<b>Настройки чата:</b>\r\n" +
-                        "<b>lang</b> (пока не работает)(en/ua/ru): <b>" + chatData.Language + "</b>\r\n" +
+                    msg += "<b>Chat settings:</b>\r\n" +
+                        "<b>lang</b> (en/ua/ru): <b>" + chatData.Language + "</b>\r\n" +
                         "<b>sendSpoilers</b> (true/false): <b>" + chatData.SendSpoilers + "</b>";
 
                     context.SaveChanges();
@@ -74,7 +80,7 @@ namespace TCGUABot.Models.Commands
             }
             else
             {
-                var msg = "Не хватает прав";
+                msg = "You have to be admin in chat \""+ message.Chat.Title +"\" to use this command";
                 await client.SendTextMessageAsync(message.Chat.Id, msg, Telegram.Bot.Types.Enums.ParseMode.Html, true, true, message.MessageId);
             }
         }

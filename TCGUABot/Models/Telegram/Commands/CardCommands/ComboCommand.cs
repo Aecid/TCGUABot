@@ -7,6 +7,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TCGUABot.Data;
+using TCGUABot.Resources;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.InputFiles;
@@ -26,7 +27,8 @@ namespace TCGUABot.Models.Commands
             var msg = string.Empty;
             var chatId = message.Chat.Id;
             var ComboList = new List<Card>();
-            Console.WriteLine("Cards in combo: " + queryCards.ToList().Count);
+            var lang = context.TelegramChats.FirstOrDefault(f => f.Id == chatId)?.Language;
+            lang = lang == null ? "ru" : lang;
 
             foreach (var comboPiece in queryCards)
             {
@@ -37,13 +39,11 @@ namespace TCGUABot.Models.Commands
 
                 if (card != null)
                 {
-                    Console.WriteLine("Card found");
                     ComboList.Add(card);
                 }
                 else
                 {
-                    Console.WriteLine("Not found");
-                    msg += "❌Карта " + cpName + " была не найдена\r\n";
+                    msg += "<b>❌" + Lang.Res(lang).cardNotFoundByRequest + " \"" + comboPiece.Trim() + "\"</b>";
                 }
             }
 
