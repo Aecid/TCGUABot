@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
@@ -122,7 +123,9 @@ namespace TCGUABot.Helpers.TelegramOAuth.Middleware
                 return HandleRequestResult.Fail("Authentication properties null");
             }
 
-            JObject user = JObject.FromObject(telegramUser);
+            JObject normalUser = JObject.FromObject(telegramUser);
+            string json = normalUser.ToString(Newtonsoft.Json.Formatting.None);
+            JsonDocument user = JsonSerializer.Deserialize<JsonDocument>(json);
 
             Response.Cookies.Delete("__Telegram");
             return HandleRequestResult.Success(await telegramOAuthHandler.CreateTicketAsync(identity,

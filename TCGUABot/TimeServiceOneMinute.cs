@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -17,12 +18,13 @@ namespace TCGUABot
     {
         private readonly ILogger _logger;
         private Timer _timer;
-        private ApplicationDbContext _context;
 
-        public TimeServiceOneMinute(ILogger<TimeServiceOneMinute> logger, ApplicationDbContext context)
+        private readonly IServiceScopeFactory scopeFactory;
+
+        public TimeServiceOneMinute(ILogger<TimeServiceOneMinute> logger, IServiceScopeFactory scopeFactory)
         {
             _logger = logger;
-            _context = context;
+            this.scopeFactory = scopeFactory;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -37,55 +39,59 @@ namespace TCGUABot
 
         private async void DoWork(object state)
         {
-            var results = Helpers.MythicSpoilerParsing.GetNewSpoilers(_context);
-            var client = await Bot.Get();
-            var chats = _context.TelegramChats.Where(tc => tc.SendSpoilers == true).ToList();
-            //for testing purposes
-            //results.Add(new Data.Models.MythicSpoiler() { Url = "http://fossfolks.com/wp-content/uploads/images/news/small-business-calendar-software-testing.jpg" });
-            if (results.Count <= 5)
+            using (var scope = scopeFactory.CreateScope())
             {
-                foreach (var result in results)
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var results = Helpers.MythicSpoilerParsing.GetNewSpoilers(dbContext);
+                var client = await Bot.Get();
+                var chats = dbContext.TelegramChats.Where(tc => tc.SendSpoilers == true).ToList();
+                //for testing purposes
+                //results.Add(new Data.Models.MythicSpoiler() { Url = "http://fossfolks.com/wp-content/uploads/images/news/small-business-calendar-software-testing.jpg" });
+                if (results.Count <= 5)
                 {
-                    try
+                    foreach (var result in results)
                     {
-                        var req = WebRequest.Create(result.Url);
-                        
-                        using (Stream fileStream = req.GetResponse().GetResponseStream())
+                        try
                         {
-                            var data = ReadFully(fileStream);
+                            var req = WebRequest.Create(result.Url);
 
-                            foreach (var chat in chats)
+                            using (Stream fileStream = req.GetResponse().GetResponseStream())
                             {
-                                using (Stream stream = new MemoryStream(data))
-                                {
+                                var data = ReadFully(fileStream);
 
-                                    var caption = result.Url.Replace(".jpg", ".html");
-                                    try
+                                foreach (var chat in chats)
+                                {
+                                    using (Stream stream = new MemoryStream(data))
                                     {
-                                        await client.SendPhotoAsync(chat.Id, new InputOnlineFile(stream), caption: caption, Telegram.Bot.Types.Enums.ParseMode.Html);
-                                        await Task.Delay(300);
+
+                                        var caption = result.Url.Replace(".jpg", ".html");
+                                        try
+                                        {
+                                            await client.SendPhotoAsync(chat.Id, new InputOnlineFile(stream), caption: caption, Telegram.Bot.Types.Enums.ParseMode.Html);
+                                            await Task.Delay(300);
+                                        }
+                                        catch { }
                                     }
-                                    catch { }
                                 }
                             }
                         }
-                    }
-                    catch
-                    {
+                        catch
+                        {
 
+                        }
                     }
                 }
-            }
-            else
-            {
-                foreach (var chat in chats)
+                else
                 {
-                    var msg = "Lots of new spoilers at http://www.mythicspoiler.com/newspoilers.html";
+                    foreach (var chat in chats)
+                    {
+                        var msg = "Lots of new spoilers at http://www.mythicspoiler.com/newspoilers.html";
 
-                    await client.SendTextMessageAsync(chat.Id, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        await client.SendTextMessageAsync(chat.Id, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
 
-                    await Task.Delay(300);
+                        await Task.Delay(300);
 
+                    }
                 }
             }
         }

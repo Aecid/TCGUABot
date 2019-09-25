@@ -27,7 +27,7 @@ namespace TCGUABot.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.ForNpgsqlUseIdentityColumns();
+            builder.UseIdentityColumns();
             builder.Entity<TournamentUserPair>()
                 .Property(p => p.Id)
                 .ValueGeneratedOnAdd();

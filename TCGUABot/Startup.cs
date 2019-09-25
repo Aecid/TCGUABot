@@ -6,17 +6,17 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TCGUABot.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using TCGUABot.Helpers.TelegramOAuth.Middleware;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http;
 using TCGUABot.Data.Models;
+using TCGUABot.Helpers.TelegramOAuth.Middleware;
 using TCGUABot.Helpers;
-using React.AspNet;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using TCGUABot.Services;
 
@@ -24,7 +24,7 @@ namespace TCGUABot
 {
     public class Startup
     {
-        public static IServiceCollection StaticServices {get; private set;}
+        public static IServiceCollection StaticServices { get; private set; }
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -35,7 +35,7 @@ namespace TCGUABot
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -44,14 +44,11 @@ namespace TCGUABot
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(
-                    Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
+            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
 
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddRoles<IdentityRole>()
-                .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddAuthentication()
@@ -64,7 +61,6 @@ namespace TCGUABot
                 );
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddReact();
             services.AddProgressiveWebApp();
 
             services.AddAuthorization(ops =>
@@ -87,16 +83,12 @@ namespace TCGUABot
                 });
             });
 
-            services.AddMvc( options =>
-              {
-                  options.InputFormatters.Insert(0, new TextPlainInputFormatter());
-              }
+            services.AddMvc(options =>
+             {
+                 options.InputFormatters.Insert(0, new TextPlainInputFormatter());
+             }
             )
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddJsonOptions(options =>
-                {
-                    options.SerializerSettings.DateFormatString = "0:MM/dd/yy, H:mm";
-                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                 .AddRazorPagesOptions(ops =>
                 {
 
@@ -107,17 +99,14 @@ namespace TCGUABot
             services.AddHostedService<TimeServiceOneMinute>();
 
             Startup.StaticServices = services;
-
-            return services.BuildServiceProvider();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
             }
             else
             {
@@ -137,33 +126,25 @@ namespace TCGUABot
                 app.UseBrowserLink();
             }
 
-            app.UseReact(config =>
+            //app.UseMvc(routes =>
+            //{
+            //    routes.MapRoute(
+            //        name: "simple",
+            //        template: "{controller=Home}/{action=Index}");
+            //    routes.MapRoute(
+            //        name: "default",
+            //        template: "{controller=Home}/{action=Index}/{id?}");
+            //});
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
             {
-                // If you want to use server-side rendering of React components,
-                // add all the necessary JavaScript files here. This includes
-                // your components as well as all of their dependencies.
-                // See http://reactjs.net/ for more information. Example:
-                //config
-                //  .AddScript("~/js/First.jsx")
-                //  .AddScript("~/js/Second.jsx");
+                endpoints
+                .MapRazorPages();
 
-                // If you use an external build too (for example, Babel, Webpack,
-                // Browserify or Gulp), you can improve performance by disabling
-                // ReactJS.NET's version of Babel and loading the pre-transpiled
-                // scripts. Example:
-                //config
-                //  .SetLoadBabel(false)
-                //  .AddScriptWithoutTransform("~/js/bundle.server.js");
-            });
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "simple",
-                    template: "{controller=Home}/{action=Index}");
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                endpoints
+                .MapControllerRoute(
+                        name: "default",
+                        pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

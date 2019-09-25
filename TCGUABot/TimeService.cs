@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -16,10 +17,12 @@ namespace TCGUABot
         private Timer _timer;
         private ApplicationDbContext _context;
 
-        public TimeService(ILogger<TimeService> logger, ApplicationDbContext context)
+        private readonly IServiceScopeFactory scopeFactory;
+
+        public TimeService(ILogger<TimeService> logger, IServiceScopeFactory scopeFactory)
         {
             _logger = logger;
-            _context = context;
+            this.scopeFactory = scopeFactory;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -34,10 +37,7 @@ namespace TCGUABot
 
         private void DoWork(object state)
         {
-            if (GetLocalTime().Hour == 20 && GetLocalTime().Minute == 40)
-            {
-                Console.WriteLine("IT'S TIME!");
-            }
+
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
