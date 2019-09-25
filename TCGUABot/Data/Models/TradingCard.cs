@@ -16,7 +16,8 @@ namespace TCGUABot.Data.Models
 
         public string Name { get; set; }
         public string Set { get; set; }
-        public bool isPromo { get; set; }
+        public string Language { get; set; }
+        public bool IsPromo { get; set; }
         public bool IsFoil { get; set; }
         public string Notes { get; set; }
         public float Price { get; set; }

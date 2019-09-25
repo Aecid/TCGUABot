@@ -26,6 +26,11 @@ namespace TCGUABot.Data.Models
         public bool IsLocked { get; set; }
         public bool IsClosed { get; set; }
         public string CreatorId { get; set; }
+        public string City { get; set; }
+        public string Country { get; set; }
+        public string LocationName { get; set; }
+        public string Latitude { get; set; }
+        public string Longitude { get; set; }
         public ICollection<TournamentUserPair> TournamentUserPairs { get; set; }
 
         [NotMapped]

@@ -47,7 +47,7 @@ namespace TCGUABot.Models.Commands
 
         public static Tuple<string, InlineKeyboardMarkup> GenerateTourneyList(Message message, ApplicationDbContext context)
         {
-            var TList = context.Tournaments.Where(t => t.IsClosed == false && DateTime.Compare(t.PlannedDate.AddHours(1), TimeService.GetLocalTime()) > 0).OrderBy(t => t.PlannedDate).ToList();
+            var TList = context.Tournaments.Where(t => t.IsClosed == false && DateTime.Compare(t.PlannedDate.AddHours(4), TimeService.GetLocalTime()) > 0).OrderBy(t => t.PlannedDate).ToList();
             var chatId = message.Chat.Id;
             var msg = string.Empty;
             var keyboardList = new List<List<InlineKeyboardButton>>();
@@ -62,7 +62,8 @@ namespace TCGUABot.Models.Commands
                     var buttonList = new List<InlineKeyboardButton>();
                     msg += "<a href=\"https://ace.od.ua/Tournaments/Details?id=" + tourney.Id + "\">" + string.Format("{0:ddd, dd'/'MM'/'yy HH:mm}", tourney.PlannedDate);
                     msg += " - ";
-                    msg += tourney.Name + "</a>";
+                    var tname = string.IsNullOrEmpty(tourney.LocationName) ? tourney.Name : tourney.Name + "-" + tourney.LocationName;
+                    msg += tname + "</a>";
                     if (!string.IsNullOrEmpty(tourney.EntryFee))
                     {
                         var entryFee = tourney.EntryFee.Contains("бесплатно", StringComparison.InvariantCultureIgnoreCase) ? "🔥<i>бесплатно!</i>🔥" : tourney.EntryFee;

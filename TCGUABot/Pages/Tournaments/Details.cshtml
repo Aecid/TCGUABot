@@ -32,7 +32,7 @@
                 <img src="~/img/loader.gif"/>
             </div>
 
-            @if (User.Identity.IsAuthenticated)
+            @if (User.Identity.IsAuthenticated && (DateTime.Compare(Model.Tournament.PlannedDate.AddHours(4), TimeService.GetLocalTime()) <= 0))
             {
                 <hr />
                 <div class="dropdown-container">

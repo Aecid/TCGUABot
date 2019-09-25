@@ -191,19 +191,19 @@ namespace TCGUABot.Controllers
         public ActionResult CreateDefaultTournament([FromQuery] string type, string creator)
         {
             DateTime now = TimeService.GetLocalTime();
-            var tourneyTime = new DateTime(now.Year, now.Month, now.Day, 11, 00, 00);
+            var tourneyTime = new DateTime(now.Year, now.Month, now.Day, 12, 00, 00);
             string name = "";
 
             if (type == "sat")
             {
                 tourneyTime = tourneyTime.Next(DayOfWeek.Saturday);
-                name = "Modern - Corvin";
+                name = "Modern";
             }
             
             if (type == "sun")
             {
                 tourneyTime = tourneyTime.Next(DayOfWeek.Sunday);
-                name = "Limited - Corvin";
+                name = "Limited";
             }
 
             if (!context.Tournaments.Any(d => d.PlannedDate == tourneyTime))
@@ -214,6 +214,9 @@ namespace TCGUABot.Controllers
                     CreationDate = TimeService.GetLocalTime(),
                     CreatorId = creator,
                     Name = name,
+                    LocationName = "Corvin",
+                    Latitude = "46.485030f",
+                    Longitude = "30.737538f",
                     Description = "Default tournament"
                 };
 

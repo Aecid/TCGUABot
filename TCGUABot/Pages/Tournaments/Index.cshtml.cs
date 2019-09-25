@@ -25,8 +25,8 @@ namespace TCGUABot.Pages.Tournaments
 
         public async Task OnGetAsync()
         {
-            Tournament = await _context.Tournaments.Where(t => DateTime.Compare(t.PlannedDate.AddHours(1), TimeService.GetLocalTime()) > 0).OrderBy(t => t.PlannedDate).ToListAsync();
-            OutdatedTournament = await _context.Tournaments.Where(t => DateTime.Compare(t.PlannedDate.AddHours(1), TimeService.GetLocalTime()) <= 0).OrderByDescending(t => t.PlannedDate).ToListAsync();
+            Tournament = await _context.Tournaments.Where(t => DateTime.Compare(t.PlannedDate.AddHours(4), TimeService.GetLocalTime()) > 0).OrderBy(t => t.PlannedDate).ToListAsync();
+            OutdatedTournament = await _context.Tournaments.Where(t => DateTime.Compare(t.PlannedDate.AddHours(4), TimeService.GetLocalTime()) <= 0).OrderByDescending(t => t.PlannedDate).ToListAsync();
         
             foreach (var tourney in Tournament)
             {
@@ -36,7 +36,6 @@ namespace TCGUABot.Pages.Tournaments
                 {
                     tourney.RegisteredPlayers.Add(_context.TelegramUsers.FirstOrDefault(u => u.Id == pair.PlayerTelegramId));
                 }
-
             }
 
             //foreach (var tourney in OutdatedTournament)

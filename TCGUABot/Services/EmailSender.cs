@@ -30,7 +30,7 @@ namespace TCGUABot.Services
             var client = new SendGridClient(apiKey);
             var msg = new SendGridMessage()
             {
-                From = new EmailAddress("admin@ace.od.ua", "Administrator"),
+                From = new EmailAddress("tcguabot@ace.od.ua", "TCGUA Bot"),
                 Subject = subject,
                 PlainTextContent = message,
                 HtmlContent = message

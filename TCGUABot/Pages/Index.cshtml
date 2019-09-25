@@ -12,7 +12,7 @@
 
 <div class="text-center">
     <form onsubmit="OnSubmit(); return false" class="card-search-form" id="searchForm" autocomplete="off">
-        <input type="text" id="q" class="card-name-input" onkeyup="OnInputChange()" placeholder="Введите имя карты..." /><br />
+        <input type="text" id="q" autofocus autocomplete="off" class="card-name-input" onkeyup="OnInputChange()" placeholder="Введите имя карты..." /><br />
         <div id="suggestions" class="card-search-suggestions"></div>
         <div id="results" class="card-search-results"></div>
     </form>
@@ -21,6 +21,12 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
+$(document).ready(function() {
+    $('#q').click(function(e){
+        $(this).focus();
+    });
+    $('#q').trigger('click');
+});
         function OnInputChange(event) {
             if (window.event.keyCode != 13) {
                 if (document.getElementById("q").value.length > 3) {

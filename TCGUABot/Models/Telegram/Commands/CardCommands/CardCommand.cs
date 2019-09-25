@@ -59,20 +59,20 @@ namespace TCGUABot.Models.Commands
             string price = string.Empty;
             if (card != null)
             {
-                nameEn += "<b>"+Lang.Res(lang).enFlag+" " + card.name + "</b>";
-                if (card.foreignData.Any(c => c.language.Equals("Russian"))) nameRu += "<b>"+ Lang.Res(lang).ruFlag+" " + card.ruName + " </b>";
-                set = "<i>("+CardData.Instance.Sets.FirstOrDefault(s => s.code.Equals(card.Set, StringComparison.InvariantCultureIgnoreCase)).name+")</i>";
+                nameEn += "<b>" + Lang.Res(lang).enFlag + " " + card.name + "</b>";
+                if (card.foreignData.Any(c => c.language.Equals("Russian"))) nameRu += "<b>" + Lang.Res(lang).ruFlag + " " + card.ruName + " </b>";
+                set = "<i>(" + CardData.Instance.Sets.FirstOrDefault(s => s.code.Equals(card.Set, StringComparison.InvariantCultureIgnoreCase)).name + ")</i>";
 
 
                 try
                 {
                     var prices = CardData.GetTcgPlayerPrices(card.tcgplayerProductId);
                     if (prices["normal"] > 0)
-                        price += Lang.Res(lang).price+": <b>$" + prices["normal"].ToString() + "</b>\r\n";
+                        price += Lang.Res(lang).price + ": <b>$" + prices["normal"].ToString() + "</b>\r\n";
                     if (prices["foil"] > 0)
                         price += Lang.Res(lang).priceFoil + ": <b>$" + prices["foil"].ToString() + "</b>\r\n";
                     if (prices["normal"] == 0 && prices["foil"] == 0)
-                        price += Lang.Res(lang).price + ": <i>"+ Lang.Res(lang).priceNoData + "</i>\r\n";
+                        price += Lang.Res(lang).price + ": <i>" + Lang.Res(lang).priceNoData + "</i>\r\n";
 
                 }
                 catch
@@ -88,8 +88,8 @@ namespace TCGUABot.Models.Commands
             {
                 if (card.names != null && card.names.Count > 0)
                 {
-                    nameEn = "<b>"+ Lang.Res(lang).enFlag +"</b>";
-                    nameRu = "<b>"+ Lang.Res(lang).ruFlag +"</b>";
+                    nameEn = "<b>" + Lang.Res(lang).enFlag + "</b>";
+                    nameRu = "<b>" + Lang.Res(lang).ruFlag + "</b>";
                     set = "<i>(" + CardData.Instance.Sets.FirstOrDefault(s => s.code == card.Set).name + ")</i>";
 
                     var ComboList = new List<Card>();
@@ -112,7 +112,7 @@ namespace TCGUABot.Models.Commands
                         else
                         {
                             Console.WriteLine("Not found");
-                            msg += "❌"+ Lang.Res(lang).cardNotFoundByRequest+" \"" + cpName + "\"\r\n";
+                            msg += "❌" + Lang.Res(lang).cardNotFoundByRequest + " \"" + cpName + "\"\r\n";
                         }
                     }
 
@@ -147,7 +147,7 @@ namespace TCGUABot.Models.Commands
                         ? nameEn
                         : nameEn.Remove(index, 1);
 
-                    if (nameRu.Equals("<b>"+ Lang.Res(lang).ruFlag + "</b>")) msg = nameEn + "\r\n" + set + "\r\n" + price;
+                    if (nameRu.Equals("<b>" + Lang.Res(lang).ruFlag + "</b>")) msg = nameEn + "\r\n" + set + "\r\n" + price;
                     else msg = nameEn + "\r\n" + nameRu + "\r\n" + set + "\r\n" + price;
 
                     if (media.Count > 0)
@@ -175,9 +175,29 @@ namespace TCGUABot.Models.Commands
 
                     if (req != null)
                     {
-                        using (Stream fileStream = req.GetResponse().GetResponseStream())
+                        try
                         {
-                            await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream), msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                            using (Stream fileStream = req.GetResponse().GetResponseStream())
+                            {
+                                await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream), msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+
+                            try
+                            {
+                                req = WebRequest.Create(CardData.GetTcgPlayerImage(card.tcgplayerProductId));
+                                using (Stream fileStream = req.GetResponse().GetResponseStream())
+                                {
+                                    await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream), msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                                }
+                            }
+                            catch
+                            {
+
+                            }
                         }
                     }
                     else
