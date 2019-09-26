@@ -31,6 +31,8 @@ namespace TCGUABot.Controllers
         {
             Console.WriteLine(JsonConvert.SerializeObject(update));
 
+            var z = Request.Body;
+
             var commands = Bot.Commands;
             var callbackHandlers = Bot.CallbackHandlers;
             var client = await Bot.Get();

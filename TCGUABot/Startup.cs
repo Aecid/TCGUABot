@@ -19,6 +19,7 @@ using TCGUABot.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using TCGUABot.Services;
+using Newtonsoft.Json;
 
 namespace TCGUABot
 {
@@ -89,6 +90,7 @@ namespace TCGUABot
              }
             )
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                .AddNewtonsoftJson()
                 .AddRazorPagesOptions(ops =>
                 {
 

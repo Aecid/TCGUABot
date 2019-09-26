@@ -125,7 +125,7 @@ namespace TCGUABot.Helpers.TelegramOAuth.Middleware
 
             JObject normalUser = JObject.FromObject(telegramUser);
             string json = normalUser.ToString(Newtonsoft.Json.Formatting.None);
-            JsonDocument user = JsonSerializer.Deserialize<JsonDocument>(json);
+            JsonDocument user = JsonDocument.Parse(json);
 
             Response.Cookies.Delete("__Telegram");
             return HandleRequestResult.Success(await telegramOAuthHandler.CreateTicketAsync(identity,
