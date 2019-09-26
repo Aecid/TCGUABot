@@ -41,7 +41,11 @@ namespace TCGUABot.Models.Commands
             else
             {
                 var text = "❌<b>Нет анонсированных турниров.</b>";
-                await client.SendTextMessageAsync(chatId, text, disableNotification: true, parseMode:Telegram.Bot.Types.Enums.ParseMode.Html);
+                try
+                {
+                    await client.SendTextMessageAsync(chatId, text, disableNotification: true, parseMode: Telegram.Bot.Types.Enums.ParseMode.Html);
+                }
+                catch { }
             }
         }
 

@@ -20,7 +20,9 @@ namespace TCGUABot.Models.Commands
             var chatId = message.Chat.Id;
             var tUser = message.From;
             Helpers.TelegramUtil.AddUser(tUser, context);
-            await client.SendTextMessageAsync(chatId, @"Привет!
+            try
+            {
+                await client.SendTextMessageAsync(chatId, @"Привет!
 
 Поиск карт по имени происходит через имя бота: введите, например, ""@tcgua_bot bolt"" и подождите подсказок от бота.
 Цены в боте показываются по медиане TCGPlayer.
@@ -39,6 +41,11 @@ namespace TCGUABot.Models.Commands
 /import {deckImport} - вы можете импортировать деку из MTG Arena и сохранить её на сайте. Если вы не зарегистрированы на сайте или не связали аккаунт на сайте с аккаунтом телеграмма, дека может быть удалена в любой момент
 
 /login - авторизирует пользователя на сайте и создает аккаунт привязанный к телеграмму");
+            }
+            catch
+            {
+
+            }
         }
     }
 }

@@ -24,7 +24,14 @@ namespace TCGUABot.Models.Commands
             Helpers.TelegramUtil.AddUser(tUser, context);
 
             var chatId = message.Chat.Id;
-            await client.SendChatActionAsync(chatId, Telegram.Bot.Types.Enums.ChatAction.UploadPhoto);
+            try
+            {
+                await client.SendChatActionAsync(chatId, Telegram.Bot.Types.Enums.ChatAction.UploadPhoto);
+            }
+            catch
+            {
+
+            }
             string text = string.Empty;
             string setName = string.Empty;
             var originalMessage = message.Text.Substring(message.Text.IndexOf("/c "));
