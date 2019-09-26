@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using TCGUABot.Data;
 using TCGUABot.Models.InlineQueryHandler;
 using Telegram.Bot.Types;
@@ -28,6 +29,8 @@ namespace TCGUABot.Controllers
 
         public async Task<OkResult> Webhook([FromBody]Update update)
         {
+            Console.WriteLine(JsonConvert.SerializeObject(update));
+
             var commands = Bot.Commands;
             var callbackHandlers = Bot.CallbackHandlers;
             var client = await Bot.Get();
