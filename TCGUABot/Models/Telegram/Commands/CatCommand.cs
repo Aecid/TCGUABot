@@ -21,7 +21,11 @@ namespace TCGUABot.Models.Commands
         {
 
             var chatId = message.Chat.Id;
-            await client.SendChatActionAsync(chatId, Telegram.Bot.Types.Enums.ChatAction.UploadPhoto);
+            try
+            {
+                await client.SendChatActionAsync(chatId, Telegram.Bot.Types.Enums.ChatAction.UploadPhoto);
+            }
+            catch { }
 
             var catRequest = (HttpWebRequest)WebRequest.Create("https://aws.random.cat/meow");
 
@@ -43,12 +47,20 @@ namespace TCGUABot.Models.Commands
             {
                 if (fileUrl.EndsWith(".gif"))
                 {
-                    var msg = await client.SendVideoAsync(chatId, new InputOnlineFile(fileStream), supportsStreaming: true);
+                    try
+                    {
+                        var msg = await client.SendVideoAsync(chatId, new InputOnlineFile(fileStream), supportsStreaming: true);
+                    }
+                    catch { }
 
                 }
                 else
                 {
-                    await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream));
+                    try
+                    {
+                        await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream));
+                    }
+                    catch { }
                 }
             }
         }

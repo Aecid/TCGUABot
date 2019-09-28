@@ -55,6 +55,7 @@ namespace TCGUABot.Pages.Decks
             this.Deck.ApplicationUser = user;
             this.Deck.UserId = user.Id;
             this.Deck.CreationDate = DateTime.UtcNow;
+            this.Deck.Id = Guid.NewGuid().ToString();
             _context.Decks.Add(Deck);
             var z = await _context.SaveChangesAsync();
 

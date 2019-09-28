@@ -46,7 +46,7 @@ namespace TCGUABot.Controllers
                         if (handler.Is(update.CallbackQuery.Data))
                         {
                             Console.WriteLine("Result: {0}, {1}", update.CallbackQuery.Data, update.CallbackQuery.From.Id);
-                            handler.Execute(update.CallbackQuery, client, context);
+                            await handler.Execute(update.CallbackQuery, client, context);
                         }
                     }
                 }
@@ -54,7 +54,7 @@ namespace TCGUABot.Controllers
 
             if (update.InlineQuery != null)
             {
-                inlineQueryHandler.Execute(update.InlineQuery, client);
+                await inlineQueryHandler.Execute(update.InlineQuery, client);
             }
 
             if (update != null)

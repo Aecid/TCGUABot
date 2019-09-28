@@ -11,7 +11,7 @@ namespace TCGUABot.Models.InlineQueryHandler
 {
     public class InlineQueryHandler
     {
-        public async void Execute(InlineQuery query, TelegramBotClient client)
+        public async Task Execute(InlineQuery query, TelegramBotClient client)
         {
             if (query.Query.StartsWith("set"))
             {

@@ -1,0 +1,24 @@
+﻿@page
+@using TCGUABot.Data.Models
+@model IndexModel
+@inject UserManager<Data.Models.ApplicationUser> UserManager
+@inject ApplicationDbContext Context
+
+@{
+    ViewData["Title"] = "Home page";
+    //var decks = Context.Decks.Where(d => d.UserId=="d34f08f5-9daa-46d6-a87c-cc3a6fda538a").OrderByDescending(p => p.CreationDate).Take(5);
+    //ApplicationUser user;
+}
+
+<div class="text-center">
+        @foreach (var set in CardData.Instance.Sets)
+        {
+        <h3>@set.name (@set.code)</h3>
+        <ul>
+            @foreach (var card in set.cards)
+            {
+                <li>@card.name</li>
+            }
+            </ul>
+        }
+</div>

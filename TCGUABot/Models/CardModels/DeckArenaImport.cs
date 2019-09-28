@@ -149,6 +149,7 @@ namespace TCGUABot.Models
                             {
                                 card.multiverseId = tempCard.multiverseId;
                                 card.scryfallId = tempCard.scryfallId;
+                                card.tcgPlayerProductId = tempCard.tcgplayerProductId;
                             }
 
                             if (side) deck.SideBoard.Add(card);
@@ -188,6 +189,7 @@ namespace TCGUABot.Models
                         importCard.multiverseId = 0;
                         importCard.collectorNumber = "0";
                         importCard.set = "NONE";
+                        importCard.tcgPlayerProductId = 0;
                     }
                     else
                     {
@@ -195,6 +197,7 @@ namespace TCGUABot.Models
                         importCard.set = set.code;
                         importCard.collectorNumber = tempCard.number;
                         importCard.multiverseId = tempCard.multiverseId;
+                        importCard.tcgPlayerProductId = tempCard.tcgplayerProductId;
                     }
 
                     deck.MainDeck.Add(importCard);
@@ -229,6 +232,7 @@ namespace TCGUABot.Models
                                 importCard.collectorNumber = "0";
                             }
                             importCard.multiverseId = tempCard.multiverseId;
+                            importCard.tcgPlayerProductId = tempCard.tcgplayerProductId;
                         }
 
                         deck.SideBoard.Add(importCard);
@@ -270,8 +274,8 @@ namespace TCGUABot.Models
 
             foreach (var card in deck.MainDeck)
             {
-                if (card.multiverseId > 0)
-                    Deck.MainDeck.Add(Helpers.CardSearch.GetCardByMultiverseId(card.multiverseId.GetValueOrDefault()), card.count);
+                if (card.tcgPlayerProductId > 0)
+                    Deck.MainDeck.Add(Helpers.CardSearch.GetCardByTcgPlayerProductId(card.tcgPlayerProductId.GetValueOrDefault()), card.count);
                 else
                     Deck.MainDeck.Add(new Card() { name = card.name, multiverseId = 0, type = "Other" }, card.count);
             }
@@ -280,8 +284,8 @@ namespace TCGUABot.Models
             {
                 foreach (var card in deck.SideBoard)
                 {
-                    if (card.multiverseId > 0)
-                        Deck.SideBoard.Add(Helpers.CardSearch.GetCardByMultiverseId(card.multiverseId.GetValueOrDefault()), card.count);
+                    if (card.tcgPlayerProductId > 0)
+                        Deck.SideBoard.Add(Helpers.CardSearch.GetCardByTcgPlayerProductId(card.tcgPlayerProductId.GetValueOrDefault()), card.count);
                     else
                         Deck.SideBoard.Add(new Card() { name = card.name, multiverseId = 0, type = "Other" }, card.count);
                 }
@@ -450,6 +454,7 @@ namespace TCGUABot.Models
         public string collectorNumber;
         public int? multiverseId;
         public string scryfallId;
+        public int? tcgPlayerProductId;
 
         public override bool Equals(object obj)
         {

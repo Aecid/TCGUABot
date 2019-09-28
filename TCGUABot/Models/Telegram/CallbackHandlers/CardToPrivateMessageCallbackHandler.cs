@@ -16,7 +16,7 @@ namespace TCGUABot.Models.CallbackHandlers
     {
         public override string Name => "cp";
 
-        public override async void Execute(CallbackQuery query, TelegramBotClient client, ApplicationDbContext context)
+        public override async Task Execute(CallbackQuery query, TelegramBotClient client, ApplicationDbContext context)
         {
             var dataArray = query.Data.Split("|");
             var name = dataArray[0];

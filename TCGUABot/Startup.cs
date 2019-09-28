@@ -98,7 +98,7 @@ namespace TCGUABot
 
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddHostedService<TimeService>();
-            services.AddHostedService<TimeServiceOneMinute>();
+            services.AddHostedService<TimeServiceGetSpoilers>();
 
             Startup.StaticServices = services;
         }

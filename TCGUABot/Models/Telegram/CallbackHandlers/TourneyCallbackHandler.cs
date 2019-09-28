@@ -16,7 +16,7 @@ namespace TCGUABot.Models.CallbackHandlers
     {
         public override string Name => "t";
 
-        public override async void Execute(CallbackQuery query, TelegramBotClient client, ApplicationDbContext context)
+        public override async Task Execute(CallbackQuery query, TelegramBotClient client, ApplicationDbContext context)
         {
             //                    buttonList.Add(InlineKeyboardButton.WithCallbackData("✅", "t" + "|" + "1" + "|" + tourney.Id + "|" + message.MessageId));
             var dataArray = query.Data.Split("|");

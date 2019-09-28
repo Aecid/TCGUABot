@@ -11,7 +11,7 @@ namespace TCGUABot.Models.CallbackHandlers
     public abstract class CallbackHandler
     {
         public abstract string Name { get; }
-        public abstract void Execute(CallbackQuery query, TelegramBotClient client, ApplicationDbContext context);
+        public abstract Task Execute(CallbackQuery query, TelegramBotClient client, ApplicationDbContext context);
         public bool Is(string callbackData)
         {
             try

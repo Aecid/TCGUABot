@@ -15,17 +15,17 @@ namespace TCGUABot.Helpers
             Card card = new Card();
             if (!exactMatch)
             {
-                var set = CardData.Instance.Sets.LastOrDefault(s => s.cards.Any(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant()) && c.multiverseId > 0));
+                var set = CardData.Instance.Sets.LastOrDefault(s => s.cards.Any(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant())));
                 if (set == null)
                 {
-                    set = CardData.Instance.Sets.LastOrDefault(s => s.cards.Any(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant()) && f.multiverseId > 0)));
+                    set = CardData.Instance.Sets.LastOrDefault(s => s.cards.Any(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant()))));
                 }
                 if (set != null)
                 {
-                    card = set.cards.LastOrDefault(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant()) && c.multiverseId > 0);
+                    card = set.cards.LastOrDefault(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant()));
                     if (card == null)
                     {
-                        card = set.cards.LastOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant()) && f.multiverseId > 0));
+                        card = set.cards.LastOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant())));
                     }
 
                     card.Set = set.code;
@@ -50,12 +50,10 @@ namespace TCGUABot.Helpers
                             c => 
                             (
                             c.name.ToLowerInvariant().Equals(name.ToLowerInvariant())
-                            &&
-                            c.multiverseId > 0
                             )
                             ||
                             (
-                            c.foreignData.Any(f => f.name.ToLowerInvariant().Equals(name.ToLowerInvariant()) && f.multiverseId > 0)
+                            c.foreignData.Any(f => f.name.ToLowerInvariant().Equals(name.ToLowerInvariant()))
                             )
                         
                     )
@@ -65,10 +63,10 @@ namespace TCGUABot.Helpers
 
                 if (set != null)
                 {
-                    card = set.cards.LastOrDefault(c => c.name.ToLowerInvariant().Equals(name.ToLowerInvariant()) && c.multiverseId > 0);
+                    card = set.cards.LastOrDefault(c => c.name.ToLowerInvariant().Equals(name.ToLowerInvariant()));
                     if (card == null)
                     {
-                        card = set.cards.LastOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Equals(name.ToLowerInvariant()) && f.multiverseId > 0));
+                        card = set.cards.LastOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Equals(name.ToLowerInvariant())));
                     }
 
                     card.Set = set.code;
@@ -99,6 +97,14 @@ namespace TCGUABot.Helpers
                 if (card == null)
                 {
                     card = setToSearch.cards.FirstOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Equals(name.ToLowerInvariant())));
+                }
+
+                if (card == null)
+                {
+                    List<string> setTypes = new List<string>() { "archenemy", "commander", "duel_deck", "from_the_vault", "funny", "masters", "masterpiece", "memorabilia", "spellbook", "planechase", "premium_deck", "promo", "token", "treasure_chest", "vanguard" };
+                    var nonFunnySets = CardData.Instance.Sets.Where(s => !setTypes.Contains(s.type));
+                    var nonFunnySetToSerach = nonFunnySets.FirstOrDefault(s => s.cards.Any(z => z.name.Equals(name, StringComparison.InvariantCultureIgnoreCase)));
+                    card = nonFunnySetToSerach.cards.FirstOrDefault(z => z.name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
                 }
 
                 if (card == null) return null;

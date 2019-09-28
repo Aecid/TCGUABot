@@ -37,6 +37,11 @@ namespace TCGUABot.Data
                    .Property(e => e.Id)
                    .HasDefaultValueSql("uuid_generate_v4()");
 
+            builder.HasPostgresExtension("uuid-ossp")
+                   .Entity<Deck>()
+                   .Property(e => e.Id)
+                   .HasDefaultValueSql("uuid_generate_v4()");
+
             builder.Entity<TradingCard>()
                 .Property(p => p.Id)
                 .ValueGeneratedOnAdd();

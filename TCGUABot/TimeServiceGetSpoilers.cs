@@ -14,14 +14,14 @@ using Telegram.Bot.Types.InputFiles;
 
 namespace TCGUABot
 {
-    public class TimeServiceOneMinute : IHostedService, IDisposable
+    public class TimeServiceGetSpoilers : IHostedService, IDisposable
     {
         private readonly ILogger _logger;
         private Timer _timer;
 
         private readonly IServiceScopeFactory scopeFactory;
 
-        public TimeServiceOneMinute(ILogger<TimeServiceOneMinute> logger, IServiceScopeFactory scopeFactory)
+        public TimeServiceGetSpoilers(ILogger<TimeServiceGetSpoilers> logger, IServiceScopeFactory scopeFactory)
         {
             _logger = logger;
             this.scopeFactory = scopeFactory;
@@ -32,7 +32,7 @@ namespace TCGUABot
             _logger.LogInformation("Timed Background Service is starting.");
 
             _timer = new Timer(DoWork, null, TimeSpan.Zero,
-                TimeSpan.FromMinutes(1));
+                TimeSpan.FromHours(1));
 
             return Task.CompletedTask;
         }

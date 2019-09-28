@@ -106,36 +106,42 @@ namespace TCGUABot.Models.Commands
                         var cpName = comboPiece.Trim();
                         Card secondCard;
                         secondCard = Helpers.CardSearch.GetCardByName(cpName, true);
-
                         nameEn += "|<b>" + comboPiece + "</b>";
-                        if (secondCard.foreignData.Any(c => c.language.Equals("Russian"))) nameRu += "|<b>" + secondCard.ruName + "</b>";
-
 
                         if (secondCard != null)
                         {
-                            Console.WriteLine("Card found");
+                            if (secondCard.foreignData.Any(c => c.language.Equals("Russian"))) nameRu += "|<b>" + secondCard.ruName + "</b>";
                             ComboList.Add(secondCard);
                         }
-                        else
-                        {
-                            Console.WriteLine("Not found");
-                            msg += "❌" + Lang.Res(lang).cardNotFoundByRequest + " \"" + cpName + "\"\r\n";
-                        }
+
                     }
 
                     List<IAlbumInputMedia> media = new List<IAlbumInputMedia>();
 
                     var firstCardMuId = 0;
+                    var firstCardTcgPlayerId = 0;
                     foreach (var foundCard in ComboList)
                     {
-                        if (firstCardMuId != foundCard.multiverseId)
+                        if (foundCard.multiverseId > 0)
                         {
-                            firstCardMuId = foundCard.multiverseId;
-                            var imp = new InputMediaPhoto(new InputMedia("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + foundCard.multiverseId + "&type=card"))
+                            if (firstCardMuId != foundCard.multiverseId)
                             {
-                                //Caption = foundCard.name
-                            };
-                            media.Add(imp);
+                                firstCardMuId = foundCard.multiverseId;
+                                var imp = new InputMediaPhoto(new InputMedia("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + foundCard.multiverseId + "&type=card"))
+                                {
+                                    //Caption = foundCard.name
+                                };
+                                media.Add(imp);
+                            }
+                        }
+                        else
+                        {
+                            if (firstCardTcgPlayerId != foundCard.tcgplayerProductId)
+                            {
+                                firstCardTcgPlayerId = foundCard.tcgplayerProductId;
+                                var imp = new InputMediaPhoto( new InputMedia(CardData.GetTcgPlayerImage(foundCard.tcgplayerProductId)));
+                                media.Add(imp);
+                            }
                         }
                     }
 

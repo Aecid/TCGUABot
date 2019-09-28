@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TCGUABot.Data;
 using TCGUABot.Models.Commands;
+using TCGUABot.Models.InlineQueryHandler;
 using Telegram.Bot.Types;
 
 namespace TCGUABot.Controllers
@@ -34,6 +35,18 @@ namespace TCGUABot.Controllers
             return msg;
         }
 
+        [HttpGet("/Test/InlineQuery/{cardName}", Name = "InlineQueryCall")]
+        public async Task<string> InlineQuery(string cardName)
+        {
+
+            var msg = string.Empty;
+
+            var command = new InlineQueryHandler();
+            await command.Execute(new InlineQuery() { Query = cardName }, await Bot.Get());
+
+            return msg;
+        }
+
         [HttpGet("/Test/SettingsCommand", Name = "SettingsCommandCall")]
         public async Task<string> SettingsCommand(string cardName)
         {
@@ -54,6 +67,18 @@ namespace TCGUABot.Controllers
 
             var command = new GuideCommand();
             await command.Execute(new Message() { Text = "/guide " + keyWord, Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
+
+            return msg;
+        }
+
+        [HttpGet("/Test/FileCommand", Name = "FileCommandCall")]
+        public async Task<string> FileCommand(string query)
+        {
+
+            var msg = string.Empty;
+
+            var command = new FileCommand();
+            await command.Execute(new Message() { Text = "/file" + query, Chat = new Chat() { Id = 186070199 }, From = new User() { Id = 186070199 } }, await Bot.Get(), context);
 
             return msg;
         }

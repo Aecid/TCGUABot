@@ -260,6 +260,7 @@ namespace TCGUABot
         }
         public static string GetTcgPlayerImage(int productKey)
         {
+            if (productKey == 0) return "";
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddJsonFile("appsettings.json");
             IConfiguration configuration = configurationBuilder.Build();
