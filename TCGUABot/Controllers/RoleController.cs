@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using TCGUABot.Data;
 using TCGUABot.Data.Models;
 using TCGUABot.Models.Roles;
 
@@ -17,9 +18,11 @@ namespace TCGUABot.Controllers
     {
         private RoleManager<IdentityRole> roleManager;
         private UserManager<ApplicationUser> userManager;
+        private ApplicationDbContext context;
 
-        public RoleController(RoleManager<IdentityRole> roleMgr, UserManager<ApplicationUser> userMrg)
+        public RoleController(RoleManager<IdentityRole> roleMgr, UserManager<ApplicationUser> userMrg, ApplicationDbContext cntxt)
         {
+            context = cntxt;
             roleManager = roleMgr;
             userManager = userMrg;
         }
@@ -61,14 +64,25 @@ namespace TCGUABot.Controllers
 
         public async Task<IActionResult> Update(string id)
         {
-            IdentityRole role = await roleManager.FindByIdAsync(id);
+            IdentityRole role = context.Roles.FirstOrDefault(r => r.Id == id);
             List<ApplicationUser> members = new List<ApplicationUser>();
             List<ApplicationUser> nonMembers = new List<ApplicationUser>();
-            foreach (ApplicationUser user in userManager.Users)
-            {
-                var list = await userManager.IsInRoleAsync(user, role.Name) ? members : nonMembers;
-                list.Add(user);
-            }
+            //var users = context.Users;
+            //foreach (var user in users)
+            //{
+            //    if (context.UserRoles.Any(r => r.RoleId == id && r.UserId == user.Id))
+            //    {
+            //        members.Add(user);
+            //    }
+            //    else
+            //    {
+            //        nonMembers.Add(user);
+            //    }
+            //}
+            members = context.Users.Where(u => context.UserRoles.Any(r => r.UserId == u.Id && r.RoleId == id)).ToList();
+            nonMembers = context.Users.Where(u => !context.UserRoles.Any(r => r.UserId == u.Id && r.RoleId == id)).ToList();
+
+
             return View(new RoleEdit
             {
                 Role = role,

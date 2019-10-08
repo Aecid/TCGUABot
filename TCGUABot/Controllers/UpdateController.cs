@@ -70,7 +70,7 @@ namespace TCGUABot.Controllers
                     {
                         foreach (var command in commands)
                         {
-                            if (command.Contains(update.Message.Text))
+                            if (command.StartsWith(update.Message.Text))
                             {
                                 try
                                 {

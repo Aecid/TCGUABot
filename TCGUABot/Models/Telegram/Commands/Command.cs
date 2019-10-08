@@ -12,9 +12,9 @@ namespace TCGUABot.Models.Commands
     {
         public abstract string Name { get; }
         public abstract Task Execute(Message message, TelegramBotClient client, ApplicationDbContext context);
-        public bool Contains(string command)
+        public bool StartsWith(string command)
         {
-            return command.Contains(this.Name, StringComparison.InvariantCultureIgnoreCase);
+            return command.StartsWith(this.Name, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

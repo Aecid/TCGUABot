@@ -20,7 +20,11 @@ namespace TCGUABot.Models.Commands
             ChatMember[] admins = new ChatMember[0];
             if (!isPrivate)
             {
-                admins = await client.GetChatAdministratorsAsync(message.Chat.Id);
+                try
+                {
+                    admins = await client.GetChatAdministratorsAsync(message.Chat.Id);
+                }
+                catch { }
             }
             if (admins.Any(a => a.User.Id == message.From.Id) || message.From.Id == 186070199 || isPrivate)
             {
@@ -42,7 +46,11 @@ namespace TCGUABot.Models.Commands
                             else
                             {
                                 var errormsg = "Wrong 'lang' value :(";
-                                await client.SendTextMessageAsync(message.Chat.Id, errormsg, Telegram.Bot.Types.Enums.ParseMode.Html, true, true, message.MessageId);
+                                try
+                                {
+                                    await client.SendTextMessageAsync(message.Chat.Id, errormsg, Telegram.Bot.Types.Enums.ParseMode.Html, true, true, message.MessageId);
+                                }
+                                catch { }
                             }
                         }
 
@@ -58,7 +66,43 @@ namespace TCGUABot.Models.Commands
                             else
                             {
                                 var errormsg = "Wrong 'sendSpoilers' value :(";
-                                await client.SendTextMessageAsync(message.Chat.Id, errormsg, Telegram.Bot.Types.Enums.ParseMode.Html, true, true, message.MessageId);
+                                try
+                                {
+                                    await client.SendTextMessageAsync(message.Chat.Id, errormsg, Telegram.Bot.Types.Enums.ParseMode.Html, true, true, message.MessageId);
+                                }
+                                catch { }
+                            }
+                        }
+
+                        if (message.Text.Contains(" broadcast "))
+                        {
+                            var text = false;
+                            if (message.Chat.Id == message.From.Id)
+                            {
+
+                                if (bool.TryParse(message.Text.Replace("/settings set broadcast ", "").Trim(), out text))
+                                {
+                                    msg += "<b>sendSpoilers</b> was set to <b>" + text.ToString() + "</b>\r\n";
+                                    context.TelegramUsers.FirstOrDefault(tc => tc.Id == message.Chat.Id).AcceptBroadcast = text;
+                                }
+                                else
+                                {
+                                    var errormsg = "Wrong 'broadcast' value :(";
+
+                                    try 
+                                    {
+                                        await client.SendTextMessageAsync(message.Chat.Id, errormsg, Telegram.Bot.Types.Enums.ParseMode.Html, true, true, message.MessageId);
+                                    }
+                                    catch { }
+                                }
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    await client.SendTextMessageAsync(message.Chat.Id, "This setting works only for private chats");
+                                }
+                                catch { }
                             }
                         }
                     }
@@ -73,15 +117,29 @@ namespace TCGUABot.Models.Commands
                         "<b>lang</b> (en/ua/ru): <b>" + chatData.Language + "</b>\r\n" +
                         "<b>sendSpoilers</b> (true/false): <b>" + chatData.SendSpoilers + "</b>";
 
+                    if (message.Chat.Id == message.From.Id)
+                    {
+                        var userData = context.TelegramUsers.FirstOrDefault(tc => tc.Id == message.Chat.Id);
+                        msg += "\r\n\r\n<b>Private settings:</b>\r\n<b>broadcast</b> (true/false): <b>" + userData.AcceptBroadcast + "</b>";
+                    }
+
                     context.SaveChanges();
-                    await client.SendTextMessageAsync(chatData.Id, msg, Telegram.Bot.Types.Enums.ParseMode.Html, true, true, message.MessageId);
+                    try
+                    {
+                        await client.SendTextMessageAsync(chatData.Id, msg, Telegram.Bot.Types.Enums.ParseMode.Html, true, true, message.MessageId);
+                    }
+                    catch { }
                 }
                 catch { }
             }
             else
             {
                 msg = "You have to be admin in chat \""+ message.Chat.Title +"\" to use this command";
-                await client.SendTextMessageAsync(message.Chat.Id, msg, Telegram.Bot.Types.Enums.ParseMode.Html, true, true, message.MessageId);
+                try
+                {
+                    await client.SendTextMessageAsync(message.Chat.Id, msg, Telegram.Bot.Types.Enums.ParseMode.Html, true, true, message.MessageId);
+                }
+                catch { }
             }
         }
     }

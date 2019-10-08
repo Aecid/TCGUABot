@@ -12,7 +12,7 @@ using TCGUABot.Data.Models;
 
 namespace TCGUABot.Pages.Tournaments
 {
-    [Authorize(Roles = "Admin, Store Owner, Judge, Event Organizer")]
+    [Authorize(Roles = "Admin,Store Owner,Judge,Event Organizer")]
     public class CreateModel : PageModel
     {
         private readonly ApplicationDbContext _context;

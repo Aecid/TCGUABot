@@ -16,6 +16,7 @@ namespace TCGUABot.Data.Models
         public string Username { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public bool AcceptBroadcast { get; set; }
 
         [NotMapped]
         public string Name

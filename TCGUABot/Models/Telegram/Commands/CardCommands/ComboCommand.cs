@@ -50,18 +50,14 @@ namespace TCGUABot.Models.Commands
             List<IAlbumInputMedia> media = new List<IAlbumInputMedia>();
             foreach (var card in ComboList)
             {
-                //var req = WebRequest.Create("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card");
+                string url = card.multiverseId == 0 && card.tcgplayerProductId > 0 ? CardData.GetTcgPlayerImage(card.tcgplayerProductId) : "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card";
 
-                //using (Stream fileStream = req.GetResponse().GetResponseStream())
-                //{
-                    var imp = new InputMediaPhoto(new InputMedia("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card"))
-                    {
-                        Caption = card.name
-                    };
-                    media.Add(imp);
-   //             }
+                var imp = new InputMediaPhoto(new InputMedia(url))
+                {
+                    Caption = card.name
+                };
 
- //               req.
+                media.Add(imp);
             }
 
             foreach (var z in media)

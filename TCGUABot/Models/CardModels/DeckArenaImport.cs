@@ -77,8 +77,10 @@ namespace TCGUABot.Models
                 {
                     Card card = new Card();
                     if (importCard.multiverseId > 0) card = CardData.Instance.Sets.FirstOrDefault(s => s.cards.Any(d => d.multiverseId == importCard.multiverseId)).cards.FirstOrDefault(c => c.multiverseId == importCard.multiverseId);
+                    if (importCard.multiverseId == 0 && importCard.tcgPlayerProductId > 0) card = CardData.Instance.Sets.FirstOrDefault(s => s.cards.Any(d => d.tcgplayerProductId == importCard.tcgPlayerProductId)).cards.FirstOrDefault(c => c.tcgplayerProductId == importCard.tcgPlayerProductId);
+
                     if (card == null) card = CardData.Instance.Sets.FirstOrDefault(s => s.code.Equals(set) && s.type != "promo" && s.type != "funny" && s.type != "box").cards.FirstOrDefault(c => c.number == importCard.collectorNumber.ToString());
-                    //if (card == null) break;
+                    if (card == null) break;
                     if (card.name.Equals(importCard.name))
                     {
                         deckList.Add(importCard.count + " " + card.name);
@@ -131,6 +133,7 @@ namespace TCGUABot.Models
                 {
                     ImportCard card = new ImportCard();
 
+
                     if (myString.Trim().Length > 1)
                     {
                         try
@@ -144,7 +147,49 @@ namespace TCGUABot.Models
                             card.set = matches[0].Groups[3].Value.Replace("(DAR)", "(DOM)");
                             card.collectorNumber = matches[0].Groups[4].Value;
 
-                            var tempCard = Helpers.CardSearch.GetCardByName(card.name, card.set);
+                            var tempCard = new Card();
+                            
+                            var basics = new List<string>() { "Island", "Swamp", "Mountain", "Plains", "Forest", "Остров", "Равнина", "Гора", "Лес", "Болото" };
+
+                            if (basics.Contains(card.name))
+                            {
+                                switch (card.name)
+                                {
+                                    case "Island":
+                                        {
+                                            tempCard = Helpers.CardSearch.GetCardByMultiverseId(439602);
+                                            break;
+                                        };
+                                    case "Swamp":
+                                        {
+                                            tempCard = Helpers.CardSearch.GetCardByMultiverseId(439603);
+                                            break;
+                                        };
+                                    case "Mountain":
+                                        {
+                                            tempCard = Helpers.CardSearch.GetCardByMultiverseId(439604);
+                                            break;
+                                        };
+                                    case "Plains":
+                                        {
+                                            tempCard = Helpers.CardSearch.GetCardByMultiverseId(439601);
+                                            break;
+                                        }
+                                    case "Forest":
+                                        {
+                                            tempCard = Helpers.CardSearch.GetCardByMultiverseId(439605);
+                                            break;
+                                        }
+
+                                }
+
+                            }
+                            else
+                                {
+                                tempCard = Helpers.CardSearch.GetCardByName(card.name, card.set);
+
+                            }
+
                             if (tempCard != null)
                             {
                                 card.multiverseId = tempCard.multiverseId;

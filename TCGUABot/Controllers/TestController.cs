@@ -115,10 +115,44 @@ namespace TCGUABot.Controllers
             return msg;
         }
 
+        [HttpGet("/Test/BoosterCommand", Name = "BoosterCommandCall")]
+        public async Task<string> BoosterCommand()
+        {
+
+            var msg = string.Empty;
+
+            var command = new BoosterCommand();
+            await command.Execute(new Message() { Text = "/booster NEM", Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
+
+            return msg;
+        }
+
         [HttpGet("/Test/GetProductDetailsById/{productId}", Name = "GetProductDetailsById")]
         public string GetProductDetailsById(int productId)
         {
-            return CardData.GetTcgProductDetails(productId);
+            var z = CardData.GetTcgProductDetails(productId);
+
+            var res = string.Empty;
+
+            res += z.name;
+
+            return res;
+        }
+
+        [HttpGet("/Test/Tcg/{name}", Name = "SearchTcg")]
+        public string SearchTcg(string name)
+        {
+            var z = CardData.TcgSearchByName(name);
+
+            var res = string.Empty;
+
+            foreach (dynamic a in z)
+            {
+                res += "\r\n" + (string)a.name;
+                res += "\r\n" + CardData.TcgGroups.FirstOrDefault(z => z.groupId == (int)a.groupId).name;
+            }
+
+            return res;
         }
     }
 }

@@ -20,16 +20,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using TCGUABot.Services;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc.Cors;
 
 namespace TCGUABot
 {
     public class Startup
     {
-        public static IServiceCollection StaticServices { get; private set; }
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
             Bot.Get();
+            SecondaryBot.Get();
             CardData.Initalize();
         }
 
@@ -93,14 +94,18 @@ namespace TCGUABot
                 .AddNewtonsoftJson()
                 .AddRazorPagesOptions(ops =>
                 {
-
+                    ops.Conventions.AuthorizePage("/Tournaments/Create", "Event Organizer");
                 });
 
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddHostedService<TimeService>();
             services.AddHostedService<TimeServiceGetSpoilers>();
 
-            Startup.StaticServices = services;
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAnyOrigin",
+                builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().WithHeaders("Access-Control-Allow-Origin"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -120,7 +125,7 @@ namespace TCGUABot
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-            app.UseAuthentication();
+
 
             if (env.IsDevelopment())
             {
@@ -138,10 +143,15 @@ namespace TCGUABot
             //        template: "{controller=Home}/{action=Index}/{id?}");
             //});
             app.UseRouting();
+            app.UseCors("AllowAnyOrigin");
+
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints
-                .MapRazorPages();
+                .MapRazorPages().RequireAuthorization();
+                
 
                 endpoints
                 .MapControllerRoute(

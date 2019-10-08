@@ -13,5 +13,6 @@ namespace TCGUABot.Data.Models
 
         public string Language { get; set; }
         public bool SendSpoilers { get; set; }
+        public bool SendTourneyReminder { get; set; }
     }
 }

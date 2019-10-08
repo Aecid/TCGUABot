@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -9,6 +10,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using TCGUABot.Models;
+using TCGUABot.Models.TcgPlayerModels;
 
 namespace TCGUABot
 {
@@ -18,6 +20,7 @@ namespace TCGUABot
         public static List<string> Names = new List<string>();
         private static readonly object padlock = new object();
         public readonly List<Set> Sets = new List<Set>();
+        public static List<TcgPlayerGroup> TcgGroups { get; private set; }
         public string Version = string.Empty;
         public static string BearerToken { get; private set; }
         public static CardData Instance
@@ -39,6 +42,7 @@ namespace TCGUABot
         public CardData()
         {
             BearerToken = GetTcgplayerAccessToken();
+            TcgGroups = GetTcgPlayerGroups();
 
             var version = GetVersion();
             if (version != Version || Sets == null)
@@ -106,6 +110,90 @@ namespace TCGUABot
                 }
             }
         }
+
+        public static List<TcgPlayerProductDetails> TcgSearchByName(string name)
+        {
+            IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddJsonFile("appsettings.json");
+            IConfiguration configuration = configurationBuilder.Build();
+
+            var result = new Dictionary<string, float>();
+            var version = configuration.GetSection("TCGPlayer").GetSection("Version").Value;
+
+            var url = "https://api.tcgplayer.com/" + version + "/catalog/categories/1/search";
+            var request = (HttpWebRequest)WebRequest.Create(url);
+
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            request.Headers.Add("Authorization", "Bearer " + BearerToken);
+
+            using (var streamWriter = new StreamWriter(request.GetRequestStream()))
+            {
+                string json = "{\r\n    " +
+                    "\"sort\": \"name\",\r\n    " +
+                    "\"limit\": 10,\r\n    " +
+                    "\"offset\": 0,\r\n    " +
+                    "\"filters\": " +
+                    "[\r\n    \t" +
+                    "{ \"name\": \"ProductName\", " +
+                    "\"values\": [ \"" + name + "\" ] }\r\n    ]    \r\n}";
+
+                streamWriter.Write(json);
+            }
+
+            var content = string.Empty;
+
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                using var stream = response.GetResponseStream();
+                using (var sr = new StreamReader(stream))
+                {
+                    content = sr.ReadToEnd();
+                }
+            }
+
+            List<string> results = new List<string>();
+
+            var res = JsonConvert.DeserializeObject<dynamic>(content);
+            if ((bool)res.success)
+            {
+                foreach (var singleRes in res.results)
+                {
+                    results.Add((string)singleRes);
+                }
+            }
+
+            url = "https://api.tcgplayer.com/" + version + "/catalog/products/" + string.Join(",", results);
+            var req = (HttpWebRequest)WebRequest.Create(url);
+
+            req.Method = "GET";
+            req.ContentType = "application/json";
+            req.Headers.Add("Authorization", "Bearer " + BearerToken);
+
+            content = string.Empty;
+
+            using (var response = (HttpWebResponse)req.GetResponse())
+            {
+                using var stream = response.GetResponseStream();
+                using (var sr = new StreamReader(stream))
+                {
+                    content = sr.ReadToEnd();
+                }
+            }
+
+            res = JsonConvert.DeserializeObject<TcgPlayerProductDetailsResponse>(content);
+
+            if (res.success)
+            {
+                return res.results;
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
 
         public static string GetTcgplayerAccessToken()
         {
@@ -194,12 +282,10 @@ namespace TCGUABot
 
             using (var response = (HttpWebResponse)request.GetResponse())
             {
-                using (var stream = response.GetResponseStream())
+                using var stream = response.GetResponseStream();
+                using (var sr = new StreamReader(stream))
                 {
-                    using (var sr = new StreamReader(stream))
-                    {
-                        content = sr.ReadToEnd();
-                    }
+                    content = sr.ReadToEnd();
                 }
             }
 
@@ -221,7 +307,7 @@ namespace TCGUABot
         }
         //http://api.tcgplayer.com/v1.17.0/catalog/products/137942,132438?getExtendedFields=true
 
-        public static string GetTcgProductDetails(int productKey)
+        public static TcgPlayerProductDetails GetTcgProductDetails(int productKey)
         {
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddJsonFile("appsettings.json");
@@ -240,24 +326,15 @@ namespace TCGUABot
             var content = string.Empty;
             using (var response = (HttpWebResponse)request.GetResponse())
             {
-                using (var stream = response.GetResponseStream())
-                {
-                    using (var sr = new StreamReader(stream))
-                    {
-                        content = sr.ReadToEnd();
-                    }
-                }
+                using var stream = response.GetResponseStream();
+                using var sr = new StreamReader(stream);
+                content = sr.ReadToEnd();
             }
 
-            try
-            {
-                return content;
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Something went wrong with tcgplayer image" + "\r\n" + e.Message + "\r\n" + e.InnerException.Message);
-            }
+            var res = JsonConvert.DeserializeObject<TcgPlayerProductDetailsResponse>(content);
+            return res.results[0];
         }
+
         public static string GetTcgPlayerImage(int productKey)
         {
             if (productKey == 0) return "";
@@ -358,6 +435,76 @@ namespace TCGUABot
         public string GetVersion()
         {
             return ApiCall("https://mtgjson.com/json/version.json");
+        }
+
+        public List<TcgPlayerGroup> GetTcgPlayerGroups()
+        {
+            IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddJsonFile("appsettings.json");
+            IConfiguration configuration = configurationBuilder.Build();
+
+            var result = new Dictionary<string, float>();
+            var version = configuration.GetSection("TCGPlayer").GetSection("Version").Value;
+
+            var url = "https://api.tcgplayer.com/" + version + "/catalog/categories/1/groups?limit=100";
+            var request = (HttpWebRequest)WebRequest.Create(url);
+
+            request.Method = "GET";
+            request.ContentType = "application/json";
+            request.Headers.Add("Authorization", "Bearer " + BearerToken);
+
+            var content = string.Empty;
+
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                using var stream = response.GetResponseStream();
+                using (var sr = new StreamReader(stream))
+                {
+                    content = sr.ReadToEnd();
+                }
+            }
+
+            var res = JsonConvert.DeserializeObject<TcgPlayerGroupsResponse>(content);
+
+            var list = res.results;
+
+            if (res.totalItems > 100)
+            {
+                var total = res.totalItems;
+                var k = 1;
+                while (true)
+                {
+                    total = total - 100;
+                    var offset = k * 100;
+                    var tempUrl = "https://api.tcgplayer.com/" + version + "/catalog/categories/1/groups?offset=" + offset + "&limit=100";
+                    var tempRequest = (HttpWebRequest)WebRequest.Create(tempUrl);
+
+                    tempRequest.Method = "GET";
+                    tempRequest.ContentType = "application/json";
+                    tempRequest.Headers.Add("Authorization", "Bearer " + BearerToken);
+
+                    var tempContent = string.Empty;
+
+                    using (var response = (HttpWebResponse)tempRequest.GetResponse())
+                    {
+                        using var stream = response.GetResponseStream();
+                        using (var sr = new StreamReader(stream))
+                        {
+                            tempContent = sr.ReadToEnd();
+                        }
+                    }
+
+                    var tempRes = JsonConvert.DeserializeObject<TcgPlayerGroupsResponse>(tempContent);
+
+                    list.AddRange(tempRes.results);
+
+                    k++;
+
+                    if (total < 100) break;
+                }
+            }
+
+            return list;
         }
     }
 }

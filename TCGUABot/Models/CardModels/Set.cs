@@ -7,7 +7,7 @@ namespace TCGUABot.Models
 {
     public class Set
     {
-        //public int baseSetSize;
+        public int baseSetSize;
         //public string block;
         public List<Card> cards;
         public string code;

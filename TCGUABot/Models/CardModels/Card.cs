@@ -9,7 +9,7 @@ namespace TCGUABot.Models
     {
         //public string artist;
         //public string borderColor;
-        //public List<string> colorIdentity;
+        public List<string> colorIdentity;
         //public List<string> colors;
         public double convertedManaCost;
         public List<ForeignData> foreignData;
@@ -35,7 +35,7 @@ namespace TCGUABot.Models
         //public string originalText;
         //public string originalType;
         //public Prices prices;
-        //public string rarity;
+        public string rarity;
         public List<string> printings;
         //public Dictionary<string, string> purchaseUrls;
         public List<Ruling> rulings;

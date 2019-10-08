@@ -61,15 +61,30 @@ namespace TCGUABot.Models.InlineQueryHandler
                         var muId = ruLang ? card.ruMultiverseId : card.multiverseId;
                         var cardName = ruLang ? card.ruName : card.name;
 
-                        results.Add(new InlineQueryResultArticle((++k).ToString(), card.name, new InputTextMessageContent("/c " + card.name + "(" + set.code + ")"))
+                        if (card.tcgplayerProductId > 0)
                         {
-                            HideUrl = true,
-                            ThumbWidth = 99,
-                            ThumbHeight = 138,
-                            ThumbUrl = "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + muId + "&type=card",
-                            Title = cardName + " (" + set.name + ")",
-                            Description = card.type + " \r\n" + card.manaCost
-                        });
+                            results.Add(new InlineQueryResultArticle((++k).ToString(), card.name, new InputTextMessageContent("/tcgid "+card.tcgplayerProductId))
+                            {
+                                HideUrl = true,
+                                ThumbWidth = 99,
+                                ThumbHeight = 138,
+                                ThumbUrl = "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + muId + "&type=card",
+                                Title = cardName + " (" + set.name + ")",
+                                Description = card.type + " \r\n" + card.manaCost
+                            });
+                        }
+                        else
+                        {
+                            results.Add(new InlineQueryResultArticle((++k).ToString(), card.name, new InputTextMessageContent("/c " + card.name + "(" + set.code + ")"))
+                            {
+                                HideUrl = true,
+                                ThumbWidth = 99,
+                                ThumbHeight = 138,
+                                ThumbUrl = "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + muId + "&type=card",
+                                Title = cardName + " (" + set.name + ")",
+                                Description = card.type + " \r\n" + card.manaCost
+                            });
+                        }
 
                         if (results.Count > 49) break;
                     }

@@ -32,8 +32,6 @@ namespace TCGUABot.Models.Commands
                 msg += "\r\n"+card.text;
                 if (!string.IsNullOrEmpty(card.power) && !string.IsNullOrEmpty(card.toughness))
                 msg += "\r\n<b>" + card.power + " / " + card.toughness + "</b>";
-                msg += "\r\n\r\n" + "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card";
-
 
             }
             else

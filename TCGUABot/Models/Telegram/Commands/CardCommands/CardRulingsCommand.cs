@@ -47,8 +47,6 @@ namespace TCGUABot.Models.Commands
                     msg += "\r\n<b>❌"+ Lang.Res(lang).rulingsNotFound + "</b>";
                 }
 
-                msg += "\r\n\r\n" + "https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card";
-
             }
             else
             {
