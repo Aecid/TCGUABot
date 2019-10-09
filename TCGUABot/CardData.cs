@@ -296,12 +296,17 @@ namespace TCGUABot
 
             float priceNormal = 0;
             float priceFoil = 0;
-            float.TryParse(pnormal.midPrice.ToString(), out priceNormal);
-            float.TryParse(pfoil.midPrice.ToString(), out priceFoil);
+            if (float.TryParse(pnormal.midPrice.ToString(), out priceNormal))
+                result.Add("normal", priceNormal);
+            else if (float.TryParse(pnormal.marketPrice.ToString(), out priceNormal))
+                    result.Add("normal", priceNormal);
+            else result.Add("normal", 0);
 
-            result.Add("normal", priceNormal);
-            result.Add("foil", priceFoil);
-
+            if (float.TryParse(pfoil.midPrice.ToString(), out priceFoil))
+                result.Add("foil", priceFoil);
+            else if (float.TryParse(pfoil.marketPrice.ToString(), out priceFoil))
+                result.Add("foil", priceFoil);
+            else result.Add("foil", 0);
 
             return result;
         }
