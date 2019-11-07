@@ -47,7 +47,7 @@ namespace TCGUABot.Models.InlineQueryHandler
                 foreach (var card in cards)
                 {
 
-                    results.Add(new InlineQueryResultArticle((++k).ToString(), card.name, new InputTextMessageContent("/p_id " + card.productId))
+                    results.Add(new InlineQueryResultArticle((++k).ToString(), card.name, new InputTextMessageContent("/tcgid " + card.productId))
                     {
                         HideUrl = true,
                         ThumbWidth = 99,

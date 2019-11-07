@@ -10,12 +10,17 @@ namespace TCGUABot.Helpers
     {
         public static Card GetCardByName(string name, bool exactMatch = false)
         {
+            var expansions = new List<string>()
+                    {
+                        "core", "draft_innovation", "expansion"
+                    };
+
             if (string.IsNullOrEmpty(name)) return null;
 
             Card card = new Card();
             if (!exactMatch)
             {
-                var set = CardData.Instance.Sets.LastOrDefault(s => s.cards.Any(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant())));
+                var set = CardData.Instance.Sets.LastOrDefault(s => s.cards.Any(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant())) && expansions.Contains(s.type));
                 if (set == null)
                 {
                     set = CardData.Instance.Sets.LastOrDefault(s => s.cards.Any(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant()))));
@@ -38,11 +43,6 @@ namespace TCGUABot.Helpers
             }
             else
             {
-                var expansions = new List<string>()
-                    {
-                       "core", "draft_innovation", "expansion", "funny", "masters", "starter", "token"
-                    };
-
                 var set = CardData.Instance.Sets.LastOrDefault(
                     s => s.cards.Any
                     (

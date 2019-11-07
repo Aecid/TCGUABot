@@ -49,7 +49,7 @@
     <Folder Include="Areas\Identity\Data\" />
     <Folder Include="Data\Models\Roles\" />
     <Folder Include="Models\DataModels\" />
-    <Folder Include="Models\Shops\BuyMagic\" />
+    <Folder Include="wwwroot\etc\" />
   </ItemGroup>
 
 

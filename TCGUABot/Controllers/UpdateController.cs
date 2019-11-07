@@ -45,6 +45,16 @@ namespace TCGUABot.Controllers
                     {
                         if (handler.Is(update.CallbackQuery.Data))
                         {
+                            var user = update.CallbackQuery.From.FirstName + " " + update.CallbackQuery.From.LastName + " @" + update.CallbackQuery.From.Username;
+                            var userId = update.CallbackQuery.From.Id;
+                            var text = update.CallbackQuery.Data;
+                            var messageText = String.Format("Bot: @tcgua_bot, incoming from: {0} ({1}), msg: {2}", user, userId, text);
+                            //Logging?:D
+                            try
+                            {
+                                await client.SendTextMessageAsync("-1001202180806", messageText, Telegram.Bot.Types.Enums.ParseMode.Html, true, true);
+                            }
+                            catch { }
                             Console.WriteLine("Result: {0}, {1}", update.CallbackQuery.Data, update.CallbackQuery.From.Id);
                             await handler.Execute(update.CallbackQuery, client, context);
                         }
@@ -86,7 +96,15 @@ namespace TCGUABot.Controllers
                                 catch { }
 
                                 Console.WriteLine("Incoming message from:" + update.Message.From.FirstName + " " + update.Message.From.LastName + " @" + update.Message.From.Username + "("+update.Message.From.Id+"), in chat: " + update.Message.Chat.Title + "("+update.Message.Chat.Id+")\r\n"+ update.Message.Text);
-                                await command.Execute(update.Message, client, context);
+                                try
+                                {
+                                    await command.Execute(update.Message, client, context);
+                                }
+                                catch
+                                {
+                                    var errorMsg = "Error executing command " + command.Name;
+                                    await client.SendTextMessageAsync("-1001202180806", errorMsg, Telegram.Bot.Types.Enums.ParseMode.Html, true, true);
+                                }
                                 break;
                             }
                         }

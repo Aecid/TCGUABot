@@ -11,12 +11,13 @@ using TCGUABot.Resources;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.InputFiles;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TCGUABot.Models.Commands
 {
-    public class CardByTcgIdCommand : Command
+    public class CardCommand : Command
     {
-        public override string Name => "/tcgid ";
+        public override string Name => "/c ";
 
         public override async Task Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
         {
@@ -34,22 +35,32 @@ namespace TCGUABot.Models.Commands
             }
             string text = string.Empty;
             string setName = string.Empty;
+            var originalMessage = message.Text.Substring(message.Text.IndexOf("/c "));
+            if (originalMessage.Contains("(") && originalMessage.Contains(")"))
+            {
+                var match = Regex.Match(originalMessage, @"/c (.*)\((.*)\)");
+                text = match.Groups[1].Value;
+                setName = match.Groups[2].Value;
+            }
+            else
+            {
+                text = originalMessage.Replace("/c ", "");
+            }
             var msg = string.Empty;
-            Card card;
-
-            text = message.Text.Replace("/tcgid ", "");
-            var tcgid = int.MinValue;
-            if (!int.TryParse(text, out tcgid))
+            Card card = null;
+            if (setName != string.Empty)
             {
                 try
                 {
-                    msg = "Something went very wrong";
-                    await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyToMessageId: message.MessageId);
+                    card = Helpers.CardSearch.GetCardByName(text.Trim(), setName);
                 }
-                catch { }
+                catch
+                { }
             }
-
-            card = Helpers.CardSearch.GetCardByTcgPlayerProductId(tcgid);
+            else
+            {
+                card = Helpers.CardSearch.GetCardByName(text.Trim());
+            }
 
             string nameEn = string.Empty;
             string nameRu = string.Empty;
@@ -160,8 +171,13 @@ namespace TCGUABot.Models.Commands
 
                     if (media.Count > 0)
                     {
+                        var buttonsList = new List<InlineKeyboardButton>();
+                        buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTB", "trade|wtb|" + card.tcgplayerProductId + "|" + card.name));
+                        buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.tcgplayerProductId + "|" + card.name));
+                        var keyboard = new InlineKeyboardMarkup(buttonsList);
+
                         await client.SendMediaGroupAsync(media, chatId);
-                        await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyMarkup: keyboard);
                     }
 
                 }
@@ -185,15 +201,15 @@ namespace TCGUABot.Models.Commands
                     {
                         try
                         {
-
                             using (Stream fileStream = req.GetResponse().GetResponseStream())
                             {
-                                try
-                                {
-                                    await client.DeleteMessageAsync(chatId, message.MessageId);
-                                }
-                                catch { }
-                                await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream), msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+
+                                var buttonsList = new List<InlineKeyboardButton>();
+                                buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTB", "trade|wtb|" + card.tcgplayerProductId + "|" + card.name));
+                                buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.tcgplayerProductId + "|" + card.name));
+                                var keyboard = new InlineKeyboardMarkup(buttonsList);
+
+                                await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream), msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyMarkup: keyboard);
                             }
                         }
                         catch (Exception e)
@@ -202,15 +218,15 @@ namespace TCGUABot.Models.Commands
 
                             try
                             {
+                                var buttonsList = new List<InlineKeyboardButton>();
+                                buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTB", "trade|wtb|" + card.tcgplayerProductId + "|" + card.name));
+                                buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.tcgplayerProductId + "|" + card.name));
+                                var keyboard = new InlineKeyboardMarkup(buttonsList);
+
                                 req = WebRequest.Create(CardData.GetTcgPlayerImage(card.tcgplayerProductId));
                                 using (Stream fileStream = req.GetResponse().GetResponseStream())
                                 {
-                                    try
-                                    {
-                                        await client.DeleteMessageAsync(chatId, message.MessageId);
-                                    }
-                                    catch { }
-                                    await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream), msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                                    await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream), msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyMarkup: keyboard);
                                 }
                             }
                             catch
@@ -221,27 +237,13 @@ namespace TCGUABot.Models.Commands
                     }
                     else
                     {
-                        try
-                        {
-                            try
-                            {
-                                await client.DeleteMessageAsync(chatId, message.MessageId);
-                            }
-                            catch { }
-                            await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
-                        }
-                        catch
-                        { }
+                        await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
                     }
                 }
             }
             else
             {
-                try
-                {
-                    await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyToMessageId: message.MessageId);
-                }
-                catch { }
+                await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyToMessageId: message.MessageId);
             }
         }
 

@@ -154,5 +154,16 @@ namespace TCGUABot.Controllers
 
             return res;
         }
+
+        [HttpGet("/Test/wtb/{name}", Name = "wtbCommandCall")]
+        public async Task<string> WtbCommand(string name)
+        {
+            var msg = string.Empty;
+
+            var command = new WtbCommand();
+            await command.Execute(new Message() { Text = "/wtb "+name, Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
+
+            return msg;
+        }
     }
 }

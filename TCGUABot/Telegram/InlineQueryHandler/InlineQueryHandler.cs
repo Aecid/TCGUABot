@@ -19,12 +19,18 @@ namespace TCGUABot.Models.InlineQueryHandler
             }
             else
             {
-                if (query.Query.Length > 2)
+                if (query.Query.Length > 3)
                 {
-                    var results = GetCards(query);
+                    var results = new List<InlineQueryResultArticle>();
+                    if (Regex.IsMatch(query.Query, @"\p{IsCyrillic}")) results = GetCards(query);
+                    else results = GetCardsFromTcg(query);
+
                     try
                     {
-                        await client.AnswerInlineQueryAsync(query.Id, results);
+                        if (results.Count > 0)
+                        {
+                            await client.AnswerInlineQueryAsync(query.Id, results);
+                        }
                     }
                     catch (Exception e)
                     {
@@ -90,6 +96,35 @@ namespace TCGUABot.Models.InlineQueryHandler
                     }
                 }
                 if (results.Count > 49) break;
+            }
+
+            return results;
+        }
+
+        public List<InlineQueryResultArticle> GetCardsFromTcg (InlineQuery query)
+        {
+            //var cardName = query.Query.Replace("tcg ", "");
+
+            List<InlineQueryResultArticle> results = new List<InlineQueryResultArticle>();
+
+            var cards = CardData.TcgSearchByName(query.Query);
+
+            if (cards.Count > 0)
+            {
+                var k = 0;
+                foreach (var card in cards)
+                {
+
+                    results.Add(new InlineQueryResultArticle((++k).ToString(), card.name, new InputTextMessageContent("/tcgid " + card.productId))
+                    {
+                        HideUrl = true,
+                        ThumbWidth = 99,
+                        ThumbHeight = 138,
+                        ThumbUrl = card.imageUrl,
+                        Title = card.name,
+                        Description = CardData.TcgGroups.FirstOrDefault(z => z.groupId == card.groupId).name,
+                    });
+                }
             }
 
             return results;

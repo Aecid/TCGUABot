@@ -81,10 +81,37 @@ namespace TCGUABot.Models.Commands
                         int count = 0;
                         foreach (var player in tourney.TournamentUserPairs)
                         {
-                            //msg += "\r\n🧙‍♂️ " + "<a href=\"tg://user?id=" + player.PlayerTelegramId + "\">" + context.TelegramUsers.FirstOrDefault(u => u.Id == player.PlayerTelegramId).Name + "</a>";
                             var tplayer = context.TelegramUsers.FirstOrDefault(u => u.Id == player.PlayerTelegramId);
-                            var status = string.IsNullOrEmpty(tplayer.EmojiStatus) ? "🧙‍♂️" : tplayer.EmojiStatus;
-                            msg += "\r\n" + (++count) + ". " + status + tplayer.Name;
+
+                            if (tplayer != null)
+                            {
+                                //msg += "\r\n🧙‍♂️ " + "<a href=\"tg://user?id=" + player.PlayerTelegramId + "\">" + context.TelegramUsers.FirstOrDefault(u => u.Id == player.PlayerTelegramId).Name + "</a>";
+                                var status = string.IsNullOrEmpty(tplayer.EmojiStatus) ? "🧙‍♂️" : tplayer.EmojiStatus;
+                                var name = tplayer.Name;
+
+                                ////Oko made me do it unless I wanted to be an elk;
+                                //status = "🦌";
+                                //var words = name.Split(null);
+                                //if (words.Length > 1)
+                                //{
+                                //    words[words.Length - 1] = "Elk";
+                                //}
+                                //else
+                                //{
+                                //    words[0] = "Elk " + words[0];
+                                //}
+                                //name = string.Join(" ", words);
+                                ////
+
+
+
+
+                                msg += "\r\n" + (++count) + ". " + status + name;
+                            }
+                            else
+                            {
+                                msg += "\r\n" + (++count) + ". 🦌" + "<a href=\"tg://user?id="+player.PlayerTelegramId+"\">ID-10-t error: user null</a>";
+                            }
                         }
                     }
                     if (TList.Count > 1) msg += "\r\n\r\n";

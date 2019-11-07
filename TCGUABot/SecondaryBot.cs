@@ -30,7 +30,7 @@ namespace TCGUABot
             callbackHandlers = new List<CallbackHandler>();
 
             commandsList.Add(new CatCommand());
-            commandsList.Add(new TcgSearch());
+            commandsList.Add(new TcgSearchCommand());
 
 
 

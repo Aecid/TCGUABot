@@ -329,15 +329,22 @@ namespace TCGUABot
             request.Headers.Add("Authorization", "Bearer " + BearerToken);
 
             var content = string.Empty;
-            using (var response = (HttpWebResponse)request.GetResponse())
+            try
             {
-                using var stream = response.GetResponseStream();
-                using var sr = new StreamReader(stream);
-                content = sr.ReadToEnd();
-            }
+                using (var response = (HttpWebResponse)request.GetResponse())
+                {
+                    using var stream = response.GetResponseStream();
+                    using var sr = new StreamReader(stream);
+                    content = sr.ReadToEnd();
+                }
 
-            var res = JsonConvert.DeserializeObject<TcgPlayerProductDetailsResponse>(content);
-            return res.results[0];
+                var res = JsonConvert.DeserializeObject<TcgPlayerProductDetailsResponse>(content);
+                return res.results[0];
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public static string GetTcgPlayerImage(int productKey)

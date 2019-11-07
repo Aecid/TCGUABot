@@ -11,12 +11,13 @@ using TCGUABot.Resources;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.InputFiles;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TCGUABot.Models.Commands
 {
-    public class TcgSearch : Command
+    public class TcgSearchCommand : Command
     {
-        public override string Name => "/p_id ";
+        public override string Name => "/tcgid ";
 
         public override async Task Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
         {
@@ -25,7 +26,7 @@ namespace TCGUABot.Models.Commands
 
             var chatId = message.Chat.Id;
 
-            var text = message.Text.Replace("/p_id ", "").Trim();
+            var text = message.Text.Replace("/tcgid ", "").Trim();
 
             try
             {
@@ -45,7 +46,13 @@ namespace TCGUABot.Models.Commands
                 lang = lang == null ? "ru" : lang;
 
                 var nameEn = "<b>" + Lang.Res(lang).enFlag + " " + card.name + "</b>";
-                var set = "<i>(" + CardData.TcgGroups.FirstOrDefault(z => z.groupId == card.groupId).name + ")</i>";
+                string set = "";
+
+                try
+                {
+                    set = "<i>(" + CardData.TcgGroups.FirstOrDefault(z => z.groupId == card.groupId).name + ")</i>";
+                }
+                catch { set = "Unknown Set"; }
 
 
                 try
@@ -68,13 +75,35 @@ namespace TCGUABot.Models.Commands
                 msg += nameEn + "\r\n" + set + "\r\n" + price;
 
                 var req = WebRequest.Create(card.imageUrl);
-                using (Stream fileStream = req.GetResponse().GetResponseStream())
+                try
                 {
-                    try
+                    using (Stream fileStream = req.GetResponse().GetResponseStream())
                     {
-                        await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream), msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        var buttonsList = new List<InlineKeyboardButton>();
+                        buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTB", "trade|wtb|" + card.productId + "|" + card.name));
+                        buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.productId + "|" + card.name));
+                        var keyboard = new InlineKeyboardMarkup(buttonsList);
+
+                        try
+                        {
+                            await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream), msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyMarkup: keyboard);
+                        }
+                        catch { }
                     }
-                    catch { }
+                }
+                catch
+                {
+                        var buttonsList = new List<InlineKeyboardButton>();
+                        buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTB", "trade|wtb|" + card.productId + "|" + card.name));
+                        buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.productId + "|" + card.name));
+                        var keyboard = new InlineKeyboardMarkup(buttonsList);
+                        msg += "\r\n" + card.imageUrl;
+
+                        try
+                        {
+                            await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyMarkup: keyboard);
+                        }
+                        catch { }
                 }
             }
         }

@@ -49,10 +49,17 @@
             <ul>
                 @{ foreach (var player in item.RegisteredPlayers)
                     {
-                        var status = @player.EmojiStatus ?? "🧙‍♂️";
+                        if (player != null)
+                        {
+                            var status = @player.EmojiStatus ?? "🧙‍♂️";
                     <li>@status&nbsp;@Html.Raw(player.Name.Replace(" ", "&nbsp;"))</li>
+                        }
+                        else
+                        {
+                        <li>🧙‍♂️ ID-10-t error: user null</li>
+                        }
                     }
-                }
+                    }
             </ul>
         </div>
         <div>

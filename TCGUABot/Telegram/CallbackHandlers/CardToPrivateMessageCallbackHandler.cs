@@ -49,7 +49,7 @@ namespace TCGUABot.Models.CallbackHandlers
                 }
             };
 
-            command.Execute(message, await Bot.Get(), context);
+            await command.Execute(message, await Bot.Get(), context);
         }
     }
 }
