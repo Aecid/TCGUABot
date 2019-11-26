@@ -68,6 +68,8 @@ namespace TCGUABot.Models.Commands
                     msg += " - ";
                     var tname = string.IsNullOrEmpty(tourney.LocationName) ? tourney.Name : tourney.Name + "-" + tourney.LocationName;
                     msg += tname + "</a>";
+                    if (!string.IsNullOrEmpty(tourney.Description))
+                    msg += "\r\n📜 " + tourney.Description;
                     if (!string.IsNullOrEmpty(tourney.EntryFee))
                     {
                         var entryFee = tourney.EntryFee.Contains("бесплатно", StringComparison.InvariantCultureIgnoreCase) ? "🔥<i>бесплатно!</i>🔥" : tourney.EntryFee;
