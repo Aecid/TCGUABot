@@ -77,11 +77,12 @@ namespace TCGUABot.Models.Commands
                         msg += "\r\n<b>"+ Lang.Res(lang).entryFee + ": </b>" + entryFee;
                     }
                     if (!string.IsNullOrEmpty(tourney.Rewards)) msg += "\r\n<b>"+ Lang.Res(lang).rewards + ": </b>" + tourney.Rewards;
-                    var tourneyPlayers = context.TournamentUserPairs.Where(p => p.TournamentId == tourney.Id).ToList();
-                    if (tourneyPlayers != null && tourneyPlayers.Count > 0)
-                    {
+                    if (tourney.MaxPlayers != null && tourney.MaxPlayers > 0) msg += "\r\n<b>" + Lang.Res(lang).maxPlayers + ": </b>" + tourney.MaxPlayers;
+                    var tourneyPlayers = context.TournamentUserPairs.Where(p => p.TournamentId == tourney.Id).OrderBy(p => p.Id).ToList();
+                    //if (tourneyPlayers != null && tourneyPlayers.Count > 0)
+                    //{
                         int count = 0;
-                        foreach (var player in tourney.TournamentUserPairs)
+                        foreach (var player in tourneyPlayers)
                         {
                             var tplayer = context.TelegramUsers.FirstOrDefault(u => u.Id == player.PlayerTelegramId);
 
@@ -114,8 +115,20 @@ namespace TCGUABot.Models.Commands
                             {
                                 msg += "\r\n" + (++count) + ". 🦌" + "<a href=\"tg://user?id="+player.PlayerTelegramId+"\">ID-10-t error: user null</a>";
                             }
+
+                            if (count == tourney.MaxPlayers)
+                                msg += "\r\n_________________";
                         }
-                    }
+
+                        if (++count <= tourney.MaxPlayers)
+                        {
+                            for (int i = count; i<=tourney.MaxPlayers; i++)
+                            {
+                                msg += "\r\n" + i + ". -----------------";
+                            }
+                        }
+                        
+                    //}
                     if (TList.Count > 1) msg += "\r\n\r\n";
 
                     //buttonList.Add(InlineKeyboardButton.WithUrl(tourney.Name, "https://ace.od.ua/Tournaments/Details?id=" + tourney.Id));
@@ -128,6 +141,10 @@ namespace TCGUABot.Models.Commands
                 }
 
             }
+            keyboardList.Add(new List<InlineKeyboardButton>
+            {
+                InlineKeyboardButton.WithCallbackData("🔄", "t|refresh")
+            });
 
             var keyboard = new InlineKeyboardMarkup(keyboardList);
 

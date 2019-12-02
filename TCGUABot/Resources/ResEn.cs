@@ -20,7 +20,6 @@ namespace TCGUABot.Resources
         public override string importError => "Deck import error";
         public override string deckLink => "Deck link";
         public override string free => "Free!";
-
-
+        public override string maxPlayers => "Max players";
     }
 }

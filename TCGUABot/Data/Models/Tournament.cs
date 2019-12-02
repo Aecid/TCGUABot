@@ -31,6 +31,7 @@ namespace TCGUABot.Data.Models
         public string LocationName { get; set; }
         public string Latitude { get; set; }
         public string Longitude { get; set; }
+        public int? MaxPlayers { get; set; }
         public ICollection<TournamentUserPair> TournamentUserPairs { get; set; }
 
         [NotMapped]

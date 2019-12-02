@@ -39,6 +39,11 @@
                 <input asp-for="Tournament.Rewards" class="form-control" />
                 <span asp-validation-for="Tournament.Rewards" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="Tournament.MaxPlayers" class="control-label"></label>
+                <input asp-for="Tournament.MaxPlayers" class="form-control" />
+                <span asp-validation-for="Tournament.MaxPlayers" class="text-danger"></span>
+            </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="Tournament.IsLocked" /> @Html.DisplayNameFor(model => model.Tournament.IsLocked)

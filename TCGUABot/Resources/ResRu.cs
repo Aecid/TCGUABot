@@ -14,6 +14,8 @@
         public override string rulingsNotFound => "Рулинги не найдены";
         public override string importError => "Ошибка импорта деки";
         public override string deckLink => "Ссылка на деку";
+        public override string maxPlayers => "Максимум игроков";
+
 
         public override string free => "Бесплатно!";
 

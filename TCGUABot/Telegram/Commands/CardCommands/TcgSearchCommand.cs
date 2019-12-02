@@ -81,7 +81,7 @@ namespace TCGUABot.Models.Commands
                     {
                         var buttonsList = new List<InlineKeyboardButton>();
                         buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTB", "trade|wtb|" + card.productId + "|" + card.name));
-                        buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.productId + "|" + card.name));
+                        //buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.productId + "|" + card.name));
                         var keyboard = new InlineKeyboardMarkup(buttonsList);
 
                         try
@@ -95,7 +95,7 @@ namespace TCGUABot.Models.Commands
                 {
                         var buttonsList = new List<InlineKeyboardButton>();
                         buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTB", "trade|wtb|" + card.productId + "|" + card.name));
-                        buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.productId + "|" + card.name));
+                        //buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.productId + "|" + card.name));
                         var keyboard = new InlineKeyboardMarkup(buttonsList);
                         msg += "\r\n" + card.imageUrl;
 

@@ -106,7 +106,7 @@ namespace TCGUABot.Models.Commands
                         var buttonsList = new List<InlineKeyboardButton>();
                         buttonsList.Add(InlineKeyboardButton.WithCallbackData("👀", "cp|" + card.tcgplayerProductId));
                         buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTB", "trade|wtb|" + card.tcgplayerProductId));
-                        buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.tcgplayerProductId));
+                        //buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.tcgplayerProductId));
                         var keyboard = new InlineKeyboardMarkup(buttonsList);
 
                         await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyMarkup: keyboard);

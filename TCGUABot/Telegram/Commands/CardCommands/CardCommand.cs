@@ -173,7 +173,7 @@ namespace TCGUABot.Models.Commands
                     {
                         var buttonsList = new List<InlineKeyboardButton>();
                         buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTB", "trade|wtb|" + card.tcgplayerProductId + "|" + card.name));
-                        buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.tcgplayerProductId + "|" + card.name));
+                        //buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.tcgplayerProductId + "|" + card.name));
                         var keyboard = new InlineKeyboardMarkup(buttonsList);
 
                         await client.SendMediaGroupAsync(media, chatId);
@@ -206,7 +206,7 @@ namespace TCGUABot.Models.Commands
 
                                 var buttonsList = new List<InlineKeyboardButton>();
                                 buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTB", "trade|wtb|" + card.tcgplayerProductId + "|" + card.name));
-                                buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.tcgplayerProductId + "|" + card.name));
+                                //buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.tcgplayerProductId + "|" + card.name));
                                 var keyboard = new InlineKeyboardMarkup(buttonsList);
 
                                 await client.SendPhotoAsync(chatId, new InputOnlineFile(fileStream), msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyMarkup: keyboard);
@@ -220,7 +220,7 @@ namespace TCGUABot.Models.Commands
                             {
                                 var buttonsList = new List<InlineKeyboardButton>();
                                 buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTB", "trade|wtb|" + card.tcgplayerProductId + "|" + card.name));
-                                buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.tcgplayerProductId + "|" + card.name));
+                                //buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.tcgplayerProductId + "|" + card.name));
                                 var keyboard = new InlineKeyboardMarkup(buttonsList);
 
                                 req = WebRequest.Create(CardData.GetTcgPlayerImage(card.tcgplayerProductId));
