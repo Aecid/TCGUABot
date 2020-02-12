@@ -195,6 +195,65 @@ namespace TCGUABot
         }
 
 
+        public static List<TcgPlayerProductDetails> TcgGetGroupContentById(int groupId)
+        {
+            IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddJsonFile("appsettings.json");
+            IConfiguration configuration = configurationBuilder.Build();
+
+            var result = new Dictionary<string, float>();
+            var version = configuration.GetSection("TCGPlayer").GetSection("Version").Value;
+
+            var cards = new List<TcgPlayerProductDetails>();
+            int offset = 0;
+
+            while (true)
+            {
+                var url = "https://api.tcgplayer.com/" + version + "/catalog/products?getExtendedFields=true&offset=" + offset+"&limit=100&groupId=" + groupId.ToString();
+                var req = (HttpWebRequest)WebRequest.Create(url);
+
+                req.Method = "GET";
+                req.ContentType = "application/json";
+                req.Headers.Add("Authorization", "Bearer " + BearerToken);
+
+                var content = string.Empty;
+
+                using (var response = (HttpWebResponse)req.GetResponse())
+                {
+                    using var stream = response.GetResponseStream();
+                    using (var sr = new StreamReader(stream))
+                    {
+                        content = sr.ReadToEnd();
+                    }
+                }
+
+                var res = JsonConvert.DeserializeObject<TcgPlayerGroupProductsListResponse>(content);
+
+                if (res.success)
+                {
+                    cards.AddRange(res.results.ToList());
+                }
+                else
+                {
+                    break;
+                }
+
+                if (res.totalItems > cards.Count)
+                {
+                    offset += 100;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+
+            return cards;
+        }
+
+
+
         public static string GetTcgplayerAccessToken()
         {
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();

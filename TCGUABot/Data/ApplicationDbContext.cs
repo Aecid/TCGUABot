@@ -17,6 +17,7 @@ namespace TCGUABot.Data
         }
 
         public DbSet<Deck> Decks { get; set; }
+        public DbSet<Product> Cards { get; set; }
         public DbSet<Tournament> Tournaments { get; set; }
         public DbSet<TournamentUserPair> TournamentUserPairs { get; set; }
         public DbSet<TelegramUser> TelegramUsers { get; set; }
@@ -24,6 +25,7 @@ namespace TCGUABot.Data
         public DbSet<MythicSpoiler> MythicSpoilers { get; set; }
         public DbSet<TradingCard> TradingCards { get; set; }
         public DbSet<DeckGuide> DeckGuides { get; set; }
+        public DbSet<CatifiedUser> CatifiedUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

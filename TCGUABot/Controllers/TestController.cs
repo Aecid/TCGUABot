@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using TCGUABot.Data;
 using TCGUABot.Models.Commands;
 using TCGUABot.Models.InlineQueryHandler;
@@ -42,7 +43,7 @@ namespace TCGUABot.Controllers
             var msg = string.Empty;
 
             var command = new InlineQueryHandler();
-            await command.Execute(new InlineQuery() { Query = cardName }, await Bot.Get());
+            await command.Execute(new InlineQuery() { Query = cardName }, await Bot.Get(), context);
 
             return msg;
         }
@@ -134,10 +135,66 @@ namespace TCGUABot.Controllers
 
             var res = string.Empty;
 
-            res += z.name;
+            res += JsonConvert.SerializeObject(z, Formatting.Indented);
 
             return res;
         }
+
+        [HttpGet("/Test/GetGroupsByCategoryId/{productId}", Name = "GetGroupsByCategoryId")]
+        public string GetGroupsByCategoryId(int productId)
+        {
+            var z = CardData.GetTcgProductDetails(productId);
+
+            var res = string.Empty;
+
+            res += JsonConvert.SerializeObject(z, Formatting.Indented);
+
+            return res;
+        }
+
+        [HttpGet("/Test/ShowAllGroups", Name = "ShowAllGroups")]
+        public string ShowAllGroups()
+        {
+            var z = CardData.TcgGroups;
+            var res = string.Empty;
+
+            foreach (var group in z)
+            {
+                res += JsonConvert.SerializeObject(group, Formatting.Indented);
+                res += "\r\n_____________________\r\n";
+            }
+
+            return res;
+        }
+
+        [HttpGet("/Test/ShowGroupContentById/{groupId}", Name = "ShowGroupContentById")]
+        public string ShowGroupContentById(int groupId)
+        {
+            var z = CardData.TcgGroups;
+            var res = string.Empty;
+
+            foreach (var group in z)
+            {
+                res += JsonConvert.SerializeObject(group, Formatting.Indented);
+                res += "\r\n_____________________\r\n";
+            }
+
+            return res;
+        }
+
+        [HttpGet("/Test/Group/{groupId}", Name = "GetGroupContent")]
+        public string GetGroupContentById(int groupId)
+        {
+            var z = CardData.TcgGetGroupContentById(groupId);
+            var res = string.Empty;
+            res += "Total cards: " + z.Count().ToString();
+            res += "\r\n";
+            res += JsonConvert.SerializeObject(z);
+            return res;
+        }
+
+
+
 
         [HttpGet("/Test/Tcg/{name}", Name = "SearchTcg")]
         public string SearchTcg(string name)
@@ -153,6 +210,16 @@ namespace TCGUABot.Controllers
             }
 
             return res;
+        }
+
+        [HttpGet("/Test/Tcgid/{id}", Name = "SearchTcgById")]
+        public async Task<string> SearchTcgById(string id)
+        {
+            var msg = string.Empty;
+
+            var command = new TcgSearchCommand();
+            await command.Execute(new Message() { Text = "/tcgid "+id, Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
+            return msg;
         }
 
         [HttpGet("/Test/wtb/{name}", Name = "wtbCommandCall")]

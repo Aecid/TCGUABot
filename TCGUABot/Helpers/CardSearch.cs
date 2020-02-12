@@ -20,25 +20,63 @@ namespace TCGUABot.Helpers
             Card card = new Card();
             if (!exactMatch)
             {
-                var set = CardData.Instance.Sets.LastOrDefault(s => s.cards.Any(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant())) && expansions.Contains(s.type));
-                if (set == null)
-                {
-                    set = CardData.Instance.Sets.LastOrDefault(s => s.cards.Any(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant()))));
-                }
+                var set = CardData.Instance.Sets.LastOrDefault(
+                s => s.cards.Any
+                (
+
+                        c =>
+                        (
+                            (
+                                c.name.ToLowerInvariant().Equals(name.ToLowerInvariant())
+                            )
+                        ||
+                            (
+                                c.foreignData.Any(f => f.name.ToLowerInvariant().Equals(name.ToLowerInvariant()))
+                            )
+                        )
+                        &&
+                        c.tcgplayerProductId > 0
+
+                )
+                &&
+                expansions.Contains(s.type)
+                );
+
                 if (set != null)
                 {
-                    card = set.cards.LastOrDefault(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant()));
+                    card = set.cards.LastOrDefault(c => c.name.ToLowerInvariant().Equals(name.ToLowerInvariant()));
                     if (card == null)
                     {
-                        card = set.cards.LastOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant())));
+                        card = set.cards.LastOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Equals(name.ToLowerInvariant())));
                     }
 
                     card.Set = set.code;
+
                     return card;
                 }
                 else
                 {
-                    return null;
+
+                    set = CardData.Instance.Sets.LastOrDefault(s => s.cards.Any(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant())) && expansions.Contains(s.type));
+                    if (set == null)
+                    {
+                        set = CardData.Instance.Sets.LastOrDefault(s => s.cards.Any(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant()))));
+                    }
+                    if (set != null)
+                    {
+                        card = set.cards.LastOrDefault(c => c.name.ToLowerInvariant().Contains(name.ToLowerInvariant()));
+                        if (card == null)
+                        {
+                            card = set.cards.LastOrDefault(c => c.foreignData.Any(f => f.name.ToLowerInvariant().Contains(name.ToLowerInvariant())));
+                        }
+
+                        card.Set = set.code;
+                        return card;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
             }
             else
@@ -46,8 +84,8 @@ namespace TCGUABot.Helpers
                 var set = CardData.Instance.Sets.LastOrDefault(
                     s => s.cards.Any
                     (
-                        
-                            c => 
+
+                            c =>
                             (
                             c.name.ToLowerInvariant().Equals(name.ToLowerInvariant())
                             )
@@ -55,7 +93,7 @@ namespace TCGUABot.Helpers
                             (
                             c.foreignData.Any(f => f.name.ToLowerInvariant().Equals(name.ToLowerInvariant()))
                             )
-                        
+
                     )
                     &&
                     expansions.Contains(s.type)
@@ -108,7 +146,7 @@ namespace TCGUABot.Helpers
                 }
 
                 if (card == null) return null;
-                
+
                 card.Set = set;
 
                 return card;
@@ -135,7 +173,7 @@ namespace TCGUABot.Helpers
             foreach (var set in CardData.Instance.Sets)
             {
                 var card = set.cards.FirstOrDefault(c => c.tcgplayerProductId == id);
-                if (card!=null)
+                if (card != null)
                 {
                     card.Set = set.code;
                     return card;

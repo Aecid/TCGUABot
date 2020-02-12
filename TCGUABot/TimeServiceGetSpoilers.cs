@@ -32,7 +32,7 @@ namespace TCGUABot
             _logger.LogInformation("Timed Background Service is starting.");
 
             _timer = new Timer(DoWork, null, TimeSpan.Zero,
-                TimeSpan.FromHours(1));
+                TimeSpan.FromMinutes(5));
 
             return Task.CompletedTask;
         }

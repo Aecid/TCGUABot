@@ -37,7 +37,8 @@ namespace TCGUABot.Models.Commands
 
             }
 
-            var card = CardData.GetTcgProductDetails(int.Parse(text));
+            //var card = CardData.GetTcgProductDetails(int.Parse(text));
+            var card = context.Cards.FirstOrDefault(z => z.ProductId == int.Parse(text));
 
             string price = string.Empty;
             if (card != null)
@@ -45,19 +46,19 @@ namespace TCGUABot.Models.Commands
                 var lang = context.TelegramChats.FirstOrDefault(f => f.Id == chatId)?.Language;
                 lang = lang == null ? "ru" : lang;
 
-                var nameEn = "<b>" + Lang.Res(lang).enFlag + " " + card.name + "</b>";
+                var nameEn = "<a href=\""+card.Url+"\">" + Lang.Res(lang).enFlag + " " + card.Name + "</a>";
                 string set = "";
 
                 try
                 {
-                    set = "<i>(" + CardData.TcgGroups.FirstOrDefault(z => z.groupId == card.groupId).name + ")</i>";
+                    set = "<i>(" + CardData.TcgGroups.FirstOrDefault(z => z.groupId == card.GroupId).name + ") (" + CardData.TcgGroups.FirstOrDefault(z => z.groupId == card.GroupId).abbreviation + ")</i>";
                 }
-                catch { set = "Unknown Set"; }
+                catch { set = "<i>Unknown Set</i>"; }
 
 
                 try
                 {
-                    var prices = CardData.GetTcgPlayerPrices(card.productId);
+                    var prices = CardData.GetTcgPlayerPrices(card.ProductId);
                     if (prices["normal"] > 0)
                         price += Lang.Res(lang).price + ": <b>$" + prices["normal"].ToString() + "</b>\r\n";
                     if (prices["foil"] > 0)
@@ -74,13 +75,13 @@ namespace TCGUABot.Models.Commands
 
                 msg += nameEn + "\r\n" + set + "\r\n" + price;
 
-                var req = WebRequest.Create(card.imageUrl);
+                var req = WebRequest.Create(card.ImageUrl);
                 try
                 {
                     using (Stream fileStream = req.GetResponse().GetResponseStream())
                     {
                         var buttonsList = new List<InlineKeyboardButton>();
-                        buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTB", "trade|wtb|" + card.productId + "|" + card.name));
+                        buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTB", "trade|wtb|" + card.ProductId + "|" + card.Name.Replace("/", "\\/")));
                         //buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.productId + "|" + card.name));
                         var keyboard = new InlineKeyboardMarkup(buttonsList);
 
@@ -94,10 +95,10 @@ namespace TCGUABot.Models.Commands
                 catch
                 {
                         var buttonsList = new List<InlineKeyboardButton>();
-                        buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTB", "trade|wtb|" + card.productId + "|" + card.name));
+                        buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTB", "trade|wtb|" + card.ProductId + "|" + card.Name));
                         //buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.productId + "|" + card.name));
                         var keyboard = new InlineKeyboardMarkup(buttonsList);
-                        msg += "\r\n" + card.imageUrl;
+                        msg += "\r\n" + card.ImageUrl;
 
                         try
                         {

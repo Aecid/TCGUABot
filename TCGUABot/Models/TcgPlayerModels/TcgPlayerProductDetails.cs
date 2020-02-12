@@ -13,6 +13,6 @@ namespace TCGUABot.Models.TcgPlayerModels
         public string imageUrl { get; set; }
         public int groupId { get; set; }
         public string url { get; set; }
-        public List<TcgPlayerProductExtendedDataItem> extendedData { get; set; }
+        public dynamic extendedData { get; set; }
     }
 }

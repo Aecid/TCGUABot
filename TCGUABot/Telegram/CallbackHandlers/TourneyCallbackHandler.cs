@@ -65,6 +65,10 @@ namespace TCGUABot.Models.CallbackHandlers
             var generatedMesssage = TourneyCommand.GenerateTourneyList(query.Message, context);
             var msg = generatedMesssage.Item1;
             var keyboard = generatedMesssage.Item2;
+            
+            if (msg.Contains("<i>Last update:</i>"))
+                msg = msg.Remove(msg.TrimEnd().LastIndexOf(Environment.NewLine));
+            msg += "\r\n<i>Last update:</i> " + "<i>"+TimeService.GetLocalTime().ToString("MM/dd/yyyy HH:mm:ss")+"</i>";
 
             if (!string.IsNullOrEmpty(msg) && keyboard != null)
             {

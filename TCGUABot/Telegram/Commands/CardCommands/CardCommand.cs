@@ -145,7 +145,7 @@ namespace TCGUABot.Models.Commands
                             if (firstCardTcgPlayerId != foundCard.tcgplayerProductId)
                             {
                                 firstCardTcgPlayerId = foundCard.tcgplayerProductId;
-                                var imp = new InputMediaPhoto( new InputMedia(CardData.GetTcgPlayerImage(foundCard.tcgplayerProductId)));
+                                var imp = new InputMediaPhoto( new InputMedia(context.Cards.FirstOrDefault(c => c.ProductId == firstCardTcgPlayerId).ImageUrl));
                                 media.Add(imp);
                             }
                         }
