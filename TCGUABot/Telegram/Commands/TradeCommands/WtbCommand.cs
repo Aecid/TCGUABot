@@ -13,7 +13,6 @@ using TCGUABot.Models.Shops.BuyMagic;
 using TCGUABot.Models.Shops.MTGMarket;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.InputFiles;
 
 namespace TCGUABot.Models.Commands
 {
@@ -159,7 +158,7 @@ namespace TCGUABot.Models.Commands
 
             try
             {
-                await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, true, false, message.MessageId);
+                await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, disableWebPagePreview:true, replyToMessageId:message.MessageId);
             }
             catch { }
         }

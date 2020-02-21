@@ -20,6 +20,9 @@ namespace TCGUABot.Data
         public string Lang { get; set; }
         public bool Wts { get; set; }
         public bool isOpen { get; set; }
+        public string Location { get; set; }
+        public string Description { get; set; }
+        public string Quantity { get; set; }
 
         public DateTime Created { get; set; }
         public DateTime LastModified { get; set; }
