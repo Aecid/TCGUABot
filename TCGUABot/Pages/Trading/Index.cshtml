@@ -1,0 +1,138 @@
+﻿@page
+@model TCGUABot.Pages.Trading.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Order[0].PlayerTelegramId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order[0].ProductId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order[0].ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order[0].Edition)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order[0].EditionId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order[0].isFoil)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order[0].Lang)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order[0].Wts)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order[0].Location)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order[0].isDeliverable)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order[0].DeliveryService)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order[0].Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order[0].Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order[0].Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order[0].ExchangeRate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order[0].isOpen)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order[0].Created)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Order[0].LastModified)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Order) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlayerTelegramId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Edition)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EditionId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.isFoil)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lang)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Wts)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Location)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.isDeliverable)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliveryService)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ExchangeRate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.isOpen)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Created)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastModified)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -21,7 +21,7 @@ namespace TCGUABot.Models.Commands
         {
             string text = string.Empty;
             string setName = string.Empty;
-            text = message.Text.Replace("/booster ", "");
+            text = message.Text.Replace("/booster", "").Trim().Replace("@tcgua_bot", "");
 
             var set = CardData.Instance.Sets.FirstOrDefault(z => z.code.Equals(text, StringComparison.InvariantCultureIgnoreCase));
 

@@ -358,7 +358,7 @@ namespace TCGUABot
             if (float.TryParse(pnormal.midPrice.ToString(), out priceNormal))
                 result.Add("normal", priceNormal);
             else if (float.TryParse(pnormal.marketPrice.ToString(), out priceNormal))
-                    result.Add("normal", priceNormal);
+                result.Add("normal", priceNormal);
             else result.Add("normal", 0);
 
             if (float.TryParse(pfoil.midPrice.ToString(), out priceFoil))
@@ -368,6 +368,41 @@ namespace TCGUABot
             else result.Add("foil", 0);
 
             return result;
+        }
+
+        public static IEnumerable<dynamic> GetTcgPlayerPrices(List<int> productKeys)
+        {
+            IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddJsonFile("appsettings.json");
+            IConfiguration configuration = configurationBuilder.Build();
+
+            var result = new Dictionary<string, float>();
+            var version = configuration.GetSection("TCGPlayer").GetSection("Version").Value;
+
+            var keys = string.Join(",", productKeys);
+
+            var url = "https://api.tcgplayer.com/" + version + "/pricing/product/" + keys;
+            var request = (HttpWebRequest)WebRequest.Create(url);
+
+            request.Method = "GET";
+            request.ContentType = "application/json";
+            request.Headers.Add("Authorization", "Bearer " + BearerToken);
+
+            var content = string.Empty;
+
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                using var stream = response.GetResponseStream();
+                using (var sr = new StreamReader(stream))
+                {
+                    content = sr.ReadToEnd();
+                }
+            }
+
+            var res = JsonConvert.DeserializeObject<dynamic>(content);
+            IEnumerable<dynamic> results = res.results;
+
+            return results;
         }
         //http://api.tcgplayer.com/v1.17.0/catalog/products/137942,132438?getExtendedFields=true
 

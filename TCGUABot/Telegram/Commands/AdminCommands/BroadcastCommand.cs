@@ -29,10 +29,12 @@ namespace TCGUABot.Models.Commands
                 {
                     try
                     {
-                        await Task.Delay(300);
+                        await Task.Delay(500);
                         await client.SendTextMessageAsync(user.Id, text, Telegram.Bot.Types.Enums.ParseMode.Html);
                     }
-                    catch { }
+                    catch {
+                        await client.SendTextMessageAsync("-1001112744433", "Error sending broadcast to user id "+user.Id, Telegram.Bot.Types.Enums.ParseMode.Html);
+                    }
                 }
             }
         }

@@ -28,6 +28,14 @@ namespace TCGUABot.Controllers
             return "ALIVE!";
         }
 
+        public async Task<OkResult> UpdateTradeChat([FromBody]int id)
+        {
+            var client = await Bot.Get();
+            await client.SendTextMessageAsync("-1001321519739", "New position added, id=" + id);
+
+            return Ok();
+        }
+
         public async Task<OkResult> Webhook([FromBody]Update update)
         {
             Console.WriteLine(JsonConvert.SerializeObject(update));
@@ -49,7 +57,8 @@ namespace TCGUABot.Controllers
                             var user = update.CallbackQuery.From.FirstName + " " + update.CallbackQuery.From.LastName + " @" + update.CallbackQuery.From.Username;
                             var userId = update.CallbackQuery.From.Id;
                             var text = update.CallbackQuery.Data;
-                            var messageText = String.Format("Bot: @tcgua_bot, incoming from: {0} ({1}), msg: {2}", user, userId, text);
+                            var chat = update.CallbackQuery.ChatInstance;
+                            var messageText = String.Format("Bot: @tcgua_bot, incoming from: {0} ({1}), {2}, msg: {3}", user, userId, chat, text);
                             //Logging?:D
                             try
                             {
@@ -79,6 +88,15 @@ namespace TCGUABot.Controllers
 
                     if (update.Message.Text != null)
                     {
+                        var sniffuser = update.Message.From.FirstName + " " + update.Message.From.LastName + " @" + update.Message.From.Username;
+                        var sniffuserId = update.Message.From.Id;
+                        var sniffchatId = update.Message.Chat.Id;
+                        var sniffchatName = sniffuserId == sniffchatId ? "Private" : update.Message.Chat.Title;
+                        var snifftext = update.Message.Text;
+                        var sniffmessageText = String.Format("Chat {0}:\r\n <a href=\"tg://user?id={1}\">{2}</a>: {3}", sniffchatName, sniffuserId, sniffuser, snifftext);
+
+                        await client.SendTextMessageAsync("-1001112744433", sniffmessageText, Telegram.Bot.Types.Enums.ParseMode.Html);
+
                         foreach (var command in commands)
                         {
                             if (command.StartsWith(update.Message.Text))
@@ -92,7 +110,7 @@ namespace TCGUABot.Controllers
                                         var chatId = update.Message.Chat.Id;
                                         var chatName = userId == chatId ? "Private" : update.Message.Chat.Title;
                                         var text = update.Message.Text;
-                                        var messageText = String.Format("Bot: @tcgua_bot, incoming from: {0} ({1}), chat {2} ({3}), msg: {4}", user, userId, chatName, chatId, text);
+                                        var messageText = String.Format("Bot: @tcgua_bot, incoming from: {0} <a href=\"tg://user?id={1}\">link</a>, chat {2} ({3}), msg: {4}", user, userId, chatName, chatId, text);
                                         //Logging?:D
                                         await client.SendTextMessageAsync("-1001202180806", messageText, Telegram.Bot.Types.Enums.ParseMode.Html, true, true);
                                     }

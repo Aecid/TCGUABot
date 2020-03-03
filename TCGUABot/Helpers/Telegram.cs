@@ -15,6 +15,8 @@ namespace TCGUABot.Helpers
             try
             {
                 var isExistingUser = context.TelegramUsers.Any(u => u.Id == telegramUser.Id);
+
+
                 if (!isExistingUser)
                 {
                     var user = new TelegramUser()

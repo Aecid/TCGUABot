@@ -1,34 +1,172 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using TCGUABot.Data;
+using TCGUABot.Models.Commands;
+using TCGUABot.Models.InlineQueryHandler;
+using Telegram.Bot.Types;
 
 namespace TCGUABot.Controllers
 {
-    public class TradeController : Controller
+    //[Route("api/[controller]")]
+    //[ApiController]
+    public class TradeController : ControllerBase
     {
-        ApplicationDbContext context { get; set; }
+        public ApplicationDbContext context { get; set; }
         public TradeController(ApplicationDbContext context)
         {
             this.context = context;
         }
 
-        [HttpGet]
-        public JsonResult GetTradeCard([FromQuery] string productId)
+        public string HealthCheck()
         {
-            var cards = context.TradingCards.Where(tc => tc.ProductId.ToString() == productId);
-            return Json(cards);
+            return "ALIVE!";
         }
 
-        [HttpGet]
-        public JsonResult WTB([FromQuery] string id)
+        public async Task<OkResult> Webhook([FromBody]Update update)
         {
-            dynamic result = new ExpandoObject();
-            return Json(result);
+            Console.WriteLine(JsonConvert.SerializeObject(update));
+
+            var z = Request.Body;
+
+            var commands = TradeBot.Commands;
+            var callbackHandlers = TradeBot.CallbackHandlers;
+            var client = await TradeBot.Get();
+            var inlineQueryHandler = new InlineQueryHandler();
+            if (update.CallbackQuery != null)
+            {
+                if (update.CallbackQuery.Data != null)
+                {
+                    foreach (var handler in callbackHandlers)
+                    {
+                        if (handler.Is(update.CallbackQuery.Data))
+                        {
+                            var user = update.CallbackQuery.From.FirstName + " " + update.CallbackQuery.From.LastName + " @" + update.CallbackQuery.From.Username;
+                            var userId = update.CallbackQuery.From.Id;
+                            var text = update.CallbackQuery.Data;
+                            var messageText = String.Format("Bot: @tcgua_bot, incoming from: {0} ({1}), msg: {2}", user, userId, text);
+                            //Logging?:D
+                            try
+                            {
+                                await client.SendTextMessageAsync("-1001202180806", messageText, Telegram.Bot.Types.Enums.ParseMode.Html, true, true);
+                            }
+                            catch { }
+                            Console.WriteLine("Result: {0}, {1}", update.CallbackQuery.Data, update.CallbackQuery.From.Id);
+                            await handler.Execute(update.CallbackQuery, client, context);
+                        }
+                    }
+                }
+            }
+
+            if (update.InlineQuery != null)
+            {
+                await inlineQueryHandler.Execute(update.InlineQuery, client, context);
+            }
+
+            if (update != null)
+            {
+                if (update.Message != null)
+                {
+                    if (update.Message.Chat != null)
+                    {
+                        Helpers.TelegramUtil.AddChat(update.Message.Chat.Id, context, update.Message.Chat.Id == update.Message.From.Id);
+                    }
+
+                    if (update.Message.Text != null)
+                    {
+                        foreach (var command in commands)
+                        {
+                            if (command.StartsWith(update.Message.Text))
+                            {
+                                if (!context.CatifiedUsers.Any(z => z.TelegramId == update.Message.From.Id))
+                                {
+                                    try
+                                    {
+                                        var user = update.Message.From.FirstName + " " + update.Message.From.LastName + " @" + update.Message.From.Username;
+                                        var userId = update.Message.From.Id;
+                                        var chatId = update.Message.Chat.Id;
+                                        var chatName = userId == chatId ? "Private" : update.Message.Chat.Title;
+                                        var text = update.Message.Text;
+                                        var messageText = String.Format("Bot: @tcgua_bot, incoming from: {0} ({1}), chat {2} ({3}), msg: {4}", user, userId, chatName, chatId, text);
+                                        //Logging?:D
+                                        await client.SendTextMessageAsync("-1001202180806", messageText, Telegram.Bot.Types.Enums.ParseMode.Html, true, true);
+                                    }
+                                    catch { }
+
+                                    Console.WriteLine("Incoming message from:" + update.Message.From.FirstName + " " + update.Message.From.LastName + " @" + update.Message.From.Username + "(" + update.Message.From.Id + "), in chat: " + update.Message.Chat.Title + "(" + update.Message.Chat.Id + ")\r\n" + update.Message.Text);
+                                    try
+                                    {
+                                        await command.Execute(update.Message, client, context);
+                                    }
+                                    catch
+                                    {
+                                        var errorMsg = "Error executing command " + command.Name;
+                                        await client.SendTextMessageAsync("-1001202180806", errorMsg, Telegram.Bot.Types.Enums.ParseMode.Html, true, true);
+                                    }
+                                    break;
+                                }
+                                else
+                                {
+                                    var catCommand = new TranslateCommand();
+                                    await catCommand.Execute(new Message() { Chat = new Chat() { Id = update.Message.Chat.Id }, ReplyToMessage = update.Message }, client, context);
+                                    break;
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            return Ok();
+        }
+
+        [HttpGet("/Update/UpdateCardsDB", Name = "UpdateCardsDB")]
+        public string UpdateCardsDB()
+        {
+            var z = CardData.TcgGroups;
+            var res = string.Empty;
+
+            foreach (var group in z)
+            {
+                try
+                {
+                    var cards = CardData.TcgGetGroupContentById(group.groupId);
+                    foreach (var card in cards)
+                    {
+                        var p = new Product()
+                        {
+                            ProductId = card.productId,
+                            Name = card.name,
+                            CleanName = card.cleanName,
+                            GroupId = card.groupId,
+                            Url = card.url,
+                            ImageUrl = card.imageUrl,
+                            ExtendedData = JsonConvert.SerializeObject(card.extendedData)
+                        };
+
+                        try
+                        {
+                            context.Cards.Add(p);
+                        }
+                        catch
+                        {
+
+                        }
+                    }
+
+                    context.SaveChanges();
+                }
+                catch { }
+            }
+
+
+            return res;
         }
     }
 }

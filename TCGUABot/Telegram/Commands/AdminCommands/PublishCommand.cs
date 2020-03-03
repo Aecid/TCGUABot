@@ -46,6 +46,20 @@ namespace TCGUABot.Models.Commands
 
                 catch { }
             }
+
+            if (message.From.Id == 73379396)
+            {
+                var chatId = message.Chat.Id;
+                var text = message.Text.Replace("/tpublish", "");
+
+                try
+                {
+                    var command = new TourneyCommand();
+                    await command.Execute(new Message() { Text = "/tourney 2", Chat = new Chat() { Id = -1001443371438 } }, await Bot.Get(), context);
+                }
+
+                catch { }
+            }
         }
     }
 }

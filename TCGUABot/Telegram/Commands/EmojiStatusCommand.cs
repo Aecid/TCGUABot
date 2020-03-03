@@ -21,7 +21,7 @@ namespace TCGUABot.Models.Commands
 
         public override async Task Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
         {
-            var emoji = message.Text.Replace("/status ", "");
+            var emoji = message.Text.Replace("@tcgua_bot","").Replace("/status ", "");
             if (Emoji.IsEmoji(emoji, 1) || Emoji.All.ToList().Any(e => e.Sequence.AsString == emoji))
             {
                 var tUser = message.From;

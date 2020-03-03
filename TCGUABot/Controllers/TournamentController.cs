@@ -214,9 +214,7 @@ namespace TCGUABot.Controllers
                     CreationDate = TimeService.GetLocalTime(),
                     CreatorId = creator,
                     Name = name,
-                    LocationName = "Corvin",
-                    Latitude = "46.485030f",
-                    Longitude = "30.737538f",
+                    LocationId = 1,
                     Description = "Default tournament"
                 };
 

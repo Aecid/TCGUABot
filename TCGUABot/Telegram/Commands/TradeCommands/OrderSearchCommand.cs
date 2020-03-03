@@ -15,9 +15,9 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TCGUABot.Models.Commands
 {
-    public class TcgSearchCommand : Command
+    public class OrderSearchCommand : Command
     {
-        public override string Name => "/tcgid";
+        public override string Name => "/wtb_tcgid_";
 
         public override async Task Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
         {
@@ -26,16 +26,7 @@ namespace TCGUABot.Models.Commands
 
             var chatId = message.Chat.Id;
 
-            string text = "";
-
-            if (message.Text.StartsWith("/tcgid "))
-                text = message.Text.Replace("/tcgid ", "").Trim();
-
-            if (message.Text.StartsWith("/tcgid_"))
-                text = message.Text.Replace("/tcgid_", "").Trim();
-
-            if (text.Contains("@tcgua_bot"))
-                text = text.Replace("@tcgua_bot", "");
+            var text = message.Text.Replace("/wtb_tcgid_", "").Trim().Replace("@tcgua_bot", "").Replace("@mtg_trade_bot", "");
 
             try
             {
@@ -47,15 +38,26 @@ namespace TCGUABot.Models.Commands
             }
 
             //var card = CardData.GetTcgProductDetails(int.Parse(text));
-            var card = context.Cards.FirstOrDefault(z => z.ProductId == int.Parse(text));
+
+            var card = new Product();
+
+            try
+            {
+                card = context.Cards.FirstOrDefault(z => z.ProductId == int.Parse(text));
+            }
+            catch
+            {
+                try
+                {
+                    await client.SendTextMessageAsync(chatId, "Error ID-10-t", Telegram.Bot.Types.Enums.ParseMode.Html/*, replyMarkup: keyboard*/);
+                }
+                catch { }
+            }
 
             string price = string.Empty;
             if (card != null)
             {
-                var lang = context.TelegramChats.FirstOrDefault(f => f.Id == chatId)?.Language;
-                lang = lang == null ? "ru" : lang;
-
-                var nameEn = "<a href=\""+card.Url+"\">" + Lang.Res(lang).enFlag + " " + card.Name + "</a>";
+                var nameEn = "<a href=\""+card.Url+"\">" + card.Name + "</a>";
                 string set = "";
 
                 try
@@ -69,11 +71,9 @@ namespace TCGUABot.Models.Commands
                 {
                     var prices = CardData.GetTcgPlayerPrices(card.ProductId);
                     if (prices["normal"] > 0)
-                        price += Lang.Res(lang).price + ": <b>$" + prices["normal"].ToString() + "</b>\r\n";
+                        price += "non-foil: <b>$"+prices["normal"].ToString() + "</b>\r\n";
                     if (prices["foil"] > 0)
-                        price += Lang.Res(lang).priceFoil + ": <b>$" + prices["foil"].ToString() + "</b>\r\n";
-                    if (prices["normal"] == 0 && prices["foil"] == 0)
-                        price += Lang.Res(lang).price + ": <i>" + Lang.Res(lang).priceNoData + "</i>\r\n";
+                        price += "foil <b>$" + prices["foil"].ToString() + "</b>\r\n";
 
                 }
                 catch
@@ -84,6 +84,25 @@ namespace TCGUABot.Models.Commands
 
                 msg += nameEn + "\r\n" + set + "\r\n" + price;
 
+
+                var orders = context.Orders.Where(x => x.ProductId == int.Parse(text));
+
+                if (orders.Count() > 0)
+                {
+                    var orderText = string.Empty;
+                    foreach (var order in orders)
+                    {
+                        var orderPrice = order.Price > 0 ? order.Price.ToString()+" грн" : order.ExchangeRate;
+                        orderText += "\r\n" +order.Quantity+ "шт., <a href=\"tg://user?id=" + order.PlayerTelegramId + "\">Продавец</a>, "+ orderPrice + ", " + order.Location;
+                    }
+
+                    msg += orderText;
+                }
+                else
+                {
+                    msg += "Nothing found";
+                }
+
                 var req = WebRequest.Create(card.ImageUrl);
                 try
                 {
@@ -91,7 +110,7 @@ namespace TCGUABot.Models.Commands
                     {
                         //var buttonsList = new List<InlineKeyboardButton>();
                         //buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTB", "trade|wtb|" + card.ProductId + "|" + card.Name.Replace("/", "\\/")));
-                        //buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.productId + "|" + card.name));
+                        ////buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.productId + "|" + card.name));
                         //var keyboard = new InlineKeyboardMarkup(buttonsList);
 
                         try
@@ -105,7 +124,7 @@ namespace TCGUABot.Models.Commands
                 {
                         //var buttonsList = new List<InlineKeyboardButton>();
                         //buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTB", "trade|wtb|" + card.ProductId + "|" + card.Name));
-                        //buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.productId + "|" + card.name));
+                        ////buttonsList.Add(InlineKeyboardButton.WithCallbackData("WTS", "trade|wts|" + card.productId + "|" + card.name));
                         //var keyboard = new InlineKeyboardMarkup(buttonsList);
                         msg += "\r\n" + card.ImageUrl;
 

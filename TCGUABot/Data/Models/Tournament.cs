@@ -23,14 +23,11 @@ namespace TCGUABot.Data.Models
         public string Description { get; set; }
         public string EntryFee { get; set; }
         public string Rewards { get; set; }
+        public bool IsRepeatable { get; set; }
         public bool IsLocked { get; set; }
         public bool IsClosed { get; set; }
         public string CreatorId { get; set; }
-        public string City { get; set; }
-        public string Country { get; set; }
-        public string LocationName { get; set; }
-        public string Latitude { get; set; }
-        public string Longitude { get; set; }
+        public int LocationId { get; set; }
         public int? MaxPlayers { get; set; }
         public ICollection<TournamentUserPair> TournamentUserPairs { get; set; }
 

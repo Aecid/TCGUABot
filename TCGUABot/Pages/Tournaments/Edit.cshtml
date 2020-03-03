@@ -54,11 +54,9 @@
                     <input class="form-check-input" asp-for="Tournament.IsClosed" /> @Html.DisplayNameFor(model => model.Tournament.IsClosed)
                 </label>
             </div>
-            <div class="form-group">
-                <label asp-for="Tournament.CreatorId" class="control-label"></label>
-                <input asp-for="Tournament.CreatorId" class="form-control" />
-                <span asp-validation-for="Tournament.CreatorId" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="Tournament.CreatorId" class="form-control" />
+            <input type="hidden" asp-for="Tournament.LocationId" class="form-control" />
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

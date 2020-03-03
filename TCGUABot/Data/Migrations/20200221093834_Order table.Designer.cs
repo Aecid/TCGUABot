@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TCGUABot.Data;
@@ -9,9 +10,10 @@ using TCGUABot.Data;
 namespace TCGUABot.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200221093834_Order table")]
+    partial class Ordertable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -164,87 +166,6 @@ namespace TCGUABot.Data.Migrations
                     b.HasKey("TelegramId");
 
                     b.ToTable("CatifiedUsers");
-                });
-
-            modelBuilder.Entity("TCGUABot.Data.City", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<string>("CountryId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("NameEn")
-                        .HasColumnType("text");
-
-                    b.Property<string>("NameRu")
-                        .HasColumnType("text");
-
-                    b.Property<string>("NameUa")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Cities");
-                });
-
-            modelBuilder.Entity("TCGUABot.Data.Country", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<string>("NameEn")
-                        .HasColumnType("text");
-
-                    b.Property<string>("NameRu")
-                        .HasColumnType("text");
-
-                    b.Property<string>("NameUa")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Countries");
-                });
-
-            modelBuilder.Entity("TCGUABot.Data.Location", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<string>("Address")
-                        .HasColumnType("text");
-
-                    b.Property<string>("CityId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Desc")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Latitude")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Longitude")
-                        .HasColumnType("text");
-
-                    b.Property<string>("NameEn")
-                        .HasColumnType("text");
-
-                    b.Property<string>("NameRu")
-                        .HasColumnType("text");
-
-                    b.Property<string>("NameUa")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Locations");
                 });
 
             modelBuilder.Entity("TCGUABot.Data.Models.ApplicationUser", b =>
@@ -429,6 +350,12 @@ namespace TCGUABot.Data.Migrations
                         .HasColumnType("text")
                         .HasDefaultValueSql("uuid_generate_v4()");
 
+                    b.Property<string>("City")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -450,11 +377,14 @@ namespace TCGUABot.Data.Migrations
                     b.Property<bool>("IsLocked")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsRepeatable")
-                        .HasColumnType("boolean");
+                    b.Property<string>("Latitude")
+                        .HasColumnType("text");
 
-                    b.Property<int>("LocationId")
-                        .HasColumnType("integer");
+                    b.Property<string>("LocationName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Longitude")
+                        .HasColumnType("text");
 
                     b.Property<int?>("MaxPlayers")
                         .HasColumnType("integer");
@@ -537,11 +467,8 @@ namespace TCGUABot.Data.Migrations
                     b.Property<string>("Edition")
                         .HasColumnType("text");
 
-                    b.Property<int?>("EditionId")
+                    b.Property<int>("EditionId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("ExchangeRate")
-                        .HasColumnType("text");
 
                     b.Property<string>("Lang")
                         .HasColumnType("text");
@@ -554,9 +481,6 @@ namespace TCGUABot.Data.Migrations
 
                     b.Property<long?>("PlayerTelegramId")
                         .HasColumnType("bigint");
-
-                    b.Property<float?>("Price")
-                        .HasColumnType("real");
 
                     b.Property<int?>("ProductId")
                         .HasColumnType("integer");

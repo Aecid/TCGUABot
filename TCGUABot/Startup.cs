@@ -34,6 +34,7 @@ namespace TCGUABot
             Configuration = configuration;
             Bot.Get();
             SecondaryBot.Get();
+            TradeBot.Get();
             CardData.Initalize();
         }
 

@@ -1,0 +1,119 @@
+﻿@page
+@model TCGUABot.Pages.Trading.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Order</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Order.PlayerTelegramId" class="control-label"></label>
+                <input asp-for="Order.PlayerTelegramId" class="form-control" />
+                <span asp-validation-for="Order.PlayerTelegramId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order.ProductId" class="control-label"></label>
+                <input asp-for="Order.ProductId" class="form-control" />
+                <span asp-validation-for="Order.ProductId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order.ProductName" class="control-label"></label>
+                <input asp-for="Order.ProductName" class="form-control" />
+                <span asp-validation-for="Order.ProductName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order.Edition" class="control-label"></label>
+                <input asp-for="Order.Edition" class="form-control" />
+                <span asp-validation-for="Order.Edition" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order.EditionId" class="control-label"></label>
+                <input asp-for="Order.EditionId" class="form-control" />
+                <span asp-validation-for="Order.EditionId" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Order.isFoil" /> @Html.DisplayNameFor(model => model.Order.isFoil)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order.Lang" class="control-label"></label>
+                <input asp-for="Order.Lang" class="form-control" />
+                <span asp-validation-for="Order.Lang" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Order.Wts" /> @Html.DisplayNameFor(model => model.Order.Wts)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order.Location" class="control-label"></label>
+                <input asp-for="Order.Location" class="form-control" />
+                <span asp-validation-for="Order.Location" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Order.isDeliverable" /> @Html.DisplayNameFor(model => model.Order.isDeliverable)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order.DeliveryService" class="control-label"></label>
+                <input asp-for="Order.DeliveryService" class="form-control" />
+                <span asp-validation-for="Order.DeliveryService" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order.Description" class="control-label"></label>
+                <input asp-for="Order.Description" class="form-control" />
+                <span asp-validation-for="Order.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order.Quantity" class="control-label"></label>
+                <input asp-for="Order.Quantity" class="form-control" />
+                <span asp-validation-for="Order.Quantity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order.Price" class="control-label"></label>
+                <input asp-for="Order.Price" class="form-control" />
+                <span asp-validation-for="Order.Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order.ExchangeRate" class="control-label"></label>
+                <input asp-for="Order.ExchangeRate" class="form-control" />
+                <span asp-validation-for="Order.ExchangeRate" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Order.isOpen" /> @Html.DisplayNameFor(model => model.Order.isOpen)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order.Created" class="control-label"></label>
+                <input asp-for="Order.Created" class="form-control" />
+                <span asp-validation-for="Order.Created" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Order.LastModified" class="control-label"></label>
+                <input asp-for="Order.LastModified" class="form-control" />
+                <span asp-validation-for="Order.LastModified" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

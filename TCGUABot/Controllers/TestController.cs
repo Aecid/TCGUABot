@@ -212,6 +212,20 @@ namespace TCGUABot.Controllers
             return res;
         }
 
+        [HttpGet("/Test/Pricelist/", Name = "Pricelist")]
+        public string PriceList()
+        {
+            var plist = new List<int>();
+            plist.Add(34444);
+            plist.Add(38303);
+
+            var z = CardData.GetTcgPlayerPrices(plist);
+
+            var res = JsonConvert.SerializeObject(z);
+
+            return res;
+        }
+
         [HttpGet("/Test/Tcgid/{id}", Name = "SearchTcgById")]
         public async Task<string> SearchTcgById(string id)
         {
@@ -228,7 +242,18 @@ namespace TCGUABot.Controllers
             var msg = string.Empty;
 
             var command = new WtbCommand();
-            await command.Execute(new Message() { Text = "/wtb "+name, Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
+            await command.Execute(new Message() { Text = "/wtb " + name, Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
+
+            return msg;
+        }
+
+        [HttpGet("/Test/tc/{name}", Name = "testCardCommandCall")]
+        public async Task<string> TCCommand(string name)
+        {
+            var msg = string.Empty;
+
+            var command = new TestCardCommand();
+            await command.Execute(new Message() { Text = "/tc " + name, Chat = new Chat() { Id = 186070199 } }, await Bot.Get(), context);
 
             return msg;
         }

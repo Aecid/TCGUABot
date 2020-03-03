@@ -12,7 +12,7 @@ using TCGUABot.Data.Models;
 
 namespace TCGUABot.Pages.Tournaments
 {
-    [Authorize(Roles = "Admin,Store Owner,Judge,Event Organizer")]
+    [Authorize(Roles = "Admin,Store Owner,Judge,Event Organizer,Igor Modern Admin")]
     public class CreateModel : PageModel
     {
         private readonly ApplicationDbContext _context;
@@ -42,6 +42,11 @@ namespace TCGUABot.Pages.Tournaments
             Tournament.CreationDate = TimeService.GetLocalTime();
             var user = await _userManager.GetUserAsync(User);
             Tournament.CreatorId = user.Id;
+            Tournament.LocationId = 1;
+
+            var telegramId = _context.UserLogins.FirstOrDefault(u => u.UserId == user.Id).ProviderKey;
+            if (telegramId == "305751207") Tournament.LocationId = 1;
+            if (telegramId == "73379396") Tournament.LocationId = 2;
             _context.Tournaments.Add(Tournament);
             await _context.SaveChangesAsync();
 

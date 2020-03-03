@@ -26,11 +26,29 @@ namespace TCGUABot.Data
         public DbSet<TradingCard> TradingCards { get; set; }
         public DbSet<DeckGuide> DeckGuides { get; set; }
         public DbSet<CatifiedUser> CatifiedUsers { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<City> Cities { get; set; }
+        public DbSet<Country> Countries { get; set; }
+        public DbSet<Location> Locations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.UseIdentityColumns();
             builder.Entity<TournamentUserPair>()
+                .Property(p => p.Id)
+                .ValueGeneratedOnAdd();
+
+            builder.Entity<Location>()
+                .Property(p => p.Id)
+                .ValueGeneratedOnAdd();
+            builder.Entity<Country>()
+                .Property(p => p.Id)
+                .ValueGeneratedOnAdd();
+            builder.Entity<City>()
+                .Property(p => p.Id)
+                .ValueGeneratedOnAdd();
+
+            builder.Entity<Order>()
                 .Property(p => p.Id)
                 .ValueGeneratedOnAdd();
 
