@@ -62,7 +62,7 @@ namespace TCGUABot.Controllers
                             //Logging?:D
                             try
                             {
-                                await client.SendTextMessageAsync("-1001202180806", messageText, Telegram.Bot.Types.Enums.ParseMode.Html, true, true);
+                                //await client.SendTextMessageAsync("-1001202180806", messageText, Telegram.Bot.Types.Enums.ParseMode.Html, true, true);
                             }
                             catch { }
                             Console.WriteLine("Result: {0}, {1}", update.CallbackQuery.Data, update.CallbackQuery.From.Id);
@@ -95,7 +95,7 @@ namespace TCGUABot.Controllers
                         var snifftext = update.Message.Text;
                         var sniffmessageText = String.Format("Chat {0}:\r\n <a href=\"tg://user?id={1}\">{2}</a>: {3}", sniffchatName, sniffuserId, sniffuser, snifftext);
 
-                        await client.SendTextMessageAsync("-1001112744433", sniffmessageText, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        //await client.SendTextMessageAsync("-1001112744433", sniffmessageText, Telegram.Bot.Types.Enums.ParseMode.Html);
 
                         foreach (var command in commands)
                         {
@@ -112,7 +112,7 @@ namespace TCGUABot.Controllers
                                         var text = update.Message.Text;
                                         var messageText = String.Format("Bot: @tcgua_bot, incoming from: {0} <a href=\"tg://user?id={1}\">link</a>, chat {2} ({3}), msg: {4}", user, userId, chatName, chatId, text);
                                         //Logging?:D
-                                        await client.SendTextMessageAsync("-1001202180806", messageText, Telegram.Bot.Types.Enums.ParseMode.Html, true, true);
+                                        //await client.SendTextMessageAsync("-1001202180806", messageText, Telegram.Bot.Types.Enums.ParseMode.Html, true, true);
                                     }
                                     catch { }
 
@@ -152,35 +152,42 @@ namespace TCGUABot.Controllers
 
             foreach (var group in z)
             {
-                try
-                {
-                    var cards = CardData.TcgGetGroupContentById(group.groupId);
-                    foreach (var card in cards)
+
+                    try
                     {
-                        var p = new Product()
-                        {
-                            ProductId = card.productId,
-                            Name = card.name,
-                            CleanName = card.cleanName,
-                            GroupId = card.groupId,
-                            Url = card.url,
-                            ImageUrl = card.imageUrl,
-                            ExtendedData = JsonConvert.SerializeObject(card.extendedData)
-                        };
-
-                        try
-                        {
-                            context.Cards.Add(p);
-                        }
-                        catch
+                        var cards = CardData.TcgGetGroupContentById(group.groupId);
+                        foreach (var card in cards)
                         {
 
+                            var p = new Product()
+                            {
+                                ProductId = card.productId,
+                                Name = card.name,
+                                CleanName = card.cleanName,
+                                GroupId = card.groupId,
+                                Url = card.url,
+                                ImageUrl = card.imageUrl,
+                                ExtendedData = JsonConvert.SerializeObject(card.extendedData)
+                            };
+
+                            try
+                            {
+                                if (!context.Cards.Any(z => z.ProductId == p.ProductId))
+                                {
+                                    context.Cards.Add(p);
+                                }
+                            }
+                            catch
+                            {
+
+                            }
+
                         }
+
+                        context.SaveChanges();
                     }
-
-                    context.SaveChanges();
-                }
-                catch { }
+                    catch { }
+                
             }
 
 

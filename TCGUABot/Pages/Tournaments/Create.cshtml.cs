@@ -44,7 +44,7 @@ namespace TCGUABot.Pages.Tournaments
             Tournament.CreatorId = user.Id;
             Tournament.LocationId = 1;
 
-            var telegramId = _context.UserLogins.FirstOrDefault(u => u.UserId == user.Id).ProviderKey;
+            var telegramId = _context.UserLogins.FirstOrDefault(u => u.UserId == user.Id)?.ProviderKey;
             if (telegramId == "305751207") Tournament.LocationId = 1;
             if (telegramId == "73379396") Tournament.LocationId = 2;
             _context.Tournaments.Add(Tournament);

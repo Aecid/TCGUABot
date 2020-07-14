@@ -36,16 +36,23 @@ namespace TCGUABot.Helpers
             {
                 if (!comparisonList.Contains(link))
                 {
+                    try { 
                     var spoiler = new MythicSpoiler();
                     spoiler.Url = link;
                     toAdd.Add(spoiler);
+                    }
+                    catch { }
                 }
             }
 
             if (toAdd.Count > 0)
             {
-                context.MythicSpoilers.AddRange(toAdd);
-                context.SaveChanges();
+                try
+                {
+                    context.MythicSpoilers.AddRange(toAdd);
+                    context.SaveChanges();
+                }
+                catch { }
             }
 
 
