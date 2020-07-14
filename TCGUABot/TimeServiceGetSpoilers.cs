@@ -31,8 +31,8 @@ namespace TCGUABot
         {
             _logger.LogInformation("Timed Background Service is starting.");
 
-            _timer = new Timer(DoWork, null, TimeSpan.Zero,
-                TimeSpan.FromMinutes(5));
+            //_timer = new Timer(DoWork, null, TimeSpan.Zero,
+                //TimeSpan.FromMinutes(5));
 
             return Task.CompletedTask;
         }
@@ -87,7 +87,11 @@ namespace TCGUABot
                     {
                         var msg = "Lots of new spoilers at http://www.mythicspoiler.com/newspoilers.html";
 
-                        await client.SendTextMessageAsync(chat.Id, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        try
+                        {
+                            await client.SendTextMessageAsync(chat.Id, msg, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        }
+                        catch { }
 
                         await Task.Delay(300);
 

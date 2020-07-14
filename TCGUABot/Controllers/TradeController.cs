@@ -126,47 +126,47 @@ namespace TCGUABot.Controllers
             return Ok();
         }
 
-        [HttpGet("/Update/UpdateCardsDB", Name = "UpdateCardsDB")]
-        public string UpdateCardsDB()
-        {
-            var z = CardData.TcgGroups;
-            var res = string.Empty;
+        //[HttpGet("/Update/UpdateCardsDB", Name = "UpdateCardsDB")]
+        //public string UpdateCardsDB()
+        //{
+        //    var z = CardData.TcgGroups;
+        //    var res = string.Empty;
 
-            foreach (var group in z)
-            {
-                try
-                {
-                    var cards = CardData.TcgGetGroupContentById(group.groupId);
-                    foreach (var card in cards)
-                    {
-                        var p = new Product()
-                        {
-                            ProductId = card.productId,
-                            Name = card.name,
-                            CleanName = card.cleanName,
-                            GroupId = card.groupId,
-                            Url = card.url,
-                            ImageUrl = card.imageUrl,
-                            ExtendedData = JsonConvert.SerializeObject(card.extendedData)
-                        };
+        //    foreach (var group in z)
+        //    {
+        //        try
+        //        {
+        //            var cards = CardData.TcgGetGroupContentById(group.groupId);
+        //            foreach (var card in cards)
+        //            {
+        //                var p = new Product()
+        //                {
+        //                    ProductId = card.productId,
+        //                    Name = card.name,
+        //                    CleanName = card.cleanName,
+        //                    GroupId = card.groupId,
+        //                    Url = card.url,
+        //                    ImageUrl = card.imageUrl,
+        //                    ExtendedData = JsonConvert.SerializeObject(card.extendedData)
+        //                };
 
-                        try
-                        {
-                            context.Cards.Add(p);
-                        }
-                        catch
-                        {
+        //                try
+        //                {
+        //                    context.Cards.Add(p);
+        //                }
+        //                catch
+        //                {
 
-                        }
-                    }
+        //                }
+        //            }
 
-                    context.SaveChanges();
-                }
-                catch { }
-            }
+        //            context.SaveChanges();
+        //        }
+        //        catch { }
+        //    }
 
 
-            return res;
-        }
+        //    return res;
+        //}
     }
 }
