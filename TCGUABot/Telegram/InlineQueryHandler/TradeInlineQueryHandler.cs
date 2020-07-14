@@ -182,7 +182,7 @@ namespace TCGUABot.Models.InlineQueryHandler
             return results;
         }
 
-        public List<InlineQueryResultArticle> GetCardsFromDBBySet(string query, string targetSet, ApplicationDbContext context)
+        public static List<InlineQueryResultArticle> GetCardsFromDBBySet(string query, string targetSet, ApplicationDbContext context)
         {
             //var cardName = query.Query.Replace("tcg ", "");
 

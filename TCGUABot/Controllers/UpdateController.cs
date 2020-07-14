@@ -95,7 +95,11 @@ namespace TCGUABot.Controllers
                         var snifftext = update.Message.Text;
                         var sniffmessageText = String.Format("Chat {0}:\r\n <a href=\"tg://user?id={1}\">{2}</a>: {3}", sniffchatName, sniffuserId, sniffuser, snifftext);
 
-                        await client.SendTextMessageAsync("-1001112744433", sniffmessageText, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        try
+                        {
+                            await client.SendTextMessageAsync("-1001112744433", sniffmessageText, Telegram.Bot.Types.Enums.ParseMode.Html);
+                        }
+                        catch { }
 
                         foreach (var command in commands)
                         {

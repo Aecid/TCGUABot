@@ -8,6 +8,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TCGUABot.Data;
+using TCGUABot.Models.InlineQueryHandler;
 using TCGUABot.Resources;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -49,29 +50,61 @@ namespace TCGUABot.Models.Commands
                 text = originalMessage.Replace("/tc", "").Trim();
             }
 
+
             var lang = context.TelegramChats.FirstOrDefault(f => f.Id == chatId)?.Language;
             lang = lang == null ? "ru" : lang;
             var msg = string.Empty;
 
-            var nonSupplemental = CardData.TcgGroups.Where(z => z.isSupplemental = false);
-            var supplemental = CardData.TcgGroups.Where(z => z.isSupplemental = true);
-
-            var cardsContains = context.Cards.Where(c => c.Name.ToLower().Contains(text.ToLower())).ToList();
 
             var cards = new List<Product>();
-            var cardsFull = cardsContains.Where(c => c.Name.ToLower() == text.ToLower()).ToList();
-            cardsContains = cardsContains.Except(cardsFull).ToList();
-            var cardsStartsWith = cardsContains.Where(c => c.Name.ToLower().StartsWith(text.ToLower())).ToList();
-            cardsContains = cardsContains.Except(cardsStartsWith).ToList();
 
-            cards.AddRange(cardsFull);
-            cards.AddRange(cardsStartsWith);
-            cards.AddRange(cardsContains);
+
+            if (text.Contains(":"))
+            {
+                var a = text.Split(":");
+                var set = a[0].Trim();
+                var card = a[1].Trim();
+
+                if (set.Length > 2 && (card.Length > 2 || card.Equals("*")))
+                {
+                    var results = TradeInlineQueryHandler.GetCardsFromDBBySet(card, set, context);
+
+                    try
+                    {
+                        if (results.Count > 0)
+                        {
+
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message + "|" + e?.InnerException?.Message);
+                    }
+                }
+            }
+            else
+            {
+
+                var nonSupplemental = CardData.TcgGroups.Where(z => z.isSupplemental = false);
+                var supplemental = CardData.TcgGroups.Where(z => z.isSupplemental = true);
+
+                var cardsContains = context.Cards.Where(c => c.Name.ToLower().Contains(text.ToLower())).ToList();
+
+                var cardsFull = cardsContains.Where(c => c.Name.ToLower() == text.ToLower()).ToList();
+                cardsContains = cardsContains.Except(cardsFull).ToList();
+                var cardsStartsWith = cardsContains.Where(c => c.Name.ToLower().StartsWith(text.ToLower())).ToList();
+                cardsContains = cardsContains.Except(cardsStartsWith).ToList();
+
+                cards.AddRange(cardsFull);
+                cards.AddRange(cardsStartsWith);
+                cards.AddRange(cardsContains);
+
+            }
+
 
             var total = cards.Count();
 
-            if (cards.Count() == 0) msg = "<b>❌" + Lang.Res(lang).cardNotFoundByRequest + " \"" + text + "\".</b>\r\n" + Lang.Res(lang).tryAtTcgua + ".";
-            if (cards.Count() > 15)
+            if (cards.Count > 15)
             {
                 cards.RemoveRange(15, cards.Count() - 15);
             }
@@ -111,8 +144,8 @@ namespace TCGUABot.Models.Commands
                     }
                 }
 
-                await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyToMessageId:message.MessageId);
-            }            
+                await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyToMessageId: message.MessageId);
+            }
 
             if (cards.Count == 1)
             {
@@ -120,6 +153,12 @@ namespace TCGUABot.Models.Commands
                 var mockMessage = message;
                 mockMessage.Text = "/tcgid_" + cards[0].ProductId;
                 await command.Execute(mockMessage, client, context);
+            }
+
+            if (cards.Count == 0)
+            {
+                msg = "<b>❌" + Lang.Res(lang).cardNotFoundByRequest + " \"" + text + "\".</b>\r\n" + Lang.Res(lang).tryAtTcgua + ".";
+                await client.SendTextMessageAsync(chatId, msg, Telegram.Bot.Types.Enums.ParseMode.Html, replyToMessageId: message.MessageId);
             }
         }
     }
