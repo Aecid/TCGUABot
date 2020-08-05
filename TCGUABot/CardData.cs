@@ -379,31 +379,43 @@ namespace TCGUABot
             var result = new Dictionary<string, float>();
             var version = configuration.GetSection("TCGPlayer").GetSection("Version").Value;
 
-            var keys = string.Join(",", productKeys);
+            var values = SplitList(productKeys, 50);
+            //split by 50
 
-            var url = "https://api.tcgplayer.com/" + version + "/pricing/product/" + keys;
-            var request = (HttpWebRequest)WebRequest.Create(url);
+            List<dynamic> results = new List<dynamic>();
 
-            request.Method = "GET";
-            request.ContentType = "application/json";
-            request.Headers.Add("Authorization", "Bearer " + BearerToken);
 
-            var content = string.Empty;
-
-            using (var response = (HttpWebResponse)request.GetResponse())
+            foreach (var keysChunk in values)
             {
-                using var stream = response.GetResponseStream();
-                using (var sr = new StreamReader(stream))
-                {
-                    content = sr.ReadToEnd();
-                }
-            }
 
-            var res = JsonConvert.DeserializeObject<dynamic>(content);
-            IEnumerable<dynamic> results = res.results;
+                var keys = string.Join(",", keysChunk);
+
+                var url = "https://api.tcgplayer.com/" + version + "/pricing/product/" + keys;
+                var request = (HttpWebRequest)WebRequest.Create(url);
+
+                request.Method = "GET";
+                request.ContentType = "application/json";
+                request.Headers.Add("Authorization", "Bearer " + BearerToken);
+
+                var content = string.Empty;
+
+                using (var response = (HttpWebResponse)request.GetResponse())
+                {
+                    using var stream = response.GetResponseStream();
+                    using (var sr = new StreamReader(stream))
+                    {
+                        content = sr.ReadToEnd();
+                    }
+                }
+
+                var res = JsonConvert.DeserializeObject<dynamic>(content);
+                IEnumerable<dynamic> castRes = res.results;
+                results.AddRange(castRes.ToList());
+            }
 
             return results;
         }
+
         //http://api.tcgplayer.com/v1.17.0/catalog/products/137942,132438?getExtendedFields=true
 
         public static TcgPlayerProductDetails GetTcgProductDetails(int productKey)
@@ -608,6 +620,19 @@ namespace TCGUABot
 
                     if (total < 100) break;
                 }
+            }
+
+            return list;
+        }
+
+
+        public static List<List<int>> SplitList(List<int> listToSplit, int nSize = 30)
+        {
+            var list = new List<List<int>>();
+
+            for (int i = 0; i < listToSplit.Count; i += nSize)
+            {
+                list.Add(listToSplit.GetRange(i, Math.Min(nSize, listToSplit.Count - i)));
             }
 
             return list;

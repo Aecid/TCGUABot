@@ -23,7 +23,7 @@ namespace TCGUABot.Models.InlineQueryHandler
 
                 if (set.Length > 2 && (card.Length > 2 || card.Equals("*")))
                 {
-                    var results = GetCardsFromDBBySet(card, set, context);
+                    var results = GetCardsFromDBBySet(card.Replace("’", "'").Replace("`", "'"), set, context);
 
                     try
                     {
@@ -71,16 +71,17 @@ namespace TCGUABot.Models.InlineQueryHandler
             var k = 0;
             foreach (var set in CardData.Instance.Sets)
             {
+                var cardNameApo = query.Query.Replace("’", "'").Replace("`", "'");
                 List<Card> cards = new List<Card>();
-                if (Regex.IsMatch(query.Query, @"\p{IsCyrillic}"))
+                if (Regex.IsMatch(cardNameApo, @"\p{IsCyrillic}"))
                 {
                     ruLang = true;
-                    cards = set.cards.Where(c => c.ruName.ToLower().Contains(query.Query.ToLower())).ToList();
+                    cards = set.cards.Where(c => c.ruName.ToLower().Contains(cardNameApo.ToLower())).ToList();
                 }
                 else
                 {
                     ruLang = false;
-                    cards = set.cards.Where(c => c.name.ToLower().Contains(query.Query.ToLower())).ToList();
+                    cards = set.cards.Where(c => c.name.ToLower().Contains(cardNameApo.ToLower())).ToList();
                 }
 
                 if (cards.Count > 0)
