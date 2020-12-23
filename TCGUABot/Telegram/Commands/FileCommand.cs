@@ -40,7 +40,7 @@ namespace TCGUABot.Models.Commands
 
                 foreach (var file in files)
                 {
-                    msg += "\r\n/file_" + file.Substring(0, file.Length - 4).Replace("Files/", "");
+                    msg += "\r\n/file_" + file.Substring(0, file.Length - 4).Replace("Files/", "") + " "+ file.Substring(file.Length - 3);
                     //var buttonList = new List<InlineKeyboardButton>();
                     //buttonList.Add(InlineKeyboardButton.)
                     //keyboardList.Add(buttonList);

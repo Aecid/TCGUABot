@@ -21,5 +21,6 @@ namespace TCGUABot.Resources
         public override string deckLink => "Deck link";
         public override string free => "Free!";
         public override string maxPlayers => "Max players";
+        public override string legality => "Legality";
     }
 }

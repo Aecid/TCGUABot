@@ -179,6 +179,7 @@ namespace TCGUABot.Models.InlineQueryHandler
                 var k = 0;
                 foreach (var card in cards)
                 {
+                    var currentSet = CardData.TcgGroups.FirstOrDefault(z => z.groupId == card.GroupId);
                     results.Add(new InlineQueryResultArticle((++k).ToString(), card.Name, new InputTextMessageContent("/tcgid " + card.ProductId))
                     {
                         HideUrl = true,
@@ -186,7 +187,7 @@ namespace TCGUABot.Models.InlineQueryHandler
                         ThumbHeight = 138,
                         ThumbUrl = card.ImageUrl,
                         Title = card.Name,
-                        Description = CardData.TcgGroups.FirstOrDefault(z => z.groupId == card.GroupId).name,
+                        Description = currentSet.name + " ("+currentSet.abbreviation+")",
                     });
                 }
             }

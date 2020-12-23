@@ -15,9 +15,9 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TCGUABot.Models.Commands
 {
-    public class CardCommand : Command
+    public class CardWitasCommand : Command
     {
-        public override string Name => "/c ";
+        public override string Name => "/card ";
 
         public override async Task Execute(Message message, TelegramBotClient client, ApplicationDbContext context)
         {
@@ -35,16 +35,16 @@ namespace TCGUABot.Models.Commands
             }
             string text = string.Empty;
             string setName = string.Empty;
-            var originalMessage = message.Text.Substring(message.Text.IndexOf("/c "));
+            var originalMessage = message.Text.Substring(message.Text.IndexOf("/card "));
             if (originalMessage.Contains("(") && originalMessage.Contains(")"))
             {
-                var match = Regex.Match(originalMessage, @"/c (.*)\((.*)\)");
+                var match = Regex.Match(originalMessage, @"/card (.*)\((.*)\)");
                 text = match.Groups[1].Value;
                 setName = match.Groups[2].Value;
             }
             else
             {
-                text = originalMessage.Replace("/c ", "");
+                text = originalMessage.Replace("/card ", "");
             }
             var msg = string.Empty;
             Card card = null;

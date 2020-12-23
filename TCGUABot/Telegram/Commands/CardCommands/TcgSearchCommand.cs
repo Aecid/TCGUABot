@@ -80,9 +80,42 @@ namespace TCGUABot.Models.Commands
                 {
                 }
 
+                var legality = string.Empty;
+                var legalCard = Helpers.CardSearch.GetCardByName(card.Name);
+                if (legalCard != null)
+                {
+                    if (legalCard.legalities.Count > 0)
+                    {
+                        var notInterestingFormats = new List<string>()
+                        {
+                            "penny",
+                            "future",
+                            "duel",
+                            "oldschool"
+                        };
+
+                        foreach (var legalItem in legalCard.legalities)
+                        {
+                            if (!notInterestingFormats.Contains(legalItem.Key))
+                            {
+                                var legalString = string.Empty;
+                                if (legalItem.Value == "Legal") legalString = "<i>" + legalItem.Key + "</i>"; 
+                                if (legalItem.Value == "Banned") legalString = "<i><s>" + legalItem.Key + "</s></i>";
+                                if (legalItem.Value == "Restricted") legalString = legalItem.Key;
+                                legality += legalString+" ";
+                            }
+                        }
+
+                        if (legality.Trim() != "")
+                        {
+                            legality = "\r\n" + legality + "\r\n";
+                        }
+                    }
+                }
+
                 var msg = string.Empty;
 
-                msg += nameEn + "\r\n" + set + "\r\n" + price;
+                msg += nameEn + "\r\n" + set + legality + "\r\n" + price;
 
                 var req = WebRequest.Create(card.ImageUrl);
                 try

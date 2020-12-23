@@ -21,7 +21,7 @@ namespace TCGUABot.Models
         //public bool isPaper;
         //public bool isReprint;
         //public string layout;
-        //public Dictionary<string, string> legalities;
+        public Dictionary<string, string> legalities;
         public string manaCost;
         //public int mcmId;
         //public int mcmMetaId;

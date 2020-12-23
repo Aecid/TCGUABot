@@ -18,6 +18,7 @@
 
 
         public override string free => "Бесплатно!";
+        public override string legality => "Легальность";
 
 
     }

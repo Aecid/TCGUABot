@@ -49,7 +49,7 @@ namespace TCGUABot
             {
                 //HttpClient client = new HttpClient();
 
-                //using (Stream s = client.GetStreamAsync("https://mtgjson.com/json/AllSets.json").Result)
+                //using (Stream s = client.GetStreamAsync("https://mtgjson.com/api/v5/AllSets.json").Result)
                 //using (StreamReader sr = new StreamReader(s))
                 //using (JsonReader reader = new JsonTextReader(sr))
                 //{
@@ -60,7 +60,7 @@ namespace TCGUABot
                 //    Sets = serializer.Deserialize<Dictionary<string, Set>>(reader);
                 //}
                 string filename = "AllSets.json";
-                var json = ApiCall("https://mtgjson.com/json/SetList.json");
+                var json = ApiCall("https://mtgjson.com/api/v5/SetList.json");
                 var SetCodes = new List<string>();
                 var jsonSetCodes = JsonConvert.DeserializeObject<dynamic>(json);
                 foreach (var setCode in jsonSetCodes)
@@ -537,22 +537,22 @@ namespace TCGUABot
 
         public string GetAllCards()
         {
-            return ApiCall("https://mtgjson.com/json/AllSets.json");
+            return ApiCall("https://mtgjson.com/api/v5/AllSets.json");
         }
 
         public bool DownloadAllCards(string filename)
         {
-            return DownloadJson("https://mtgjson.com/json/AllSets.json", filename);
+            return DownloadJson("https://mtgjson.com/api/v5/AllSets.json", filename);
         }
 
         public string GetModernCards()
         {
-            return ApiCall("https://mtgjson.com/json/Modern.json");
+            return ApiCall("https://mtgjson.com/api/v5/Modern.json");
         }
 
         public string GetVersion()
         {
-            return ApiCall("https://mtgjson.com/json/version.json");
+            return ApiCall("https://mtgjson.com/api/v5/version.json");
         }
 
         public List<TcgPlayerGroup> GetTcgPlayerGroups()

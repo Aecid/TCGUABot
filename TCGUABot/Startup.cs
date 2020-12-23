@@ -67,7 +67,7 @@ namespace TCGUABot
                 );
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddProgressiveWebApp();
+            //services.AddProgressiveWebApp();
 
             services.AddAuthorization(ops =>
             {

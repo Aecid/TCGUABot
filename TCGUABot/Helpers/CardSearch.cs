@@ -145,6 +145,14 @@ namespace TCGUABot.Helpers
                     card = nonFunnySetToSerach.cards.FirstOrDefault(z => z.name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
                 }
 
+                if (card == null)
+                {
+                    List<string> setTypes = new List<string>() { "archenemy", "commander", "duel_deck", "from_the_vault", "funny", "masters", "masterpiece", "memorabilia", "spellbook", "planechase", "premium_deck", "promo", "token", "treasure_chest", "vanguard" };
+                    var funnySets = CardData.Instance.Sets.Where(s => setTypes.Contains(s.type));
+                    var funnySetToSerach = funnySets.FirstOrDefault(s => s.cards.Any(z => z.name.Equals(name, StringComparison.InvariantCultureIgnoreCase)));
+                    card = funnySetToSerach.cards.FirstOrDefault(z => z.name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+                }
+
                 if (card == null) return null;
 
                 card.Set = set;

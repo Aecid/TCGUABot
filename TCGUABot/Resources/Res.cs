@@ -21,6 +21,7 @@ namespace TCGUABot.Resources
         public abstract string importError { get; }
         public abstract string deckLink { get; }
         public abstract string maxPlayers { get; }
+        public abstract string legality { get; }
 
     }
 }
