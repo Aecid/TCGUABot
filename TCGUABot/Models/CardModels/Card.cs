@@ -16,6 +16,7 @@ namespace TCGUABot.Models
         //public string frameVersion;
         //public bool hasFoil;
         //public bool hasNoFoil;
+        public Identifiers identifiers;
         //public bool isMtgo;
         public bool isPromo;
         //public bool isPaper;
@@ -28,7 +29,6 @@ namespace TCGUABot.Models
         //public int mtgoFoilId;
         //public int mtgoId;
         //public int mtgstocksId;
-        public int multiverseId;
         public string name;
         public List<string> names;
         public string number;
@@ -39,19 +39,17 @@ namespace TCGUABot.Models
         public List<string> printings;
         //public Dictionary<string, string> purchaseUrls;
         public List<Ruling> rulings;
-        public string scryfallId;
-        public string scryfallIllustrationId;
-        public string scryfallOrcaleId;
+
         public List<string> subtypes;
         public List<string> supertypes;
-        public int tcgplayerProductId;
         //public string tcgplayerPurchaseUrl;
         public string text;
         public string type;
         //public List<string> types;
-        //public string uuid;
+        public string uuid;
         public string power;
         public string toughness;
+        public List<string> otherFaceIds;
 
         public string Set { get; set; }
         public string ruName
@@ -72,6 +70,55 @@ namespace TCGUABot.Models
                     return this.foreignData.FirstOrDefault(f => f.language.Equals("Russian")).multiverseId;
                 else return this.multiverseId;
             }
+        }
+        public int multiverseId
+        {
+            get
+            {
+                return this.identifiers.multiverseId;
+            }
+
+            set { multiverseId = value; }
+        }
+
+        public int tcgplayerProductId
+        {
+            get
+            {
+                return this.identifiers.tcgplayerProductId;
+            }
+
+            set { tcgplayerProductId = value; }
+        }
+
+        public string scryfallOracleId
+        {
+            get
+            {
+                return this.identifiers.scryfallOracleId;
+            }
+
+            set { scryfallOracleId = value; }
+        }
+
+        public string scryfallId
+        {
+            get
+            {
+                return this.identifiers.scryfallId;
+            }
+
+            set { scryfallId = value; }
+        }
+
+        public string scryfallIllustrationId
+        {
+            get
+            {
+                return this.identifiers.scryfallIllustrationId;
+            }
+
+            set { scryfallIllustrationId = value; }
         }
 
         public override bool Equals(object obj)
@@ -100,6 +147,7 @@ namespace TCGUABot.Models
         public string text;
         public string type;
         public string flavorText;
+        public string uuid;
     }
 
     public class Ruling

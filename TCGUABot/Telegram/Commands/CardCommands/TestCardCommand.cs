@@ -64,7 +64,7 @@ namespace TCGUABot.Models.Commands
                 var set = a[0].Trim();
                 var card = a[1].Trim();
 
-                if (set.Length > 2 && (card.Length > 2 || card.Equals("*")))
+                if (set.Length > 2 && (card.Length > 2 || card.Equals("*") || card.Equals("**")))
                 {
                     var results = GetCardsFromDBBySet(card, set, context);
 
@@ -109,7 +109,17 @@ namespace TCGUABot.Models.Commands
                 {
 
                     var prices = CardData.GetTcgPlayerPrices(cards.Select(x => x.ProductId).ToList());
+
+                    var a = text.Split(":");
+                    var set = a[0].Trim();
+                    var ccard = a[1].Trim();
                     var orderedPrices = prices.OrderByDescending(p => p.midPrice).ToList();
+                    if (ccard.Equals("**"))
+                    {
+                       orderedPrices = prices.Where(p => p.subTypeName == "Normal").OrderByDescending(p => p.midPrice).ToList(); 
+                    }
+                    
+
 
                     if (orderedPrices.Count() > 20)
                     {
@@ -227,7 +237,7 @@ namespace TCGUABot.Models.Commands
 
             var cardsOfSet = context.Cards.Where(x => x.GroupId == set.groupId && x.ExtendedData.Contains("\"name\":\"Rarity\"")).ToList();
             var cards = new List<Product>();
-            if (query.Equals("*")) cards = cardsOfSet;
+            if (query.Equals("*") || query.Equals("**")) cards = cardsOfSet;
             else
             {
                 var cardsAll = cardsOfSet.Where(x => x.Name.ToLower().Contains(query.ToLower())).ToList();

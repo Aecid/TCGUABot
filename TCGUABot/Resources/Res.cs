@@ -11,6 +11,8 @@ namespace TCGUABot.Resources
         public abstract string tryAtTcgua { get; }
         public abstract string price { get; }
         public abstract string priceFoil { get; }
+        public abstract string marketPrice { get; }
+        public abstract string marketPriceFoil { get; }
         public abstract string priceNoData { get; }
         public abstract string entryFee { get; }
         public abstract string rewards { get; }

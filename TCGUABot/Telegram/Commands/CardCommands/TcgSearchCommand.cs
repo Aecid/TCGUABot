@@ -24,6 +24,15 @@ namespace TCGUABot.Models.Commands
             var tUser = message.From;
             Helpers.TelegramUtil.AddUser(tUser, context);
 
+            bool isVip = false;
+
+            try
+            {
+                isVip = context.TelegramUsers.FirstOrDefault(t => t.Id == tUser.Id).IsVIP;
+            }
+            catch
+            { }
+
             var chatId = message.Chat.Id;
 
             string text = "";
@@ -70,9 +79,13 @@ namespace TCGUABot.Models.Commands
                     var prices = CardData.GetTcgPlayerPrices(card.ProductId);
                     if (prices["normal"] > 0)
                         price += Lang.Res(lang).price + ": <b>$" + prices["normal"].ToString() + "</b>\r\n";
+                    if (prices["marketNormal"] > 0)
+                        price += Lang.Res(lang).marketPrice + ": <b>$" + prices["marketNormal"].ToString() + "</b>\r\n";
                     if (prices["foil"] > 0)
                         price += Lang.Res(lang).priceFoil + ": <b>$" + prices["foil"].ToString() + "</b>\r\n";
-                    if (prices["normal"] == 0 && prices["foil"] == 0)
+                    if (prices["marketFoil"] > 0)
+                        price += Lang.Res(lang).marketPriceFoil + ": <b>$" + prices["marketFoil"].ToString() + "</b>\r\n";
+                    if (prices["normal"] == 0 && prices["foil"] == 0 && prices["marketNormal"] == 0 && prices["marketFoil"] == 0)
                         price += Lang.Res(lang).price + ": <i>" + Lang.Res(lang).priceNoData + "</i>\r\n";
 
                 }
@@ -117,7 +130,16 @@ namespace TCGUABot.Models.Commands
 
                 msg += nameEn + "\r\n" + set + legality + "\r\n" + price;
 
-                var req = WebRequest.Create(card.ImageUrl);
+
+                WebRequest req;
+                if (isVip) {
+                    req = WebRequest.Create("https://api.scryfall.com/cards/tcgplayer/" + card.ProductId + "?format=image");
+                }
+
+                else
+                {
+                    req = WebRequest.Create(card.ImageUrl);
+                }
                 try
                 {
                     using (Stream fileStream = req.GetResponse().GetResponseStream())

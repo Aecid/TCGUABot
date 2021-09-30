@@ -9,8 +9,8 @@ namespace TCGUABot.Resources
     {
         public override string cardNotFoundByRequest => "Карта не знайдена за запитом";
         public override string tryAtTcgua => "Спробуйте ввести в чат \"@tcgua_bot ім'якарти\" і почекати підказку від бота";
-        public override string price => "Ціна";
-        public override string priceFoil => "Ціна фойли";
+        public override string price => "Медіанна ціна";
+        public override string priceFoil => "Медіанна ціна фойли";
         public override string priceNoData => "Немає даних про ціну";
         public override string entryFee => "Вартість";
         public override string rewards => "Призи";
@@ -23,6 +23,8 @@ namespace TCGUABot.Resources
         public override string maxPlayers => "Максимум гравців";
         public override string legality => "Легальность";
 
+        public override string marketPrice => "Ринкова ціна";
 
+        public override string marketPriceFoil => "Ринкова ціна фойли";
     }
 }

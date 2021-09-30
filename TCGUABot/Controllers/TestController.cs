@@ -140,6 +140,18 @@ namespace TCGUABot.Controllers
             return res;
         }
 
+        [HttpGet("/Test/GetProductPriceById/{productId}", Name = "GetProductPriceById")]
+        public string GetProductPriceById(int productId)
+        {
+            var z = CardData.GetTcgPlayerPriceTemp(productId);
+
+            var res = string.Empty;
+
+            res += JsonConvert.SerializeObject(z, Formatting.Indented);
+
+            return res;
+        }
+
         [HttpGet("/Test/GetGroupsByCategoryId/{productId}", Name = "GetGroupsByCategoryId")]
         public string GetGroupsByCategoryId(int productId)
         {
@@ -216,8 +228,14 @@ namespace TCGUABot.Controllers
         public string PriceList()
         {
             var plist = new List<int>();
-            plist.Add(34444);
-            plist.Add(38303);
+            plist.Add(228724);
+            plist.Add(228725);
+            plist.Add(228726);
+            plist.Add(228727);
+            plist.Add(228728);
+            plist.Add(36767);
+        
+
 
             var z = CardData.GetTcgPlayerPrices(plist);
 

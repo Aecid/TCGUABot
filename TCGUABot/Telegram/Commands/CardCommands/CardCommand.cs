@@ -99,7 +99,12 @@ namespace TCGUABot.Models.Commands
 
             if (card != null)
             {
-                if (card.names != null && card.names.Count > 0)
+                if (card.otherFaceIds != null && card.otherFaceIds.Count > 0)
+                {
+                    var secondCard = Helpers.CardSearch.GetCardByMTGJsonUUID(card.otherFaceIds[0]);
+
+                }
+                else if (card.names != null && card.names.Count > 0)
                 {
                     nameEn = "<b>" + Lang.Res(lang).enFlag + "</b>";
                     nameRu = "<b>" + Lang.Res(lang).ruFlag + "</b>";
@@ -128,7 +133,16 @@ namespace TCGUABot.Models.Commands
                     var firstCardTcgPlayerId = 0;
                     foreach (var foundCard in ComboList)
                     {
-                        if (foundCard.multiverseId > 0)
+                        if (foundCard.scryfallId != null)
+                        {
+                            var imp = new InputMediaPhoto(new InputMedia("https://c1.scryfall.com/file/scryfall-cards/large/front/" + foundCard.scryfallId[0] + "/" + foundCard.scryfallId[1] + "/" + foundCard.scryfallId + ".jpg"))
+                            {
+                                //Caption = foundCard.name
+                            };
+                            media.Add(imp);
+                        }
+                        //https://c1.scryfall.com/file/scryfall-cards/large/front/a/8/a8dbb9aa-1bf8-447d-a96c-33e2248bfb01.jpg
+                        else if (foundCard.multiverseId > 0)
                         {
                             if (firstCardMuId != foundCard.multiverseId)
                             {
@@ -145,7 +159,7 @@ namespace TCGUABot.Models.Commands
                             if (firstCardTcgPlayerId != foundCard.tcgplayerProductId)
                             {
                                 firstCardTcgPlayerId = foundCard.tcgplayerProductId;
-                                var imp = new InputMediaPhoto( new InputMedia(context.Cards.FirstOrDefault(c => c.ProductId == firstCardTcgPlayerId).ImageUrl));
+                                var imp = new InputMediaPhoto(new InputMedia(context.Cards.FirstOrDefault(c => c.ProductId == firstCardTcgPlayerId).ImageUrl));
                                 media.Add(imp);
                             }
                         }
@@ -185,9 +199,29 @@ namespace TCGUABot.Models.Commands
                 {
                     msg += nameEn + "\r\n" + nameRu + (nameRu.Length > 0 ? "\r\n" : "") + set + "\r\n" + price;
                     WebRequest req;
-                    if (card.multiverseId > 0)
-                        req = WebRequest.Create("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card");
-                    else
+
+                    try
+                    {
+                        req = WebRequest.Create("https://c1.scryfall.com/file/scryfall-cards/large/front/" + card.scryfallId[0] + "/" + card.scryfallId[1] + "/" + card.scryfallId + ".jpg");
+                    }
+                    catch
+                    {
+                        req = null;
+                    }
+
+                    if (req == null)
+                    {
+                        try
+                        {
+                            req = WebRequest.Create("https://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseId + "&type=card");
+                        }
+                        catch
+                        {
+                            req = null;
+                        }
+                    }
+                    if (req == null)
+                    {
                         try
                         {
                             req = WebRequest.Create(CardData.GetTcgPlayerImage(card.tcgplayerProductId));
@@ -196,6 +230,7 @@ namespace TCGUABot.Models.Commands
                         {
                             req = null;
                         }
+                    }
 
                     if (req != null)
                     {

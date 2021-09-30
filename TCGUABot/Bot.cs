@@ -19,6 +19,8 @@ namespace TCGUABot
         public static IReadOnlyList<Command> Commands { get => commandsList.AsReadOnly(); }
         public static IReadOnlyList<CallbackHandler> CallbackHandlers { get => callbackHandlers.AsReadOnly(); }
 
+        public static Random rnd = new Random();
+
         public static async Task<TelegramBotClient> Get()
         {
             if (client != null)

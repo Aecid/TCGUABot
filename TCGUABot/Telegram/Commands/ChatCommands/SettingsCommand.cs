@@ -30,7 +30,7 @@ namespace TCGUABot.Models.Commands
             {
                 try
                 {
-                    string[] langs = { "ru", "en", "ua" };
+                    string[] langs = { "ru", "en", "ua"};
                     string[] bools = { "true", "false" };
 
                     if (message.Text.Contains(" set "))
@@ -54,18 +54,38 @@ namespace TCGUABot.Models.Commands
                             }
                         }
 
-                        if (message.Text.Contains(" sendSpoilers "))
+                        //if (message.Text.Contains(" sendSpoilers "))
+                        //{
+                        //    var text = false;
+
+                        //    if (bool.TryParse(message.Text.Replace("/settings set sendSpoilers ", "").Trim(), out text))
+                        //    {
+                        //        msg += "<b>sendSpoilers</b> was set to <b>" + text.ToString() + "</b>\r\n";
+                        //        context.TelegramChats.FirstOrDefault(tc => tc.Id == message.Chat.Id).SendSpoilers = text;
+                        //    }
+                        //    else
+                        //    {
+                        //        var errormsg = "Wrong 'sendSpoilers' value :(";
+                        //        try
+                        //        {
+                        //            await client.SendTextMessageAsync(message.Chat.Id, errormsg, Telegram.Bot.Types.Enums.ParseMode.Html, true, true, message.MessageId);
+                        //        }
+                        //        catch { }
+                        //    }
+                        //}
+
+                        if (message.Text.Contains(" textFlagsMode "))
                         {
                             var text = false;
 
-                            if (bool.TryParse(message.Text.Replace("/settings set sendSpoilers ", "").Trim(), out text))
+                            if (bool.TryParse(message.Text.Replace("/settings set textFlagsMode ", "").Trim(), out text))
                             {
-                                msg += "<b>sendSpoilers</b> was set to <b>" + text.ToString() + "</b>\r\n";
+                                msg += "<b>textFlagsMode</b> was set to <b>" + text.ToString() + "</b>\r\n";
                                 context.TelegramChats.FirstOrDefault(tc => tc.Id == message.Chat.Id).SendSpoilers = text;
                             }
                             else
                             {
-                                var errormsg = "Wrong 'sendSpoilers' value :(";
+                                var errormsg = "Wrong 'textFlagsMode' value :(";
                                 try
                                 {
                                     await client.SendTextMessageAsync(message.Chat.Id, errormsg, Telegram.Bot.Types.Enums.ParseMode.Html, true, true, message.MessageId);
@@ -115,7 +135,7 @@ namespace TCGUABot.Models.Commands
                     var chatData = context.TelegramChats.FirstOrDefault(tc => tc.Id == message.Chat.Id);
                     msg += "<b>Chat settings:</b>\r\n" +
                         "<b>lang</b> (en/ua/ru): <b>" + chatData.Language + "</b>\r\n" +
-                        "<b>sendSpoilers</b> (true/false): <b>" + chatData.SendSpoilers + "</b>";
+                        "<b>textFlagsMode</b> (true/false): <b>" + chatData.TextFlagsMode + "</b>";
 
                     if (message.Chat.Id == message.From.Id)
                     {

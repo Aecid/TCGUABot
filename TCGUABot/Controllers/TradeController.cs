@@ -105,7 +105,7 @@ namespace TCGUABot.Controllers
                                     }
                                     catch
                                     {
-                                        var errorMsg = "Error executing command " + command.Name;
+                                        var errorMsg = "Error executing command " + command.Name + ":\r\nRequest: " + update.Message.Text + "\r\nDetails: from:" + update.Message.From.FirstName + " " + update.Message.From.LastName + " @" + update.Message.From.Username + "(" + update.Message.From.Id + "), in chat: " + update.Message.Chat.Title + "(" + update.Message.Chat.Id + ")";
                                         await client.SendTextMessageAsync("-1001202180806", errorMsg, Telegram.Bot.Types.Enums.ParseMode.Html, true, true);
                                     }
                                     break;

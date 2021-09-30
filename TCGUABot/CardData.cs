@@ -44,8 +44,8 @@ namespace TCGUABot
             BearerToken = GetTcgplayerAccessToken();
             TcgGroups = GetTcgPlayerGroups();
 
-            var version = GetVersion();
-            if (version != Version || Sets == null)
+            //var version = GetVersion();
+            if (Sets.Count==0)
             {
                 //HttpClient client = new HttpClient();
 
@@ -63,9 +63,13 @@ namespace TCGUABot
                 var json = ApiCall("https://mtgjson.com/api/v5/SetList.json");
                 var SetCodes = new List<string>();
                 var jsonSetCodes = JsonConvert.DeserializeObject<dynamic>(json);
-                foreach (var setCode in jsonSetCodes)
+                foreach (var setCode in jsonSetCodes.data)
                 {
-                    SetCodes.Add(setCode.code.ToString());
+                    try
+                    {
+                        SetCodes.Add(setCode.code.ToString());
+                    }
+                    catch { }
                 }
 
                 if (DownloadAllCards(filename))
@@ -79,10 +83,21 @@ namespace TCGUABot
                         var serializer = new JsonSerializer();
                         while (reader.Read())
                         {
-                            if (reader.TokenType == JsonToken.StartObject && SetCodes.Contains(reader.Path))
+                            if (reader.TokenType == JsonToken.StartObject && SetCodes.Contains(reader.Path.Replace("data.","")))
                             {
                                 var c = serializer.Deserialize<Set>(reader);
                                 Sets.Add(c);
+                            }
+                            var zz = reader.Path;
+                            if (SetCodes.Contains(reader.Path.Replace("data.", "")))
+                            {
+                                var z = reader.TokenType;
+                                try
+                                {
+                                    var c = serializer.Deserialize<Set>(reader);
+                                    Sets.Add(c);
+                                }
+                                catch { }
                             }
                         }
                     }
@@ -355,19 +370,57 @@ namespace TCGUABot
 
             float priceNormal = 0;
             float priceFoil = 0;
+            float marketPriceNormal = 0;
+            float marketPriceFoil = 0;
+
             if (float.TryParse(pnormal.midPrice.ToString(), out priceNormal))
-                result.Add("normal", priceNormal);
-            else if (float.TryParse(pnormal.marketPrice.ToString(), out priceNormal))
                 result.Add("normal", priceNormal);
             else result.Add("normal", 0);
 
             if (float.TryParse(pfoil.midPrice.ToString(), out priceFoil))
                 result.Add("foil", priceFoil);
-            else if (float.TryParse(pfoil.marketPrice.ToString(), out priceFoil))
-                result.Add("foil", priceFoil);
             else result.Add("foil", 0);
 
+            if (float.TryParse(pnormal.marketPrice.ToString(), out marketPriceNormal))
+                result.Add("marketNormal", marketPriceNormal);
+            else result.Add("marketNormal", 0);
+
+            if (float.TryParse(pfoil.marketPrice.ToString(), out marketPriceFoil))
+                result.Add("marketFoil", marketPriceFoil);
+            else result.Add("marketFoil", 0);
+
+
             return result;
+        }
+
+        public static string GetTcgPlayerPriceTemp(int productKey)
+        {
+            IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddJsonFile("appsettings.json");
+            IConfiguration configuration = configurationBuilder.Build();
+
+            var result = new Dictionary<string, float>();
+            var version = configuration.GetSection("TCGPlayer").GetSection("Version").Value;
+
+            var url = "https://api.tcgplayer.com/" + version + "/pricing/product/" + productKey.ToString();
+            var request = (HttpWebRequest)WebRequest.Create(url);
+
+            request.Method = "GET";
+            request.ContentType = "application/json";
+            request.Headers.Add("Authorization", "Bearer " + BearerToken);
+
+            var content = string.Empty;
+
+            using (var response = (HttpWebResponse)request.GetResponse())
+            {
+                using var stream = response.GetResponseStream();
+                using (var sr = new StreamReader(stream))
+                {
+                    content = sr.ReadToEnd();
+                }
+            }
+
+            return content;
         }
 
         public static IEnumerable<dynamic> GetTcgPlayerPrices(List<int> productKeys)
@@ -537,12 +590,12 @@ namespace TCGUABot
 
         public string GetAllCards()
         {
-            return ApiCall("https://mtgjson.com/api/v5/AllSets.json");
+            return ApiCall("https://mtgjson.com/api/v5/AllPrintings.json");
         }
 
         public bool DownloadAllCards(string filename)
         {
-            return DownloadJson("https://mtgjson.com/api/v5/AllSets.json", filename);
+            return DownloadJson("https://mtgjson.com/api/v5/AllPrintings.json", filename);
         }
 
         public string GetModernCards()

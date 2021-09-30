@@ -10,7 +10,7 @@ namespace TCGUABot.Helpers
     {
         public static Card GetCardByName(string name, bool exactMatch = false)
         {
-            var expansions = new List<string>()
+                var expansions = new List<string>()
                     {
                         "core", "draft_innovation", "expansion"
                     };
@@ -39,7 +39,7 @@ namespace TCGUABot.Helpers
 
                 )
                 &&
-                expansions.Contains(s.type)
+                true//expansions.Contains(s.type)
                 );
 
                 if (set != null)
@@ -96,7 +96,7 @@ namespace TCGUABot.Helpers
 
                     )
                     &&
-                    expansions.Contains(s.type)
+                    true//expansions.Contains(s.type)
                     );
 
                 if (set != null)
@@ -171,6 +171,17 @@ namespace TCGUABot.Helpers
             {
                 if (set.cards.Any(c => c.multiverseId == id)) return set.cards.FirstOrDefault(c => c.multiverseId == id);
                 if (set.cards.Any(c => c.foreignData.Any(f => f.multiverseId == id))) return set.cards.FirstOrDefault(c => c.foreignData.Any(f => f.multiverseId == id));
+            }
+
+            return null;
+        }
+
+        public static Card GetCardByMTGJsonUUID(string id)
+        {
+            foreach (var set in CardData.Instance.Sets)
+            {
+                if (set.cards.Any(c => c.uuid == id)) return set.cards.FirstOrDefault(c => c.uuid == id);
+                if (set.cards.Any(c => c.foreignData.Any(f => f.uuid == id))) return set.cards.FirstOrDefault(c => c.foreignData.Any(f => f.uuid == id));
             }
 
             return null;
